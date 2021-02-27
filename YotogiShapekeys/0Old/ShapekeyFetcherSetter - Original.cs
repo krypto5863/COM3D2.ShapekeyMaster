@@ -345,7 +345,9 @@ namespace ShapekeyMaster
 		{
 			while (IsOrgasming) 
 			{
-				RunAllBackgroundAsync();
+				RunAllBackground
+				
+				();
 
 				yield return new WaitForSecondsRealtime(.5f);
 			}

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
+//using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static ShapekeyMaster.HelperClasses;
@@ -363,7 +363,7 @@ namespace ShapekeyMaster
 			Debug.Log($"Processing changes...");
 #endif
 
-			List<Task> taskList = new List<Task>();
+			//List<Task> taskList = new List<Task>();
 
 #if (DEBUG)
 			Debug.Log($"Starting foreach...");
