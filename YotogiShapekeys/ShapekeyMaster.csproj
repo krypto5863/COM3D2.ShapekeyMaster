@@ -35,11 +35,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="HelperClasses.cs" />
-    <Compile Include="PrivateSettersContractResolver.cs" />
+    <None Include="0Old\PrivateSettersContractResolver.cs" />
     <Compile Include="ShapekeyChangeForm.cs" />
     <Compile Include="ShapeKeyEntry.cs" />
-    <Compile Include="BlendShapeFetcherSetter.cs" />
-    <None Include="ShapekeyFetcherSetter - Original.cs" />
+    <None Include="0Old\BlendShapeFetcherSetter.cs" />
+    <None Include="0Old\ShapekeyFetcherSetter - Original.cs" />
     <Compile Include="ShapekeyFetcherSetter.cs" />
     <Compile Include="UI.cs" />
     <Compile Include="HarmonyPatchers.cs" />

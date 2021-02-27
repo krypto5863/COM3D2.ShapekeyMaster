@@ -17,7 +17,10 @@ namespace ShapekeyMaster
 					.Where(m => m != null)
 					.Count() > 0;
 
+					#if (DEBUG)
+
 				Debug.Log("Maids active to edit = "+ result);
+				#endif
 
 				return result;
 			}

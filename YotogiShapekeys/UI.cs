@@ -134,7 +134,9 @@ namespace ShapekeyMaster
 				}
 				if (GUILayout.Button("Save"))
 				{
+#if (DEBUG)
 					Debug.Log("Saving data to configs now!");
+#endif
 
 					File.WriteAllText(BepInEx.Paths.ConfigPath + "\\ShapekeyMaster.json", JsonConvert.SerializeObject(ShapeKeys));
 				}
@@ -180,7 +182,9 @@ namespace ShapekeyMaster
 		{
 			if (GUILayout.Button("Add New Shapekey"))
 			{
+#if (DEBUG)
 				Debug.Log("I've been clicked! Oh the humanity!!");
+#endif
 
 				while (ShapeKeys.ContainsKey(availID))
 				{
@@ -322,7 +326,9 @@ namespace ShapekeyMaster
 		{
 			if (GUILayout.Button("Add New Shapekey"))
 			{
+			#if (DEBUG)
 				Debug.Log("I've been clicked! Oh the humanity!!");
+				#endif
 
 				while (ShapeKeys.ContainsKey(availID))
 				{

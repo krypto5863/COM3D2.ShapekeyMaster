@@ -67,7 +67,10 @@ namespace ShapekeyMaster
 		{
 			ShapekeyFetcherSetter.MissionControlAll();
 
+			#if (DEBUG)
+
 			Debug.Log($"{__instance.fullNameJpStyle }'s excitement changed to {__instance.currentExcite}! Making changes...");
+			#endif
 		}
 		//Orgasm was detected!
 		/*

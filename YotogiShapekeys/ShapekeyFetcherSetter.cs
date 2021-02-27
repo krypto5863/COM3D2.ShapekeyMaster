@@ -292,8 +292,9 @@ namespace ShapekeyMaster
 					Deform = s.Deform,
 					ShapekeyName = s.ShapeKey
 				});
-
+#if (DEBUG)
 				Debug.Log($"Creating change form of {shapekeyIndex} {s.Deform} {s.ShapeKey}");
+#endif
 			}
 			return resultList;
 		}
