@@ -83,7 +83,7 @@ namespace ShapekeyMaster
 			Debug.Log($"MissionControlAll finished processing in {stop.Elapsed} ms");
 #endif
 		}
-		public async static void MissionControlMaid(Maid maid)
+		public static void MissionControlMaid(Maid maid)
 		{
 
 
@@ -438,6 +438,7 @@ namespace ShapekeyMaster
 #endif
 			}
 		}
+		/*
 		public static void FixSingleBlendValues(TMorph morph, int index) 
 		{
 			int num = 0;
@@ -494,7 +495,7 @@ namespace ShapekeyMaster
 				int vidx = tattachPoint.vidx;
 				morph.BindVert[vidx] = m_bindposes[tattachPoint.bw.boneIndex0].MultiplyPoint3x4(m_vTmpVert[vidx]);
 			}
-		}
+		}*/
 		public static IEnumerator TaskQueuer() 
 		{
 			while (true)
