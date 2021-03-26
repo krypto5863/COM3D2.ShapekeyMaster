@@ -40,7 +40,8 @@ namespace ShapekeyMaster
 #endif
 
 							return false;
-						} else if (s.Maid == __instance.bodyskin.body.maid.status.fullNameJpStyle)
+						}
+						else if (s.Maid == __instance.bodyskin.body.maid.status.fullNameJpStyle)
 						{
 #if (DEBUG)
 							Debug.Log("ShapekeyMaster noticed a value not set by it. Discarding change...");
@@ -65,12 +66,12 @@ namespace ShapekeyMaster
 		[HarmonyPostfix]
 		public static void OnExciteSet(ref MaidStatus.Status __instance)
 		{
-			ShapekeyFetcherSetter.MissionControlAll();
+			ShapekeyFetcherSetter.RunAll();
 
-			#if (DEBUG)
+#if (DEBUG)
 
 			Debug.Log($"{__instance.fullNameJpStyle }'s excitement changed to {__instance.currentExcite}! Making changes...");
-			#endif
+#endif
 		}
 		//Orgasm was detected!
 		/*

@@ -63,34 +63,34 @@ namespace ShapekeyMaster
 
 			//if (ToolbarSelection == 0)
 			//{
-				if (ShapeKeys.ContainsKey(OpenSKMenu))
+			if (ShapeKeys.ContainsKey(OpenSKMenu))
+			{
+				DisplayShapeKeySelectMenu(ShapeKeys[OpenSKMenu]);
+
+			}
+			else if (ShapeKeys.ContainsKey(OpenMaidMenu))
+			{
+				DisplayMaidSelectMenu(ShapeKeys[OpenMaidMenu]);
+
+			}
+			else if (ShapeKeys.ContainsKey(OpenRenameMenu))
+			{
+				DisplayRenameMenu(ShapeKeys[OpenRenameMenu]);
+
+			}
+			else
+			{
+				DisplayHeaderMenu();
+
+				foreach (int i in DeleteList)
 				{
-					DisplayShapeKeySelectMenu(ShapeKeys[OpenSKMenu] as ShapeKeyEntry);
-
+					ShapeKeys.Remove(i);
 				}
-				else if (ShapeKeys.ContainsKey(OpenMaidMenu))
-				{
-					DisplayMaidSelectMenu(ShapeKeys[OpenMaidMenu] as ShapeKeyEntry);
 
-				}
-				else if (ShapeKeys.ContainsKey(OpenRenameMenu))
-				{
-					DisplayRenameMenu(ShapeKeys[OpenRenameMenu] as ShapeKeyEntry);
+				DeleteList.Clear();
 
-				}
-				else
-				{
-					DisplayHeaderMenu();
-
-					foreach (int i in DeleteList)
-					{
-						ShapeKeys.Remove(i);
-					}
-
-					DeleteList.Clear();
-
-					DisplayShapeKeyEntriesMenu(ShapeKeys);
-				}
+				DisplayShapeKeyEntriesMenu(ShapeKeys);
+			}
 			/*}
 			else if (ToolbarSelection == 1)
 			{
@@ -130,7 +130,7 @@ namespace ShapekeyMaster
 
 				if (GUILayout.Button("Apply"))
 				{
-					ShapekeyFetcherSetter.MissionControlAll();
+					ShapekeyFetcherSetter.RunAll();
 				}
 				if (GUILayout.Button("Save"))
 				{
@@ -264,7 +264,7 @@ namespace ShapekeyMaster
 					GUILayout.EndHorizontal();
 
 					//s.SetAnimateWithOrgasm(GUILayout.Toggle(s.GetAnimateWithOrgasm(), $"Animate during orgasm"));
-					if (s.AnimateWithExcitement == false && s.SetAnimate(GUILayout.Toggle(s.Animate, $"Animate"))) 
+					if (s.AnimateWithExcitement == false && s.SetAnimate(GUILayout.Toggle(s.Animate, $"Animate")))
 					{
 						GUILayout.Label($"Animation speed = (1000 ms / {s.GetAnimationPoll() * 1000} ms) x {s.GetAnimationRate()} = {1000 / (s.GetAnimationPoll() * 1000) * s.GetAnimationRate()} %/Second");
 						GUILayout.Label($"Shapekey Deformation: {s.Deform}");
@@ -292,14 +292,14 @@ namespace ShapekeyMaster
 						GUILayout.Label($"Default Shapekey Deformation: {s.Deform}");
 						s.SetDeform(Mathf.RoundToInt(GUILayout.HorizontalSlider(s.Deform, 0, 100.0F)));
 						GUILayout.Label($"Max Shapekey Deformation: {s.DeformMax}");
-						s.SetDeformMax( Mathf.RoundToInt(GUILayout.HorizontalSlider(s.DeformMax, s.DeformMin, 100.0F)));
+						s.SetDeformMax(Mathf.RoundToInt(GUILayout.HorizontalSlider(s.DeformMax, s.DeformMin, 100.0F)));
 						GUILayout.Label($"Min Shapekey Deformation: {s.DeformMin}");
 						s.SetDeformMin(Mathf.RoundToInt(GUILayout.HorizontalSlider(s.DeformMin, 0.0F, s.DeformMax)));
 					}
 					else
 					{
 						GUILayout.Label($"Shapekey Deformation: {s.Deform}");
-						s.SetDeform( Mathf.RoundToInt(GUILayout.HorizontalSlider(s.Deform, 0, 100.0F)));
+						s.SetDeform(Mathf.RoundToInt(GUILayout.HorizontalSlider(s.Deform, 0, 100.0F)));
 					}
 
 					if (GUILayout.Button($"Rename {s.EntryName}"))
@@ -326,9 +326,9 @@ namespace ShapekeyMaster
 		{
 			if (GUILayout.Button("Add New Shapekey"))
 			{
-			#if (DEBUG)
+#if (DEBUG)
 				Debug.Log("I've been clicked! Oh the humanity!!");
-				#endif
+#endif
 
 				while (ShapeKeys.ContainsKey(availID))
 				{
@@ -380,7 +380,7 @@ namespace ShapekeyMaster
 						s.Collapsed = !s.Collapsed;
 					}
 
-					s.SetEnabled( GUILayout.Toggle(s.Enabled, $"Enable"));
+					s.SetEnabled(GUILayout.Toggle(s.Enabled, $"Enable"));
 					GUILayout.BeginHorizontal();
 					GUILayout.Label("ShapeKey");
 					GUILayout.EndHorizontal();
@@ -392,7 +392,7 @@ namespace ShapekeyMaster
 
 					}
 
-					s.SetShapeKey( GUILayout.TextField(s.ShapeKey));
+					s.SetShapeKey(GUILayout.TextField(s.ShapeKey));
 
 					GUILayout.EndHorizontal();
 

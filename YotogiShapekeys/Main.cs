@@ -3,18 +3,15 @@ using COM3D2API;
 using HarmonyLib;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 //using System.Threading.Tasks;
-using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace ShapekeyMaster
 {
-	[BepInPlugin("ShapekeyMaster", "ShapekeyMaster", "1.0.0.0")]
+	[BepInPlugin("ShapekeyMaster", "ShapekeyMaster", "0.1")]
 	public class Main : BaseUnityPlugin
 	{
 		public static Main @this;
@@ -37,7 +34,8 @@ namespace ShapekeyMaster
 				/*
 				var jsonContracter = new JsonSerializerSettings();
 
-				jsonContracter.ContractResolver = new PrivateSettersContractResolver();*/
+				jsonContracter.ContractResolver = new PrivateSettersContractResolver();
+				*/
 
 				UI.ShapeKeys = JsonConvert.DeserializeObject<SortedDictionary<int, ShapeKeyEntry>>(
 				mconfig);

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Threading;
+﻿using System.Collections;
 using UnityEngine;
 
 namespace ShapekeyMaster
@@ -8,13 +6,13 @@ namespace ShapekeyMaster
 	internal class ShapeKeyEntry
 	{
 
-		private IEnumerator Animator;	
+		private IEnumerator Animator;
 
 		public int Id { get; set; }
 		public string EntryName { get; set; }
 		public bool Enabled { get; set; }
 
-		public bool SetEnabled(bool value) 
+		public bool SetEnabled(bool value)
 		{
 			if (value != Enabled)
 			{
@@ -70,7 +68,7 @@ namespace ShapekeyMaster
 			return false;
 		}
 		public bool Animate { get; set; }
-		public bool SetAnimate(bool value) 
+		public bool SetAnimate(bool value)
 		{
 
 			if (value != Animate)
@@ -94,9 +92,8 @@ namespace ShapekeyMaster
 		public string AnimationRate { get; set; }
 		public float GetAnimationRate()
 		{
-			float val;
 
-			if (float.TryParse(AnimationRate, out val))
+			if (float.TryParse(AnimationRate, out float val))
 			{
 				return val;
 			}
@@ -114,9 +111,8 @@ namespace ShapekeyMaster
 		public string AnimationPoll { get; set; }
 		public float GetAnimationPoll()
 		{
-			float val;
 
-			if (float.TryParse(AnimationPoll, out val))
+			if (float.TryParse(AnimationPoll, out float val))
 			{
 				return val;
 			}
@@ -141,7 +137,7 @@ namespace ShapekeyMaster
 			return value;
 		}
 		public float AnimationMinimum { get; set; }
-		public float SetAnimationMinimum (float value)
+		public float SetAnimationMinimum(float value)
 		{
 			if (value != AnimationMinimum)
 			{
@@ -239,7 +235,7 @@ namespace ShapekeyMaster
 #if (DEBUG)
 				Debug.Log($"Constructor found done. Calling.");
 #endif
-				ShapekeyFetcherSetter.MissionControlSingleEntry(this);
+				ShapekeyFetcherSetter.RunSingleEntry(this);
 				//ShapekeyFetcherSetter.RunSingleShapekey(this);
 
 #if (DEBUG)
@@ -247,13 +243,14 @@ namespace ShapekeyMaster
 #endif
 			}
 		}
-		private IEnumerator AnimateCoRoute() 
+		private IEnumerator AnimateCoRoute()
 		{
 			bool reverse = false;
 
 			yield return new WaitForEndOfFrame();
 
-			while (true) {
+			while (true)
+			{
 				if (Animate == true)
 				{
 					if (Enabled && HelperClasses.IsMaidActive(Maid))
@@ -271,7 +268,7 @@ namespace ShapekeyMaster
 						{
 							Deform -= GetAnimationRate();
 						}
-						else 
+						else
 						{
 							Deform += GetAnimationRate();
 						}
@@ -280,7 +277,7 @@ namespace ShapekeyMaster
 						{
 							Deform = AnimationMaximum;
 						}
-						else if (Deform < AnimationMinimum) 
+						else if (Deform < AnimationMinimum)
 						{
 							Deform = AnimationMinimum;
 						}
@@ -289,7 +286,7 @@ namespace ShapekeyMaster
 						Debug.Log($"Changed deform value for shapekey entry {EntryName}");
 #endif
 
-						ShapekeyFetcherSetter.MissionControlSingleEntry(this);
+						ShapekeyFetcherSetter.RunSingleEntry(this);
 
 						yield return new WaitForSecondsRealtime(GetAnimationPoll());
 					}

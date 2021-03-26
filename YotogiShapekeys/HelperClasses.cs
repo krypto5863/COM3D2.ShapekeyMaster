@@ -9,7 +9,8 @@ namespace ShapekeyMaster
 		public static bool IsMaidActive(string name)
 		{
 
-			if (name == "") {
+			if (name == "")
+			{
 
 				bool result =
 					ShapekeyFetcherSetter
@@ -17,10 +18,10 @@ namespace ShapekeyMaster
 					.Where(m => m != null)
 					.Count() > 0;
 
-					#if (DEBUG)
+#if (DEBUG)
 
-				Debug.Log("Maids active to edit = "+ result);
-				#endif
+				Debug.Log("Maids active to edit = " + result);
+#endif
 
 				return result;
 			}
@@ -28,7 +29,7 @@ namespace ShapekeyMaster
 			return
 				ShapekeyFetcherSetter
 				.GetMaidsList()
-				.Where(m => m != null && m.status.fullNameJpStyle == name)
+				.Where(m => m != null && m.isActiveAndEnabled && m.status.fullNameJpStyle == name)
 				.Count() > 0;
 		}
 		public static IEnumerable<TMorph> GetAllMorphsFromMaidList(List<Maid> list)
@@ -44,6 +45,7 @@ namespace ShapekeyMaster
 				maid
 				.body0
 				.goSlot
+				.GetListParents()
 				.Concat(new[] { maid.body0.Face })
 				.Where(s => s != null)
 				.Select(s => s.morph)
@@ -89,8 +91,8 @@ namespace ShapekeyMaster
 				if ((blendshape = mesh.GetBlendShapeName(i)) != null)
 				{
 					res.Add(blendshape);
-					++shapecount;	
-				}			
+					++shapecount;
+				}
 			}
 
 			return res;
@@ -122,7 +124,7 @@ namespace ShapekeyMaster
 		public static float GetHighestExcitement(List<Maid> maids)
 		{
 			maids = maids
-			.Where(m => m != null)
+			.Where(m => m != null && m.isActiveAndEnabled)
 			.ToList();
 
 			if (maids.Count() > 0)
