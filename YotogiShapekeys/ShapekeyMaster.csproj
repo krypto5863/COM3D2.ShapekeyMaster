@@ -34,15 +34,18 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="0Old\PropsMenu.cs" />
     <Compile Include="HelperClasses.cs" />
     <None Include="0Old\PrivateSettersContractResolver.cs" />
+    <Compile Include="MyGUI\Helpers.cs" />
     <Compile Include="ShapekeyChangeForm.cs" />
+    <Compile Include="ShapekeyDatabase.cs" />
     <Compile Include="ShapeKeyEntry.cs" />
     <None Include="0Old\BlendShapeFetcherSetter.cs" />
     <None Include="0Old\ShapekeyFetcherSetter - Original.cs" />
     <None Include="0Old\0Old1ShapekeyFetcherSetter.cs" />
     <Compile Include="ShapekeyFetcherSetter.cs" />
-    <Compile Include="UI.cs" />
+    <Compile Include="MyGUI\UI.cs" />
     <Compile Include="HarmonyPatchers.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -52,13 +55,10 @@
       <HintPath>..\..\..\..\Desktop\Meido Assemblies\COM Assemblies\BepinEx\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\Desktop\Meido Assemblies\COM Assemblies\GameOriginal\AssemblyCSharp publicizedStub\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Meido Assemblies\COM Assemblies\GameOriginal 1.55.4\stubbed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
       <HintPath>..\..\..\..\Desktop\Meido Assemblies\COM Assemblies\BepinEx\BepInEx.dll</HintPath>
-    </Reference>
-    <Reference Include="BepInEx.Harmony">
-      <HintPath>..\..\..\..\Desktop\Meido Assemblies\COM Assemblies\BepinEx\BepInEx.Harmony.dll</HintPath>
     </Reference>
     <Reference Include="COM3D2.API">
       <HintPath>..\..\..\..\Desktop\Meido Assemblies\COM Assemblies\Resources\COM3D2.API.dll</HintPath>
@@ -67,8 +67,13 @@
       <HintPath>..\..\..\..\Desktop\Meido Assemblies\COM Assemblies\GameOriginal\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\Desktop\Meido Assemblies\COM Assemblies\GameOriginal\UnityEngine.dll</HintPath>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Desktop\Meido Assemblies\COM Assemblies\GameOriginal 1.55.4\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\..\..\..\Desktop\Meido Assemblies\COM Assemblies\GameOriginal 1.55.4\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

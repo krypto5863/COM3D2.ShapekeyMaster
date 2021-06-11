@@ -1,14 +1,15 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 namespace ShapekeyMaster
 {
-	internal class ShapeKeyEntry
+	public class ShapeKeyEntry
 	{
 
 		private IEnumerator Animator;
 
-		public int Id { get; set; }
+		public Guid Id { get; set; }
 		public string EntryName { get; set; }
 		public bool Enabled { get; set; }
 
@@ -23,7 +24,6 @@ namespace ShapekeyMaster
 			return value;
 		}
 
-		public bool IsProp { get; set; }
 		public bool AnimateWithExcitement { get; set; }
 		public bool SetAnimateWithExcitement(bool value)
 		{
@@ -145,13 +145,24 @@ namespace ShapekeyMaster
 			}
 			return value;
 		}
-		public float Deform { get; set; }
-		public void SetDeform(float value)
+		private float deform;
+		public float Deform
 		{
-			if (value != Deform)
+			get
 			{
-				Deform = value;
-				RunUpdate();
+				if (Enabled == false)
+				{
+					return 0f;
+				}
+				return deform;
+			}
+			set 
+			{
+				if (value != deform && Enabled)
+				{
+					deform = value;
+					RunUpdate();
+				}
 			}
 		}
 		public float DeformMax { get; set; }
@@ -193,14 +204,13 @@ namespace ShapekeyMaster
 		public bool Collapsed { get; set; }
 
 		private readonly bool constructordone = false;
-		public ShapeKeyEntry(int id, bool Prop = false)
+		public ShapeKeyEntry(Guid id, string maid = "",  bool Prop = false)
 		{
 			this.Id = id;
-			EntryName = "New Entry #" + id.ToString();
+			EntryName = "New Entry #" + Id.ToString();
 			Enabled = true;
 			Deform = 0;
 			ShapeKey = "";
-			IsProp = Prop;
 
 			if (Prop == false)
 			{
@@ -209,7 +219,7 @@ namespace ShapekeyMaster
 				ExcitementMin = 0.0F;
 				DeformMax = 100;
 				DeformMin = 0;
-				Maid = "";
+				Maid = maid;
 
 				Animate = false;
 				AnimationMaximum = 100;
@@ -228,18 +238,18 @@ namespace ShapekeyMaster
 		private void RunUpdate()
 		{
 #if (DEBUG)
-			Debug.Log($"Change was detected in the shapekeys. Calling update.");
+			Main.logger.LogDebug($"Change was detected in the shapekeys. Calling update.");
 #endif
 			if (constructordone)
 			{
 #if (DEBUG)
-				Debug.Log($"Constructor found done. Calling.");
+				Main.logger.LogDebug($"Constructor found done. Calling.");
 #endif
 				ShapekeyFetcherSetter.RunSingleEntry(this);
 				//ShapekeyFetcherSetter.RunSingleShapekey(this);
 
 #if (DEBUG)
-				Debug.Log($"Finished update.");
+				Main.logger.LogDebug($"Finished update.");
 #endif
 			}
 		}
@@ -283,7 +293,7 @@ namespace ShapekeyMaster
 						}
 
 #if (DEBUG)
-						Debug.Log($"Changed deform value for shapekey entry {EntryName}");
+						Main.logger.LogDebug($"Changed deform value for shapekey entry {EntryName}");
 #endif
 
 						ShapekeyFetcherSetter.RunSingleEntry(this);
@@ -293,7 +303,7 @@ namespace ShapekeyMaster
 					else
 					{
 #if (DEBUG)
-						Debug.Log($"Maid isn't active or shapekey entry disabled. Waiting two seconds and rechecking...");
+						Main.logger.LogDebug($"Maid isn't active or shapekey entry disabled. Waiting two seconds and rechecking...");
 #endif
 
 						yield return new WaitForSecondsRealtime(2);
@@ -304,7 +314,7 @@ namespace ShapekeyMaster
 				{
 
 #if (DEBUG)
-					Debug.Log($"Animate was false. Exiting the coroutine.");
+					Main.logger.LogDebug($"Animate was false. Exiting the coroutine.");
 #endif
 
 					break;

@@ -40,7 +40,7 @@ namespace ShapekeyMaster
 		public static void RunAll()
 		{
 #if (DEBUG)
-			Debug.Log($"Running on all!");
+			Main.logger.LogDebug($"Running on all!");
 #endif
 
 			maidslist
@@ -48,7 +48,7 @@ namespace ShapekeyMaster
 			.ToList()
 			.ForEach(m => RunSingleMaid(m));
 
-			Debug.Log("Finished RunAll");
+			Main.logger.LogDebug("Finished RunAll");
 		}
 		//This simple func just fetches all morphs from a maid and sends it to the single morph func
 		public static void RunSingleMaid(Maid maid)
@@ -59,7 +59,7 @@ namespace ShapekeyMaster
 #endif
 
 #if (DEBUG)
-			Debug.Log($"Working on maid: {maid.status.fullNameJpStyle} with {GetAllMorphsFromMaid(maid).Count()} TMorphs");
+			Main.logger.LogDebug($"Working on maid: {maid.status.fullNameJpStyle} with {GetAllMorphsFromMaid(maid).Count()} TMorphs");
 #endif
 			var changeForms = GetAllMorphsFromMaid(maid)
 			 .Select(tm => ShapekeyFetcherSetter.GetTMorphChangeForm(tm))
@@ -69,7 +69,7 @@ namespace ShapekeyMaster
 
 #if (DEBUG)
 			stop.Stop();
-			Debug.Log($"MissionControlSingleEntry finished processing in {stop.Elapsed} ms");
+			Main.logger.LogDebug($"MissionControlSingleEntry finished processing in {stop.Elapsed} ms");
 #endif
 		}
 		public static void RunSingleEntry(ShapeKeyEntry sk)
@@ -78,7 +78,7 @@ namespace ShapekeyMaster
 #if (DEBUG)
 			Stopwatch stop = new Stopwatch();
 			stop.Start();
-			Debug.Log($"Calculating single entry...");
+			Main.logger.LogDebug($"Calculating single entry...");
 #endif
 
 			List<Maid> maids = new List<Maid>();
@@ -97,7 +97,7 @@ namespace ShapekeyMaster
 			}
 
 #if (DEBUG)
-			Debug.Log($"Fetched {maids.Count} Maids");
+			Main.logger.LogDebug($"Fetched {maids.Count} Maids");
 #endif
 
 			if (maids.Count <= 0)
@@ -106,7 +106,7 @@ namespace ShapekeyMaster
 			}
 
 #if (DEBUG)
-			Debug.Log($"Maids were not zero...");
+			Main.logger.LogDebug($"Maids were not zero...");
 #endif
 
 			var morphs = maids
@@ -115,7 +115,7 @@ namespace ShapekeyMaster
 			.Where(m => m.Contains(sk.ShapeKey));
 
 #if (DEBUG)
-			Debug.Log($"Fetched Morphs");
+			Main.logger.LogDebug($"Fetched Morphs");
 #endif
 
 			if (morphs.ToList().Count <= 0)
@@ -124,7 +124,7 @@ namespace ShapekeyMaster
 			}
 
 #if (DEBUG)
-			Debug.Log($"Morphs were not zero");
+			Main.logger.LogDebug($"Morphs were not zero");
 #endif
 
 			var changes = morphs
@@ -132,30 +132,28 @@ namespace ShapekeyMaster
 			.SelectMany(r => r);
 
 #if (DEBUG)
-			Debug.Log($"Turned morphs into changes");
+			Main.logger.LogDebug($"Turned morphs into changes");
 #endif
 
 			ProcessChanges(changes);
 
 #if (DEBUG)
-			Debug.Log($"Processed changes...");
+			Main.logger.LogDebug($"Processed changes...");
 
 			stop.Stop();
-			Debug.Log($"MissionControlSingleEntry finished processing in {stop.Elapsed} ms");
+			Main.logger.LogDebug($"MissionControlSingleEntry finished processing in {stop.Elapsed} ms");
 #endif
 		}
 		//This function takes a morph and checks every single shapekey entry for one that edits the held morph. If one is found, pushes to modify morph.
 		public static List<ShapekeyChangeForm> GetTMorphChangeForm(TMorph m)
 		{
 #if (DEBUG)
-			Debug.Log($"Working on TMorph holding this many morphs: {m.MorphCount}");
+			Main.logger.LogDebug($"Working on TMorph holding this many morphs: {m.MorphCount}");
 #endif
 
 			//Filters the list and only returns viable shapekey entries to reduce processing times.
-			List<ShapeKeyEntry> templist = UI.ShapeKeys.Values
-			.Where(s => s.Enabled == true
-			&& s.IsProp == false
-			&& (s.Maid.Equals("") || m.bodyskin.body.maid.status.fullNameJpStyle.Equals(s.Maid))
+			List<ShapeKeyEntry> templist = UI.SKDatabase.AllShapekeyDictionary.Values
+			.Where(s => (s.Maid.Equals("") || m.bodyskin.body.maid.status.fullNameJpStyle.Equals(s.Maid))
 			&& m.Contains(s.ShapeKey))
 			.ToList();
 
@@ -166,13 +164,13 @@ namespace ShapekeyMaster
 			{
 
 #if (DEBUG)
-				Debug.Log($"Checking that it isn't a face morph...");
+				Main.logger.LogDebug($"Checking that it isn't a face morph...");
 #endif
 
 				if (m.bodyskin.body.Face != null && m.bodyskin.body.Face.morph != null &&  m.bodyskin.body.Face.morph.Contains(s.ShapeKey))
 				{
 #if (DEBUG)
-					Debug.Log($"We are processing a facial key of {s.ShapeKey}");
+					Main.logger.LogDebug($"We are processing a facial key of {s.ShapeKey}");
 #endif
 					m.bodyskin.body.maid.boMabataki = false;
 				}
@@ -217,7 +215,7 @@ namespace ShapekeyMaster
 					ShapekeyName = s.ShapeKey
 				});
 #if (DEBUG)
-				Debug.Log($"Creating change form of {shapekeyIndex} {s.Deform} {s.ShapeKey}");
+				Main.logger.LogDebug($"Creating change form of {shapekeyIndex} {s.Deform} {s.ShapeKey}");
 #endif
 			}
 			return resultList;
@@ -227,7 +225,7 @@ namespace ShapekeyMaster
 		{
 
 #if (DEBUG)
-			Debug.Log($"Checking if changes are not zero and running coroutine if needed...");
+			Main.logger.LogDebug($"Checking if changes are not zero and running coroutine if needed...");
 #endif
 			if (changes.Count() > 0)
 			{
@@ -236,6 +234,7 @@ namespace ShapekeyMaster
 				if (CorouteRunning == false)
 				{
 					Main.@this.StartCoroutine(RunShapekeyChange());
+					//RunShapekeyChangeNormal();
 				}
 			}
 		}
@@ -245,16 +244,16 @@ namespace ShapekeyMaster
 			CorouteRunning = true;
 
 #if (DEBUG)
-			Debug.Log($"Started Changer Coroute...");
+			Main.logger.LogDebug($"Started Changer Coroute...");
 #endif
 
-			yield return new WaitForEndOfFrame();
+			yield return null;
 
 			while (ChangeList.Count > 0)
 			{
 
 #if (DEBUG)
-				Debug.Log($"Running the while...");
+				Main.logger.LogDebug($"Running the while...");
 #endif
 
 				ShapekeyChangeForm nextKey = 
@@ -264,16 +263,16 @@ namespace ShapekeyMaster
 				if (nextKey == null) 
 				{
 #if (DEBUG)
-					Debug.LogWarning($"It seems no keys were ready to be changed. Waiting for next frame...");
+					Main.logger.LogDebug($"It seems no keys were ready to be changed. Waiting for next frame...");
 #endif
-					yield return new WaitForEndOfFrame();
+					yield return null;
 					continue;
 				}
 
 				if (nextKey.Morph.GetBlendValues(nextKey.Index) != nextKey.Deform)
 				{
 #if (DEBUG)
-					Debug.Log($"{nextKey.ShapekeyName} could be changed.");
+					Main.logger.LogDebug($"{nextKey.ShapekeyName} could be changed.");
 #endif
 
 					if (nextKey.Deform < 0)
@@ -282,9 +281,9 @@ namespace ShapekeyMaster
 					}
 
 #if (DEBUG)
-					Debug.Log($"Value needs setting! Setting value of {nextKey.Deform} to {nextKey.ShapekeyName}");
+					Main.logger.LogDebug($"Value needs setting! Setting value of {nextKey.Deform} to {nextKey.ShapekeyName}");
 #endif
-					nextKey.Morph.SetBlendValues(nextKey.Index, (nextKey.Deform / 100f) + 10000f);
+					Main.SetBlendValues(nextKey.Index, (nextKey.Deform / 100f), nextKey.Morph);
 
 					try
 					{
@@ -293,12 +292,12 @@ namespace ShapekeyMaster
 					catch
 					{
 #if (DEBUG)
-						Debug.LogWarning($"Had some issues fixing blend values on {nextKey.ShapekeyName}. Be wary.");
+						Main.logger.LogWarning($"Had some issues fixing blend values on {nextKey.ShapekeyName}. Be wary.");
 #endif
 					}
 
 #if (DEBUG)
-					Debug.Log($"Checking if {nextKey.ShapekeyName} was a face morph and needs updating");
+					Main.logger.LogDebug($"Checking if {nextKey.ShapekeyName} was a face morph and needs updating");
 #endif
 					if (nextKey.Morph.bodyskin.body.Face != null && nextKey.Morph.bodyskin.body.Face.morph != null && nextKey.Morph.bodyskin.body.Face.morph.Contains(nextKey.ShapekeyName))
 					{
@@ -308,7 +307,7 @@ namespace ShapekeyMaster
 					ChangeList.Remove(nextKey);
 
 #if (DEBUG)
-					Debug.Log($"Done with single shapekey change on {nextKey.ShapekeyName}.");
+					Main.logger.LogDebug($"Done with single shapekey change on {nextKey.ShapekeyName}.");
 #endif
 				}
 				else
@@ -318,10 +317,78 @@ namespace ShapekeyMaster
 			}
 
 #if (DEBUG)
-			Debug.Log($"Coroute is done. Now exiting...");
+			Main.logger.LogDebug($"Coroute is done. Now exiting...");
 #endif
 
 			CorouteRunning = false;
+		}
+		public static void RunShapekeyChangeNormal()
+		{
+
+#if (DEBUG)
+			Main.logger.LogDebug($"Started Changer Normal...");
+#endif
+
+			while (ChangeList.Count > 0)
+			{
+#if (DEBUG)
+				Main.logger.LogDebug($"Running the while...");
+#endif
+
+				ShapekeyChangeForm nextKey =
+				ChangeList
+				.FirstOrDefault(t => t.Morph != null && t.Morph.bodyskin != null && t.Morph.bodyskin.body != null && t.Morph.bodyskin.body.maid.isActiveAndEnabled);
+
+				if (nextKey.Morph.GetBlendValues(nextKey.Index) != nextKey.Deform)
+				{
+#if (DEBUG)
+					Main.logger.LogDebug($"{nextKey.ShapekeyName} could be changed.");
+#endif
+
+					if (nextKey.Deform < 0)
+					{
+						nextKey.Deform = 0;
+					}
+
+#if (DEBUG)
+					Main.logger.LogDebug($"Value needs setting! Setting value of {nextKey.Deform} to {nextKey.ShapekeyName}");
+#endif
+					Main.SetBlendValues(nextKey.Index, (nextKey.Deform / 100f), nextKey.Morph);
+
+					try
+					{
+						nextKey.Morph.FixBlendValues();
+					}
+					catch
+					{
+#if (DEBUG)
+						Main.logger.LogWarning($"Had some issues fixing blend values on {nextKey.ShapekeyName}. Be wary.");
+#endif
+					}
+
+#if (DEBUG)
+					Main.logger.LogDebug($"Checking if {nextKey.ShapekeyName} was a face morph and needs updating");
+#endif
+					if (nextKey.Morph.bodyskin.body.Face != null && nextKey.Morph.bodyskin.body.Face.morph != null && nextKey.Morph.bodyskin.body.Face.morph.Contains(nextKey.ShapekeyName))
+					{
+						nextKey.Morph.bodyskin.body.Face.morph.FixBlendValues_Face();
+					}
+
+					ChangeList.Remove(nextKey);
+
+#if (DEBUG)
+					Main.logger.LogDebug($"Done with single shapekey change on {nextKey.ShapekeyName}.");
+#endif
+				}
+				else
+				{
+					ChangeList.Remove(nextKey);
+				}
+			}
+
+#if (DEBUG)
+			Main.logger.LogDebug($"Coroute is done. Now exiting...");
+#endif
 		}
 	}
 }

@@ -20,7 +20,7 @@ namespace ShapekeyMaster
 
 #if (DEBUG)
 
-				Debug.Log("Maids active to edit = " + result);
+				Main.logger.LogDebug("Maids active to edit = " + result);
 #endif
 
 				return result;
@@ -45,7 +45,6 @@ namespace ShapekeyMaster
 				maid
 				.body0
 				.goSlot
-				.GetListParents()
 				.Concat(new[] { maid.body0.Face })
 				.Where(s => s != null)
 				.Select(s => s.morph)
@@ -69,11 +68,27 @@ namespace ShapekeyMaster
 				.SelectMany(k => k)
 				.Distinct();
 		}
+		public static IEnumerable<string> GetAllShapeKeysFromAllMaids() 
+		{
+			var result = GetAllShapeKeysFromMaidList(ShapekeyFetcherSetter.GetMaidsList()).ToList();
+
+			result.Sort();
+
+			return result;
+		}
+		public static IEnumerable<string> GetNameOfAllMaids()
+		{
+			var result = GameMain.Instance.CharacterMgr.GetStockMaidList().Select(m => m.status.fullNameJpStyle).ToList();
+
+			result.Sort();
+
+			return result;
+		}
 		public static IEnumerable<string> GetAllBlendShapes(Mesh mesh)
 		{
 
 #if (DEBUG)
-			Debug.Log($"Was called, getting all blendshapes in {mesh.name}, there should be {mesh.blendShapeCount} blendshapes.");
+			Main.logger.LogDebug($"Was called, getting all blendshapes in {mesh.name}, there should be {mesh.blendShapeCount} blendshapes.");
 #endif
 			string blendshape;
 
@@ -85,7 +100,7 @@ namespace ShapekeyMaster
 			{
 
 #if (DEBUG)
-				Debug.Log($"Found blendshape with name {mesh.GetBlendShapeName(i)}");
+				Main.logger.LogDebug($"Found blendshape with name {mesh.GetBlendShapeName(i)}");
 #endif
 
 				if ((blendshape = mesh.GetBlendShapeName(i)) != null)
@@ -101,7 +116,7 @@ namespace ShapekeyMaster
 		{
 			float excitement = GetHighestExcitement(maids);
 #if (DEBUG)
-			Debug.Log($"Highest excitement found was {excitement}");
+			Main.logger.LogDebug($"Highest excitement found was {excitement}");
 #endif
 			float percent;
 
@@ -116,7 +131,7 @@ namespace ShapekeyMaster
 
 			float result = (sk.DeformMax - sk.DeformMin) * percent;
 #if (DEBUG)
-			Debug.Log($"Yotogi settings were found! Returning a value of : {result + sk.DeformMin}");
+			Main.logger.LogDebug($"Yotogi settings were found! Returning a value of : {result + sk.DeformMin}");
 #endif
 
 			return (result + sk.DeformMin);
@@ -131,7 +146,7 @@ namespace ShapekeyMaster
 			{
 
 #if (DEBUG)
-				Debug.Log($"Getting highest excitement! We have to query results from this many maids: {maids.Count()}");
+				Main.logger.LogDebug($"Getting highest excitement! We have to query results from this many maids: {maids.Count()}");
 #endif
 
 				return

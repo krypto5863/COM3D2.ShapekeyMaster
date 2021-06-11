@@ -69,7 +69,7 @@ namespace ShapekeyMaster
 			//yield return new WaitForEndOfFrame();
 
 #if (DEBUG)
-			Debug.Log($"Running on all!");
+			Main.logger.Log($"Running on all!");
 #endif
 
 			maidslist
@@ -77,7 +77,7 @@ namespace ShapekeyMaster
 			.ToList()
 			.ForEach(m => RunSingleMaid(m));
 
-			Debug.Log("Finished RunAll");
+			Main.logger.Log("Finished RunAll");
 
 			return null;
 
@@ -99,7 +99,7 @@ namespace ShapekeyMaster
 		{
 			//yield return new WaitForEndOfFrame();
 #if (DEBUG)
-			Debug.Log($"Working on maid: {maid.status.fullNameJpStyle} with {GetAllMorphsFromMaid(maid).Count()} TMorphs");
+			Main.logger.Log($"Working on maid: {maid.status.fullNameJpStyle} with {GetAllMorphsFromMaid(maid).Count()} TMorphs");
 #endif
 			GetAllMorphsFromMaid(maid)
 			 .ToList()
@@ -111,7 +111,7 @@ namespace ShapekeyMaster
 		public static Task RunSingleTMorph(TMorph m)
 		{
 #if (DEBUG)
-			Debug.Log($"Working on TMorph holding this many morphs: {m.MorphCount}");
+			Main.logger.Log($"Working on TMorph holding this many morphs: {m.MorphCount}");
 #endif
 
 			//Filters the list and only returns viable shapekey entries to reduce processing times.
@@ -127,13 +127,13 @@ namespace ShapekeyMaster
 			{
 
 #if (DEBUG)
-				Debug.Log($"Checking that it isn't a face morph...");
+				Main.logger.Log($"Checking that it isn't a face morph...");
 #endif
 
 				if (m.bodyskin.body.Face != null && m.bodyskin.body.Face.morph.Contains(s.ShapeKey))
 				{
 #if (DEBUG)
-					Debug.Log($"We are processing a facial key of {s.ShapeKey}");
+					Main.logger.Log($"We are processing a facial key of {s.ShapeKey}");
 #endif
 					m.bodyskin.body.maid.boMabataki = false;
 				}
@@ -175,7 +175,7 @@ namespace ShapekeyMaster
 			}
 
 #if (DEBUG)
-			Debug.Log($"Finished shapekey update");
+			Main.logger.Log($"Finished shapekey update");
 #endif
 
 			return;
@@ -201,20 +201,20 @@ namespace ShapekeyMaster
 			foreach (TMorph m in templist)
 			{
 #if (DEBUG)
-				Debug.Log($"Working on TMorph holding this many morphs: {m.MorphCount}");
-				Debug.Log($"Checking that it isn't a face morph...");
+				Main.logger.Log($"Working on TMorph holding this many morphs: {m.MorphCount}");
+				Main.logger.Log($"Checking that it isn't a face morph...");
 #endif
 
 				if (m.bodyskin.body.Face != null && m.bodyskin.body.Face.morph.Contains(s.ShapeKey))
 				{
 #if (DEBUG)
-					Debug.Log($"We are processing a facial key of {s.ShapeKey}");
+					Main.logger.Log($"We are processing a facial key of {s.ShapeKey}");
 #endif
 					m.bodyskin.body.maid.boMabataki = false;
 				}
 
 #if (DEBUG)
-				Debug.Log($"Found! Checking if value needs setting.");
+				Main.logger.Log($"Found! Checking if value needs setting.");
 #endif
 				int shapekeyIndex = (int)m.hash[s.ShapeKey];
 
@@ -226,7 +226,7 @@ namespace ShapekeyMaster
 
 					Main.@this.StartCoroutine(RunShapekeyChange(m, shapekeyIndex, deform));
 #if (DEBUG)
-					Debug.Log($"Animating with yotogi...");
+					Main.logger.Log($"Animating with yotogi...");
 #endif
 					continue;
 				}
@@ -240,7 +240,7 @@ namespace ShapekeyMaster
 				}
 			}
 #if (DEBUG)
-			Debug.Log($"Finished Single Key Change Update");
+			Main.logger.Log($"Finished Single Key Change Update");
 #endif
 			return null;
 		}
@@ -258,9 +258,9 @@ namespace ShapekeyMaster
 			if (m.GetBlendValues(shapekeyIndex) != deform)
 			{
 #if (DEBUG)
-				Debug.Log($"Value needs setting! Setting value of {deform}");
+				Main.logger.Log($"Value needs setting! Setting value of {deform}");
 #endif
-				m.SetBlendValues(shapekeyIndex, (deform / 100f) + 10000f);
+				Main.SetBlendValues(shapekeyIndex, (deform / 100f), m);
 			}
 			m.FixBlendValues();
 
@@ -274,7 +274,7 @@ namespace ShapekeyMaster
 		public static IEnumerator OrgasmAnimator() 
 		{
 #if (DEBUG)
-			Debug.Log($"Orgasm animator has started!!");
+			Main.logger.Log($"Orgasm animator has started!!");
 #endif
 
 			yield return new WaitForSecondsRealtime(2);
@@ -321,13 +321,13 @@ namespace ShapekeyMaster
 			s.Stop();
 
 #if (DEBUG)
-			Debug.Log($"Finishing...");
+			Main.logger.Log($"Finishing...");
 #endif
 
 			while (OrgasmDeform > 0)
 			{
 #if (DEBUG)
-				Debug.Log($"Reducing {OrgasmDeform}");
+				Main.logger.Log($"Reducing {OrgasmDeform}");
 #endif
 
 				OrgasmDeform -= 10;
@@ -338,7 +338,7 @@ namespace ShapekeyMaster
 			IsOrgasming = false;
 
 #if (DEBUG)
-			Debug.Log($"Orgasm animator has finished: {s.Elapsed}");
+			Main.logger.Log($"Orgasm animator has finished: {s.Elapsed}");
 #endif
 		}
 		private static IEnumerator UpdateOrgasmKeys() 
