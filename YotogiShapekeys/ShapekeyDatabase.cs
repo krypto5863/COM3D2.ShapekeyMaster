@@ -1,18 +1,20 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using UnityEngine;
 
 namespace ShapekeyMaster
 {
 	class ShapekeyDatabase
 	{
-		private SortedDictionary<Guid, ShapeKeyEntry> allShapekeyDictionary;
-		private SortedDictionary<string, List<ShapeKeyEntry>> maidShapekeyDictionary;
-		private SortedDictionary<Guid, ShapeKeyEntry> globalShapekeyDictionary;
+		private Dictionary<Guid, ShapeKeyEntry> allShapekeyDictionary;
+		private Dictionary<string, List<ShapeKeyEntry>> maidShapekeyDictionary;
+		private Dictionary<Guid, ShapeKeyEntry> globalShapekeyDictionary;
 
-		public SortedDictionary<Guid, ShapeKeyEntry> AllShapekeyDictionary 
+		public Dictionary<Guid, ShapeKeyEntry> AllShapekeyDictionary 
 		{
 			get 
 			{
@@ -25,32 +27,29 @@ namespace ShapekeyMaster
 			} 
 		}
 
-		public SortedDictionary<Guid, ShapeKeyEntry> GlobalShapekeyDictionary()
+		internal Dictionary<Guid, ShapeKeyEntry> GlobalShapekeyDictionary()
 		{
 			return globalShapekeyDictionary;
 		}
-
-		public List<string> ListOfMaidsWithKeys() 
+		internal List<string> ListOfMaidsWithKeys() 
 		{
-
 			return maidShapekeyDictionary.Keys.ToList();
-
 		}
-		public int ShapekeysCount()
+		internal int ShapekeysCount()
 		{
 			return allShapekeyDictionary.Count;
 		}
 
-		public ShapekeyDatabase() 
+		internal ShapekeyDatabase() 
 		{
-			allShapekeyDictionary = new SortedDictionary<Guid, ShapeKeyEntry>();		
+			allShapekeyDictionary = new Dictionary<Guid, ShapeKeyEntry>();		
 			
 			RefreshSubDictionaries();
 		}
 
-		private void RefreshSubDictionaries()
+		internal void RefreshSubDictionaries()
 		{
-			maidShapekeyDictionary = new SortedDictionary<string, List<ShapeKeyEntry>>();
+			maidShapekeyDictionary = new Dictionary<string, List<ShapeKeyEntry>>();
 
 			foreach (ShapeKeyEntry shapeKeyEntry in allShapekeyDictionary.Values)
 			{
@@ -67,54 +66,54 @@ namespace ShapekeyMaster
 				maidShapekeyDictionary[shapeKeyEntry.Maid].Add(shapeKeyEntry);
 			}
 
-			globalShapekeyDictionary = new SortedDictionary<Guid, ShapeKeyEntry>();
+			globalShapekeyDictionary = new Dictionary<Guid, ShapeKeyEntry>();
 
-			globalShapekeyDictionary = new SortedDictionary<Guid, ShapeKeyEntry>(allShapekeyDictionary.Where(kv => String.IsNullOrEmpty(kv.Value.Maid)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
+			globalShapekeyDictionary = allShapekeyDictionary.Where(kv => String.IsNullOrEmpty(kv.Value.Maid)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 		}
 
-		public bool DoesMaidHaveKey(string Maid, ShapeKeyEntry keyEntry)
+		internal bool DoesMaidHaveKey(string Maid, ShapeKeyEntry keyEntry)
 		{
 			return (maidShapekeyDictionary[Maid].Contains(keyEntry));
 		}
-		public bool DoesMaidPartialEntryName(string Maid, string Entry)
+		internal bool DoesMaidPartialEntryName(string Maid, string Entry)
 		{
 			return (maidShapekeyDictionary[Maid].Where(t => Regex.IsMatch(t.EntryName.ToLower(), $@".*{Entry.ToLower()}.*")).Count() > 0);
 		}
-		public bool DoesMaidPartialShapekey(string Maid, string shapekey)
+		internal bool DoesMaidPartialShapekey(string Maid, string shapekey)
 		{
 			return (maidShapekeyDictionary[Maid].Where(t => Regex.IsMatch(t.ShapeKey.ToLower(), $@".*{shapekey.ToLower()}.*")).Count() > 0);
 		}
-		public SortedDictionary<Guid, ShapeKeyEntry> ShapekeysByMaid(string Maid)
+		internal Dictionary<Guid, ShapeKeyEntry> ShapekeysByMaid(string Maid)
 		{
-			return new SortedDictionary<Guid, ShapeKeyEntry>(maidShapekeyDictionary[Maid].ToDictionary(sk => sk.Id, sk => sk));
+			if (!maidShapekeyDictionary.ContainsKey(Maid)) 
+			{
+				return new Dictionary<Guid, ShapeKeyEntry>();
+			}
+
+			return new Dictionary<Guid, ShapeKeyEntry>(maidShapekeyDictionary[Maid].ToDictionary(sk => sk.Id, sk => sk));
 		}
 
-		public void Add(ShapeKeyEntry newVal)
+		internal void Add(ShapeKeyEntry newVal)
 		{
 			allShapekeyDictionary[newVal.Id] = newVal;
 			RefreshSubDictionaries();
 		}
 
-		public void Remove(ShapeKeyEntry newVal)
+		internal void Remove(ShapeKeyEntry newVal)
 		{
 			allShapekeyDictionary.Remove(newVal.Id);
 			RefreshSubDictionaries();
 		}
 
-		public void Set(Guid ID, ShapeKeyEntry newVal)
+		internal void Set(Guid ID, ShapeKeyEntry newVal)
 		{
 			allShapekeyDictionary[ID] = newVal;
 			RefreshSubDictionaries();
 		}
-		public void SetMaid(Guid ID, string Maid)
-		{
-			allShapekeyDictionary[ID].SetMaid(Maid);
-			RefreshSubDictionaries();
-		}
-		public void ConcatenateDictionary(SortedDictionary<Guid, ShapeKeyEntry> newDictionary)
+		internal void ConcatenateDictionary(Dictionary<Guid, ShapeKeyEntry> newDictionary)
 		{
 
-			allShapekeyDictionary = new SortedDictionary<Guid, ShapeKeyEntry>(
+			allShapekeyDictionary = new Dictionary<Guid, ShapeKeyEntry>(
 					allShapekeyDictionary
 					.Concat(
 					newDictionary

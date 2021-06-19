@@ -5,6 +5,7 @@ using HarmonyLib;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Security;
 using System.Security.Permissions;
@@ -21,9 +22,9 @@ namespace ShapekeyMaster
 	[BepInDependency("deathweasel.com3d2.api")]
 	public class Main : BaseUnityPlugin
 	{
-		public static Main @this;
+		internal static Main @this;
 
-		public static BepInEx.Logging.ManualLogSource logger;
+		internal static BepInEx.Logging.ManualLogSource logger;
 
 		private static bool enablegui = false;
 
@@ -37,22 +38,24 @@ namespace ShapekeyMaster
 		internal static ConfigEntry<bool> SimpleMode;
 		internal static ConfigEntry<bool> HideInactiveMaids;
 		internal static ConfigEntry<bool> HotkeyEnabled;
+		internal static ConfigEntry<int> EntriesPerPage;
 		internal static ConfigEntry<KeyboardShortcut> Hotkey;
 
-		public static bool BackgroundTasks = true;
+		internal static bool BackgroundTasks = true;
 
 		private void Awake()
 		{
+			@this = this;
+
+			logger = Logger;
+
 			MaxDeform = Config.Bind("General", "1. Max Deformation", 100f, "The max limit of the sliders in UI.");
 
 			SimpleMode = Config.Bind("UI", "1. Simple Mode", true, "Simple mode is a simplified view of your shapekeys holding only the most basic of settings. All you really need in most cases.");
 			HideInactiveMaids = Config.Bind("UI", "2. Hide Inactive Maids", false, "In the maids view, maids that are not present or loaded are hidden from the menu options.");
+			EntriesPerPage = Config.Bind("UI", "3. Entries Per Page", 10, "How many entries to display per an entry page.");
 			HotkeyEnabled = Config.Bind("Hotkey", "1. Enable Hotkey", false, "Use a hotkey to open ShapekeyMaster.");
 			Hotkey = Config.Bind("Hotkey", "2. Hotkey", new KeyboardShortcut(KeyCode.F4, KeyCode.LeftControl), "Hotkey to open ShapekeyMaster with.");
-
-			@this = this;
-
-			logger = Logger;
 
 			if (File.Exists(BepInEx.Paths.ConfigPath + "\\ShapekeyMaster.json"))
 			{
@@ -113,7 +116,7 @@ namespace ShapekeyMaster
 			}
 		}
 
-		internal static SortedDictionary<Guid, ShapeKeyEntry> LoadFromJson(string path, bool withPrompt = false)
+		internal static Dictionary<Guid, ShapeKeyEntry> LoadFromJson(string path, bool withPrompt = false)
 		{
 			if (withPrompt)
 			{
@@ -137,12 +140,13 @@ namespace ShapekeyMaster
 
 			return null;
 		}
-
+		/*
 		public static void SetBlendValues(int f_nIdx, float f_fValue, TMorph morph)
 		{
 			float[] blendValuesBackup = morph.BlendValuesBackup;
 			morph.BlendValues[f_nIdx] = f_fValue;
 			blendValuesBackup[f_nIdx] = f_fValue;
 		}
+		*/
 	}
 }

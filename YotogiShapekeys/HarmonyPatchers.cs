@@ -1,81 +1,125 @@
 ﻿using HarmonyLib;
-using UnityEngine;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using UnityEngine.SceneManagement;
 
 namespace ShapekeyMaster
 {
-	internal class HarmonyPatchers
+	class HarmonyPatchers
 	{
-		[HarmonyPatch(typeof(ImportCM), "LoadSkinMesh_R")]
+		private static readonly List<string> YotogiLvls = new List<string>() { "SceneYotogi", "SceneYotogiOld" };
+
+		[HarmonyPatch(typeof(TMorph), MethodType.Constructor, new Type[] {typeof(TBodySkin)})]
 		[HarmonyPostfix]
-		private static void NotifyOfLoad2(ref TMorph __1)
+		private static void NotifyOfLoad(ref TMorph __instance)
 		{
 #if (DEBUG)
-			Main.logger.LogDebug("ShapekeyMaster picked up a maid load! Registering maid...");
+			Main.logger.LogDebug("ShapekeyMaster picked up a morph creation!");
 #endif
-			ShapekeyFetcherSetter.RegisterMaid(__1.bodyskin.body.maid);
 
+			ShapekeyUpdate.ListOfActiveMorphs.Add(__instance);
 		}
 
-		//A bit of a shotgun solution but basically it makes it so that our plugin has ultimate say so of what blend values are changed to what. Might not be the most compatible in the long run so a more friendly solution should eventually be seeked out.
-		[HarmonyPatch(typeof(TMorph), "SetBlendValues")]
-		[HarmonyPrefix]
-		private static bool Intercede(ref int __0, ref float __1, ref TMorph __instance)
+		[HarmonyPatch(typeof(TMorph), "DeleteObj")]
+		[HarmonyPostfix]
+		private static void NotifyOfUnLoad(ref TMorph __instance)
 		{
-			foreach (ShapeKeyEntry s in UI.SKDatabase.AllShapekeyDictionary.Values)
+#if (DEBUG)
+			Main.logger.LogDebug("ShapekeyMaster picked up a morph deletion!");
+#endif
+
+			ShapekeyUpdate.ListOfActiveMorphs.Remove(__instance);
+		}
+
+		[HarmonyPatch(typeof(Maid), "AllProcProp")]
+		[HarmonyPatch(typeof(Maid), "AllProcPropSeq")]
+		[HarmonyPostfix]
+		private static void NotifyOfMenuLoad(ref Maid __instance)
+		{
+#if (DEBUG)
+			Main.logger.LogDebug("ShapekeyMaster picked up a menu change!");
+#endif
+
+			ShapekeyUpdate.UpdateKeys(__instance.status.fullNameJpStyle);
+		}
+
+		[HarmonyPatch(typeof(TBody), "FixMaskFlag")]
+		[HarmonyPostfix]
+		private static void NotifyOfClothesMask(ref TBody __instance)
+		{
+#if (DEBUG)
+			Main.logger.LogDebug("ShapekeyMaster picked up mask change!");
+#endif
+
+			ShapekeyUpdate.UpdateKeys(__instance.maid.status.fullNameJpStyle);
+		}
+
+		[HarmonyPatch(typeof(TMorph), "FixBlendValues")]
+		[HarmonyPatch(typeof(TMorph), "FixFixBlendValues")]
+		[HarmonyPatch(typeof(TMorph), "FixBlendValues_Face")]
+		[HarmonyPrefix]
+		private static void VerifyBlendValuesBeforeSet(ref TMorph __instance) 
+		{
+			Stopwatch watch = new Stopwatch();
+
+			watch.Start();
+
+			var MaidName = __instance.bodyskin.body.maid.status.fullNameJpStyle;
+
+			if (__instance.hash == null) 
 			{
-				if (s.Enabled && __instance.hash.ContainsKey(s.ShapeKey) && (int)__instance.hash[s.ShapeKey] == __0)
+				return;
+			}
+
+			foreach (ShapeKeyEntry shapeKeyEntry in UI.SKDatabase.ShapekeysByMaid(MaidName).Values.Concat(UI.SKDatabase.GlobalShapekeyDictionary().Values)) 
+			{
+				if (__instance.hash.ContainsKey(shapeKeyEntry.ShapeKey)) 
 				{
-					if (s.Maid == "")
-					{
-#if (DEBUG)
-						Main.logger.LogDebug("ShapekeyMaster noticed a value not set by it.. Discarding change...");
-#endif
+					var index = (int)__instance.hash[shapeKeyEntry.ShapeKey];
 
-						return false;
+					if (!shapeKeyEntry.Enabled)
+					{
+						__instance.BlendValues[index] = 0;
+						__instance.BlendValuesBackup[index] = 0;
 					}
-					else if (s.Maid == __instance.bodyskin.body.maid.status.fullNameJpStyle)
+					else if (shapeKeyEntry.ConditionalsToggle && SlotChecker.CheckIfSlotDisableApplies(shapeKeyEntry, __instance.bodyskin.body.maid))
 					{
-#if (DEBUG)
-						Main.logger.LogDebug("ShapekeyMaster noticed a value not set by it. Discarding change...");
-#endif
+						__instance.BlendValues[index] = shapeKeyEntry.DisabledDeform / 100;
+						__instance.BlendValuesBackup[index] = shapeKeyEntry.DisabledDeform / 100;
+					}
+					else if (shapeKeyEntry.AnimateWithExcitement && YotogiLvls.Contains(SceneManager.GetActiveScene().name))
+					{
+						var deform = HelperClasses.CalculateExcitementDeformation(shapeKeyEntry);
 
-						return false;
+						__instance.BlendValues[index] = deform / 100;
+						__instance.BlendValuesBackup[index] = deform / 100;
+					}
+					else
+					{
+						__instance.BlendValues[index] = shapeKeyEntry.Deform / 100;
+						__instance.BlendValuesBackup[index] = shapeKeyEntry.Deform / 100;
 					}
 				}
 			}
-			return true;
-		}
 
-		[HarmonyPatch(typeof(TMorph), "ResetBlendValues")]
-		[HarmonyPostfix]
-		private static void Intercede1(ref TMorph __instance)
-		{
-			Maid maid = __instance.bodyskin.body.maid;
-			ShapekeyFetcherSetter.RegisterMaid(maid);
+			watch.Stop();
+			if (watch.ElapsedMilliseconds > 5) {
+				Main.logger.LogWarning($"ShapekeyMaster's function finished in {watch.ElapsedMilliseconds} ms. This is really high for ShapekeyMaster and should be looked into...");
+			}
 		}
 
 		//Patches the setter of the FPS value to run below code afterwards	
 		[HarmonyPatch(typeof(MaidStatus.Status), "currentExcite", MethodType.Setter)]
 		[HarmonyPostfix]
-		public static void OnExciteSet(ref MaidStatus.Status __instance)
+		public static void OnExciteSet(ref MaidStatus.Status __instance, ref int __0)
 		{
-			ShapekeyFetcherSetter.RunAll();
-
+			ShapekeyUpdate.UpdateKeys();
 #if (DEBUG)
-
 			Main.logger.LogDebug($"{__instance.fullNameJpStyle }'s excitement changed to {__instance.currentExcite}! Making changes...");
 #endif
 		}
-		//Orgasm was detected!
-		/*
-		[HarmonyPatch(typeof(YotogiPlayManager), "PlayNormalClimax")]
-		[HarmonyPatch(typeof(YotogiOldPlayManager), "PlayNormalClimax")]
-		[HarmonyPostfix]
-		public static void OnOrgasm(string __0)
-		{
-				Main.@this.StartCoroutine(ShapekeyFetcherSetter.OrgasmAnimator());
-
-				Main.logger.Log($"Somebody seems to be having an orgasm!");
-		}*/
 	}
 }

@@ -12,7 +12,8 @@ namespace ShapekeyMaster._0Old
 			if (GUILayout.Button("Add New Shapekey"))
 			{
 #if (DEBUG)
-				Main.logger.LogDebug("I've been clicked! Oh the humanity!!");
+				Main.logger.
+				("I've been clicked! Oh the humanity!!");
 #endif
 
 				Guid newkey = Guid.NewGuid();

@@ -1,233 +1,368 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ShapekeyMaster
 {
-	public class ShapeKeyEntry
+	internal class ShapeKeyEntry
 	{
-
 		private IEnumerator Animator;
-
 		public Guid Id { get; set; }
 		public string EntryName { get; set; }
-		public bool Enabled { get; set; }
 
-		public bool SetEnabled(bool value)
+		private bool enabled;
+		public bool Enabled
 		{
-			if (value != Enabled)
+			set
 			{
-				Enabled = value;
-				RunUpdate();
-			}
-
-			return value;
-		}
-
-		public bool AnimateWithExcitement { get; set; }
-		public bool SetAnimateWithExcitement(bool value)
-		{
-			if (value != AnimateWithExcitement)
-			{
-				AnimateWithExcitement = value;
-				RunUpdate();
-			}
-			return value;
-		}
-		public float ExcitementMax { get; set; }
-		public void SetExcitementMax(float value)
-		{
-			if (value != ExcitementMax)
-			{
-				ExcitementMax = value;
-				RunUpdate();
-			}
-		}
-		public float ExcitementMin { get; set; }
-		public void SetExcitementMin(float value)
-		{
-			if (value != ExcitementMin)
-			{
-				ExcitementMin = value;
-				RunUpdate();
-			}
-		}
-		public bool AnimateWithOrgasm { get; set; }
-		public bool SetAnimateWithOrgasm(bool value)
-		{
-			if (value != AnimateWithOrgasm)
-			{
-				AnimateWithOrgasm = value;
-				RunUpdate();
-			}
-			return value;
-		}
-		public bool GetAnimateWithOrgasm()
-		{
-			//return AnimateWithOrgasm;
-			return false;
-		}
-		public bool Animate { get; set; }
-		public bool SetAnimate(bool value)
-		{
-
-			if (value != Animate)
-			{
-
-				Animate = value;
-
-				if (value == false)
+				if (value != enabled)
 				{
-					Main.@this.StopCoroutine(Animator);
-				}
-				else
-				{
-					Animator = AnimateCoRoute();
-					Main.@this.StartCoroutine(Animator);
+					enabled = value;
+					RunUpdate();
 				}
 			}
+			get 
+			{
+				return enabled;
+			}
+		}
 
-			return value;
-		}
-		public string AnimationRate { get; set; }
-		public float GetAnimationRate()
+		private bool animateWithExcitement;
+		public bool AnimateWithExcitement
 		{
+			set
+			{
+				if (value != animateWithExcitement)
+				{
+					animateWithExcitement = value;
+					RunUpdate();
+				}
+			} get 
+			{
+				return animateWithExcitement;
+			}
+		}
+		private float excitementMax;
+		public float ExcitementMax
+		{
+			get { return excitementMax; }
+			set
+			{
+				if (value != excitementMax)
+				{
+					excitementMax = value;
+					RunUpdate();
+				}
+			}
+		}
+		private float excitementMin;
+		public float ExcitementMin
+		{
+			get { return excitementMin; }
 
-			if (float.TryParse(AnimationRate, out float val))
+			set
 			{
-				return val;
+				if (value != excitementMin)
+				{
+					excitementMin = value;
+					RunUpdate();
+				}
 			}
+		}
+		private bool animateWithOrgasm;
+		public bool AnimateWithOrgasm
+		{
+			get 
+			{
+				return false;
+			}
+			set
+			{
+				if (value != animateWithOrgasm)
+				{
+					animateWithOrgasm = value;
+					RunUpdate();
+				}
+			}
+		}
+		private bool animate;
+		public bool Animate
+		{
+			set
+			{
+				if (value != animate)
+				{
+					animate = value;
 
-			return 0;
-		}
-		public string SetAnimationRate(string value)
-		{
-			if (value != AnimationRate)
+					if (value == false)
+					{
+						Main.@this.StopCoroutine(Animator);
+					}
+					else
+					{
+						Animator = AnimateCoRoute();
+						Main.@this.StartCoroutine(Animator);
+					}
+				}
+			} get 
 			{
-				AnimationRate = value;
+				return animate;
 			}
-			return value;
 		}
-		public string AnimationPoll { get; set; }
-		public float GetAnimationPoll()
+		private string animationRate;
+		public string AnimationRate
 		{
+			get
+			{
+				if (float.TryParse(animationRate, out float val))
+				{
+					return animationRate;
+				}
 
-			if (float.TryParse(AnimationPoll, out float val))
-			{
-				return val;
+				return "0";
 			}
+			set 
+			{
+				animationRate = value.ToString();
+			}
+		}
+		public float AnimationRateFloat
+		{
+			get
+			{
+				if (float.TryParse(animationRate, out float val))
+				{
+					return val;
+				}
 
-			return 0.01633f;
-		}
-		public string SetAnimationPoll(string value)
-		{
-			if (value != AnimationPoll)
-			{
-				AnimationPoll = value;
+				return 0;
 			}
-			return value;
-		}
-		public float AnimationMaximum { get; set; }
-		public float SetAnimationMaximum(float value)
-		{
-			if (value != AnimationMaximum)
+			set
 			{
-				AnimationMaximum = value;
+				animationRate = value.ToString();
 			}
-			return value;
 		}
-		public float AnimationMinimum { get; set; }
-		public float SetAnimationMinimum(float value)
+		private string animationPoll;
+		public string AnimationPoll
 		{
-			if (value != AnimationMinimum)
+			get
 			{
-				AnimationMinimum = value;
+				return animationPoll;
+			} set 
+			{
+				animationPoll = value;
 			}
-			return value;
+		}
+		public float AnimationPollFloat
+		{
+			get
+			{
+				if (float.TryParse(animationPoll, out float val))
+				{
+					return val;
+				}
+
+				return 0.01633f;
+			}
+			set
+			{
+				animationPoll = value.ToString();
+			}
+		}
+		private float animationMaximum;
+		public float AnimationMaximum
+		{
+			get { return animationMaximum; }
+			set
+			{
+				animationMaximum = value;
+			}
+		}
+		private float animationMinimum;
+		public float AnimationMinimum
+		{
+			get { return animationMinimum; }
+			set
+			{
+				animationMinimum = value;
+			}
 		}
 		private float deform;
 		public float Deform
 		{
 			get
 			{
-				if (Enabled == false)
-				{
-					return 0f;
-				}
 				return deform;
 			}
-			set 
+			set
 			{
-				if (value != deform && Enabled)
+				if (value != deform)
 				{
 					deform = value;
 					RunUpdate();
 				}
 			}
 		}
-		public float DeformMax { get; set; }
-		public void SetDeformMax(float value)
+		private float disableddeform;
+		public float DisabledDeform
 		{
-			if (value != DeformMax)
+			get
 			{
-				DeformMax = value;
-				RunUpdate();
+				return disableddeform;
+			}
+			set
+			{
+				if (value != disableddeform)
+				{
+					disableddeform = value;
+					RunUpdate();
+				}
 			}
 		}
-		public float DeformMin { get; set; }
-		public void SetDeformMin(float value)
+		private float deformMax;
+		public float DeformMax
 		{
-			if (value != DeformMin)
+			get { return deformMax;}
+			set
 			{
-				DeformMin = value;
-				RunUpdate();
+				if (value != deformMax)
+				{
+					deformMax = value;
+					RunUpdate();
+				}
 			}
 		}
-		public string ShapeKey { get; set; }
-		public void SetShapeKey(string value)
+		private float deformMin;
+		public float DeformMin
 		{
-			if (value != ShapeKey)
+			get { return deformMin; }
+			set
 			{
-				ShapeKey = value;
-				RunUpdate();
+				if (value != deformMin)
+				{
+					deformMin = value;
+					RunUpdate();
+				}
+
+			}		
+		}
+
+		private string shapeKey;
+		public string ShapeKey
+		{
+			get { return shapeKey; }
+			set
+			{
+				if (value != shapeKey)
+				{
+					shapeKey = value;
+					RunUpdate();
+				}
 			}
 		}
-		public string Maid { get; set; }
-		public void SetMaid(string value)
+		private string maid;
+		public string Maid
 		{
-			if (value != Maid)
+			get
+			{ return maid; }
+			set
 			{
-				Maid = value;
-				RunUpdate();
+				if (value != maid)
+				{
+					maid = value;
+					RunUpdate();
+					UI.SKDatabase.RefreshSubDictionaries();
+				}
 			}
 		}
+
+
+		private bool conditionalsToggle;
+		public bool ConditionalsToggle 
+		{
+			get 
+			{ return conditionalsToggle; } 
+			set 
+			{
+				if (value != conditionalsToggle) 
+				{
+					conditionalsToggle = value;
+					RunUpdate();
+				}
+			} 
+		}
+		private bool disableWhen;
+		public bool DisableWhen
+		{
+			get
+			{ return disableWhen; }
+			set
+			{
+				if (value != disableWhen)
+				{
+					disableWhen = value;
+					RunUpdate();
+				}
+			}
+		}
+		private bool whenAll;
+		public bool WhenAll
+		{
+			get
+			{ return whenAll; }
+			set
+			{
+				if (value != whenAll)
+				{
+					whenAll = value;
+					RunUpdate();
+				}
+			}
+		}
+		private DisableWhenEquipped slotFlags;
+		public DisableWhenEquipped SlotFlags
+		{
+			get
+			{ return slotFlags; }
+			set
+			{
+				if (value != slotFlags)
+				{
+					slotFlags = value;
+					RunUpdate();
+				}
+			}
+		}
+		public Dictionary<Guid, string> MenuFileConditionals { get; set; }
 		public bool Collapsed { get; set; }
 
 		private readonly bool constructordone = false;
-		public ShapeKeyEntry(Guid id, string maid = "",  bool Prop = false)
+		public ShapeKeyEntry(Guid id, string maid = "")
 		{
 			this.Id = id;
 			EntryName = "New Entry #" + Id.ToString();
-			Enabled = true;
-			Deform = 0;
-			ShapeKey = "";
+			enabled = true;
+			deform = 0;
+			shapeKey = "";
 
-			if (Prop == false)
-			{
-				AnimateWithExcitement = false;
-				ExcitementMax = 300.0F;
-				ExcitementMin = 0.0F;
-				DeformMax = 100;
-				DeformMin = 0;
-				Maid = maid;
+			animateWithExcitement = false;
+			excitementMax = 300.0F;
+			excitementMin = 0.0F;
+			deformMax = 100;
+			deformMin = 0;
+			this.maid = maid;
 
-				Animate = false;
-				AnimationMaximum = 100;
-				AnimationMinimum = 0;
-				AnimationRate = "1";
-				AnimationPoll = "0.01633";
-			}
+			animate = false;
+			animationMaximum = 100;
+			animationMinimum = 0;
+			animationRate = "1";
+			animationPoll = "0.01633";
+
 			Collapsed = true;
+
+			MenuFileConditionals = new Dictionary<Guid, string>();
 
 			Animator = AnimateCoRoute();
 
@@ -245,8 +380,10 @@ namespace ShapekeyMaster
 #if (DEBUG)
 				Main.logger.LogDebug($"Constructor found done. Calling.");
 #endif
-				ShapekeyFetcherSetter.RunSingleEntry(this);
+				//ShapekeyFetcherSetter.RunSingleEntry(this);
 				//ShapekeyFetcherSetter.RunSingleShapekey(this);
+
+				ShapekeyUpdate.UpdateKeys(maid);
 
 #if (DEBUG)
 				Main.logger.LogDebug($"Finished update.");
@@ -261,44 +398,44 @@ namespace ShapekeyMaster
 
 			while (true)
 			{
-				if (Animate == true)
+				if (animate == true)
 				{
-					if (Enabled && HelperClasses.IsMaidActive(Maid))
+					if (enabled && HelperClasses.IsMaidActive(maid))
 					{
-						if (Deform >= AnimationMaximum)
+						if (deform >= animationMaximum)
 						{
 							reverse = true;
 						}
-						else if (Deform <= AnimationMinimum)
+						else if (deform <= animationMinimum)
 						{
 							reverse = false;
 						}
 
 						if (reverse)
 						{
-							Deform -= GetAnimationRate();
+							deform -= AnimationRateFloat;
 						}
 						else
 						{
-							Deform += GetAnimationRate();
+							deform += AnimationRateFloat;
 						}
 
-						if (Deform > AnimationMaximum)
+						if (deform > animationMaximum)
 						{
-							Deform = AnimationMaximum;
+							deform = animationMaximum;
 						}
-						else if (Deform < AnimationMinimum)
+						else if (deform < animationMinimum)
 						{
-							Deform = AnimationMinimum;
+							deform = animationMinimum;
 						}
 
 #if (DEBUG)
 						Main.logger.LogDebug($"Changed deform value for shapekey entry {EntryName}");
 #endif
 
-						ShapekeyFetcherSetter.RunSingleEntry(this);
+						ShapekeyUpdate.UpdateKeys(maid, true);
 
-						yield return new WaitForSecondsRealtime(GetAnimationPoll());
+						yield return new WaitForSecondsRealtime(AnimationPollFloat);
 					}
 					else
 					{
@@ -318,14 +455,6 @@ namespace ShapekeyMaster
 #endif
 
 					break;
-
-					/*SpinWait.SpinUntil(new Func<bool>(() => {
-						if (Animate == true)
-						{
-							return true;
-						}
-						return false;
-					}));*/
 				}
 			}
 		}

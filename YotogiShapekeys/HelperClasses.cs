@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -6,6 +7,20 @@ namespace ShapekeyMaster
 {
 	internal static class HelperClasses
 	{
+		public static bool HasFlag(this Enum variable, Enum value)
+		{
+			// check if from the same type.
+			if (variable.GetType() != value.GetType())
+			{
+				throw new ArgumentException("The checked flag is not from the same type as the checked variable.");
+			}
+
+			Convert.ToUInt64(value);
+			ulong num = Convert.ToUInt64(value);
+			ulong num2 = Convert.ToUInt64(variable);
+
+			return (num2 & num) == num;
+		}
 		public static bool IsMaidActive(string name)
 		{
 
@@ -13,8 +28,8 @@ namespace ShapekeyMaster
 			{
 
 				bool result =
-					ShapekeyFetcherSetter
-					.GetMaidsList()
+					GameMain.Instance.CharacterMgr
+					.GetStockMaidList()
 					.Where(m => m != null)
 					.Count() > 0;
 
@@ -27,8 +42,8 @@ namespace ShapekeyMaster
 			}
 
 			return
-				ShapekeyFetcherSetter
-				.GetMaidsList()
+				GameMain.Instance.CharacterMgr
+				.GetStockMaidList()
 				.Where(m => m != null && m.isActiveAndEnabled && m.status.fullNameJpStyle == name)
 				.Count() > 0;
 		}
@@ -70,11 +85,20 @@ namespace ShapekeyMaster
 		}
 		public static IEnumerable<string> GetAllShapeKeysFromAllMaids() 
 		{
-			var result = GetAllShapeKeysFromMaidList(ShapekeyFetcherSetter.GetMaidsList()).ToList();
+			var result = GetAllShapeKeysFromMaidList(GameMain.Instance.CharacterMgr
+				.GetStockMaidList().Where(m => m.isActiveAndEnabled).ToList()).ToList();
 
 			result.Sort();
 
 			return result;
+		}
+		public static bool IsFaceKey(string Keyname) 
+		{
+			return GameMain.Instance.CharacterMgr.GetStockMaidList()
+			.Where(maid => maid != null && maid.body0 != null && maid.body0.Face != null && maid.body0.Face.morph != null)
+			.Select(m => m.body0.Face.morph)
+			.Where(mr => mr.Contains(Keyname))
+			.Count() > 0;
 		}
 		public static IEnumerable<string> GetNameOfAllMaids()
 		{
@@ -98,7 +122,6 @@ namespace ShapekeyMaster
 
 			for (int i = 0; mesh.blendShapeCount > i && shapecount < mesh.blendShapeCount; i++)
 			{
-
 #if (DEBUG)
 				Main.logger.LogDebug($"Found blendshape with name {mesh.GetBlendShapeName(i)}");
 #endif
@@ -112,9 +135,9 @@ namespace ShapekeyMaster
 
 			return res;
 		}
-		public static float CalculateExcitementDeformation(ShapeKeyEntry sk, List<Maid> maids)
+		public static float CalculateExcitementDeformation(ShapeKeyEntry sk)
 		{
-			float excitement = GetHighestExcitement(maids);
+			float excitement = GetHighestExcitement();
 #if (DEBUG)
 			Main.logger.LogDebug($"Highest excitement found was {excitement}");
 #endif
@@ -133,18 +156,16 @@ namespace ShapekeyMaster
 #if (DEBUG)
 			Main.logger.LogDebug($"Yotogi settings were found! Returning a value of : {result + sk.DeformMin}");
 #endif
-
 			return (result + sk.DeformMin);
 		}
-		public static float GetHighestExcitement(List<Maid> maids)
+		public static float GetHighestExcitement()
 		{
-			maids = maids
+			var maids = GameMain.instance.CharacterMgr.GetStockMaidList()
 			.Where(m => m != null && m.isActiveAndEnabled)
 			.ToList();
 
 			if (maids.Count() > 0)
 			{
-
 #if (DEBUG)
 				Main.logger.LogDebug($"Getting highest excitement! We have to query results from this many maids: {maids.Count()}");
 #endif
