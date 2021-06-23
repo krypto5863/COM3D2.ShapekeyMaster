@@ -38,7 +38,7 @@ Since we understand that users may seek to share their maids or keys with other 
 # Tips
 As always, I need to include some usage details to maximize the usage of SM.
 
-1. Avoid persistent animations. These are frame rate killers even with the optimizations by SM. Animating with excitement and stuff is fine.
+1. Avoid persistent animations. These are frame rate killers even with the optimizations by SM. Animating with excitement and stuff is fine but shapekeys were never meant to be changed every single frame. Kiss's code on that front has very little optimization (where body keys are concerned, face keys are optimized for sets every frame as seems to be commmon practice.)
 2. Avoid globals. These are checked every single time a maid refreshes keys. Globals may be neccessary some times and it's always better to have one global than the same key set on every maid. But otherwise, setting keys to be maid specific is the way to go.
 3. Close the UI. The UI is built on IMGUI which is a double edged sword. UI creation is way easier with IMGUI but it's not performance friendly at all... This is what I could do for now.
 
