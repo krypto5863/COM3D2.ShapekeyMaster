@@ -34,3 +34,8 @@ Since we understand that users may seek to share their maids or keys with other 
 2. Download the `COM3D2.API.dll` from https://github.com/DeathWeasel1337/COM3D2_Plugins/releases
 3. Place both DLLs into your `BepinEx/plugins` folder.
 4. Profit! Simply open the UI with the icon in the gear menu or configure the hotkey in the config (you can use ConfigurationManager, F1 if ConfigurationManager is installed to configure the hotkey and other plugin settings too).
+
+# Convert from SA
+We understand a lot of users have ShapekeyAnimator and have used it over a long time and luckily a converter has been created by Pain Brioche and can be found here: https://github.com/Pain-Brioche/ShapekeyMasterConverter
+
+Furthermore, you can refer to this Picture guide by Dybug for more information on Shapekey conversion if you are having trouble: https://drive.google.com/drive/folders/1UZAPurIqWPRm4tYSXeJI8AychjA6jo7N
