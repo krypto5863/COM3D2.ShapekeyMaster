@@ -685,6 +685,8 @@ namespace ShapekeyMaster
 					return;
 				}
 
+				s.ConditionalsToggle = GUILayout.Toggle(s.ConditionalsToggle, "Enable Conditionals");
+
 				GUILayout.FlexibleSpace();
 
 				if (TabSelection == 0)
@@ -874,6 +876,8 @@ namespace ShapekeyMaster
 						OpenSlotConditions = s.Id;
 						return;
 					}
+
+					s.ConditionalsToggle = GUILayout.Toggle(s.ConditionalsToggle, "Enable Conditionals");
 
 					GUILayout.FlexibleSpace();
 

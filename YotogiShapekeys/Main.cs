@@ -18,7 +18,7 @@ using UnityEngine;
 
 namespace ShapekeyMaster
 {
-	[BepInPlugin("ShapekeyMaster", "ShapekeyMaster", "0.1")]
+	[BepInPlugin("ShapekeyMaster", "ShapekeyMaster", "1.0")]
 	[BepInDependency("deathweasel.com3d2.api")]
 	public class Main : BaseUnityPlugin
 	{
@@ -40,6 +40,7 @@ namespace ShapekeyMaster
 		internal static ConfigEntry<bool> HotkeyEnabled;
 		internal static ConfigEntry<int> EntriesPerPage;
 		internal static ConfigEntry<KeyboardShortcut> Hotkey;
+		internal static ConfigEntry<bool> Autosave;
 
 		internal static bool BackgroundTasks = true;
 
@@ -50,6 +51,7 @@ namespace ShapekeyMaster
 			logger = Logger;
 
 			MaxDeform = Config.Bind("General", "1. Max Deformation", 100f, "The max limit of the sliders in UI.");
+			Autosave = Config.Bind("General", "2. Autosave", true, "Will the config be saved automatically at set points.");
 
 			SimpleMode = Config.Bind("UI", "1. Simple Mode", true, "Simple mode is a simplified view of your shapekeys holding only the most basic of settings. All you really need in most cases.");
 			HideInactiveMaids = Config.Bind("UI", "2. Hide Inactive Maids", false, "In the maids view, maids that are not present or loaded are hidden from the menu options.");
@@ -66,7 +68,9 @@ namespace ShapekeyMaster
 			{
 				enablegui = !enablegui;
 
-				SaveToJson(BepInEx.Paths.ConfigPath + "\\ShapekeyMaster.json", UI.SKDatabase);
+				if (Autosave.Value) {
+					SaveToJson(BepInEx.Paths.ConfigPath + "\\ShapekeyMaster.json", UI.SKDatabase);
+				}
 
 			}, "Open/Close GUI", Convert.FromBase64String(iconBase64));
 
@@ -93,7 +97,9 @@ namespace ShapekeyMaster
 		}
 		private void OnDestroy()
 		{
-			SaveToJson(BepInEx.Paths.ConfigPath + "\\ShapekeyMaster.json", UI.SKDatabase);
+			if (Autosave.Value) {
+				SaveToJson(BepInEx.Paths.ConfigPath + "\\ShapekeyMaster.json", UI.SKDatabase);
+			}
 		}
 
 		internal static void SaveToJson(string path, ShapekeyDatabase database, bool withPrompt = false)
