@@ -39,3 +39,6 @@ Since we understand that users may seek to share their maids or keys with other 
 We understand a lot of users have ShapekeyAnimator and have used it over a long time and luckily a converter has been created by Pain Brioche and can be found here: https://github.com/Pain-Brioche/ShapekeyMasterConverter
 
 Furthermore, you can refer to this Picture guide by Dybug for more information on Shapekey conversion if you are having trouble, the conversion process has some quirks so it's recommended you give this a look: https://drive.google.com/drive/folders/1UZAPurIqWPRm4tYSXeJI8AychjA6jo7N
+
+# Enjoy!
+And don't abuse those meidos!
