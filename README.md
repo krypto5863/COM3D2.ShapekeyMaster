@@ -3,7 +3,7 @@ A ShapeAnimator replacement coded for BepinEx with extended functionality and a 
 
 # Overview
 
-ShapekeyMaster AKA SM, is a shapekey animation/setting function to compliment the amazing shapekeys whose potential remains currently untapped in the community. SM's primary aim was making shapekeys actually useful for character creation in a way that didn't interfere with user immersion.
+ShapekeyMaster AKA SM, is a shapekey animation/setting plugin to compliment the amazing shapekeys whose potential remains currently untapped in the community. SM's primary aim was making shapekeys actually useful for character creation in a way that didn't interfere with user immersion.
 
 - Performance friendly
 - BepinEx
