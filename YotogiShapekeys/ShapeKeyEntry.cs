@@ -23,10 +23,7 @@ namespace ShapekeyMaster
 					RunUpdate();
 				}
 			}
-			get 
-			{
-				return enabled;
-			}
+			get => enabled;
 		}
 
 		private bool animateWithExcitement;
@@ -38,16 +35,24 @@ namespace ShapekeyMaster
 				{
 					animateWithExcitement = value;
 					RunUpdate();
+
+					//We figured it would be much much more efficient to just have our shapekey entries themselves be individually notified when they want ExcitementChanged events instead of just updating every key.
+					if (animateWithExcitement)
+					{
+						HarmonyPatchers.ExcitementChange += (s, e) => this.RunUpdate(null, true);
+					}
+					else
+					{
+						HarmonyPatchers.ExcitementChange -= (s, e) => this.RunUpdate(null, true);
+					}
 				}
-			} get 
-			{
-				return animateWithExcitement;
 			}
+			get => animateWithExcitement;
 		}
 		private float excitementMax;
 		public float ExcitementMax
 		{
-			get { return excitementMax; }
+			get => excitementMax;
 			set
 			{
 				if (value != excitementMax)
@@ -60,7 +65,7 @@ namespace ShapekeyMaster
 		private float excitementMin;
 		public float ExcitementMin
 		{
-			get { return excitementMin; }
+			get => excitementMin;
 
 			set
 			{
@@ -74,10 +79,7 @@ namespace ShapekeyMaster
 		private bool animateWithOrgasm;
 		public bool AnimateWithOrgasm
 		{
-			get 
-			{
-				return false;
-			}
+			get => false;
 			set
 			{
 				if (value != animateWithOrgasm)
@@ -106,10 +108,7 @@ namespace ShapekeyMaster
 						Main.@this.StartCoroutine(Animator);
 					}
 				}
-			} get 
-			{
-				return animate;
-			}
+			} get => animate;
 		}
 		private string animationRate;
 		public string AnimationRate
@@ -147,10 +146,8 @@ namespace ShapekeyMaster
 		private string animationPoll;
 		public string AnimationPoll
 		{
-			get
-			{
-				return animationPoll;
-			} set 
+			get => animationPoll; 
+			set 
 			{
 				animationPoll = value;
 			}
@@ -174,7 +171,7 @@ namespace ShapekeyMaster
 		private float animationMaximum;
 		public float AnimationMaximum
 		{
-			get { return animationMaximum; }
+			get => animationMaximum;
 			set
 			{
 				animationMaximum = value;
@@ -183,7 +180,7 @@ namespace ShapekeyMaster
 		private float animationMinimum;
 		public float AnimationMinimum
 		{
-			get { return animationMinimum; }
+			get => animationMinimum;
 			set
 			{
 				animationMinimum = value;
@@ -192,10 +189,7 @@ namespace ShapekeyMaster
 		private float deform;
 		public float Deform
 		{
-			get
-			{
-				return deform;
-			}
+			get => deform;
 			set
 			{
 				if (value != deform)
@@ -208,10 +202,7 @@ namespace ShapekeyMaster
 		private float disableddeform;
 		public float DisabledDeform
 		{
-			get
-			{
-				return disableddeform;
-			}
+			get => disableddeform;
 			set
 			{
 				if (value != disableddeform)
@@ -224,7 +215,7 @@ namespace ShapekeyMaster
 		private float deformMax;
 		public float DeformMax
 		{
-			get { return deformMax;}
+			get => deformMax;
 			set
 			{
 				if (value != deformMax)
@@ -237,7 +228,7 @@ namespace ShapekeyMaster
 		private float deformMin;
 		public float DeformMin
 		{
-			get { return deformMin; }
+			get => deformMin;
 			set
 			{
 				if (value != deformMin)
@@ -252,21 +243,21 @@ namespace ShapekeyMaster
 		private string shapeKey;
 		public string ShapeKey
 		{
-			get { return shapeKey; }
+			get => shapeKey;
 			set
 			{
 				if (value != shapeKey)
 				{
 					shapeKey = value;
 					RunUpdate();
+					UI.SKDatabase.RefreshSubDictionaries();
 				}
 			}
 		}
 		private string maid;
 		public string Maid
 		{
-			get
-			{ return maid; }
+			get => maid;
 			set
 			{
 				if (value != maid)
@@ -282,22 +273,29 @@ namespace ShapekeyMaster
 		private bool conditionalsToggle;
 		public bool ConditionalsToggle 
 		{
-			get 
-			{ return conditionalsToggle; } 
+			get => conditionalsToggle;
 			set 
 			{
 				if (value != conditionalsToggle) 
 				{
 					conditionalsToggle = value;
 					RunUpdate();
+
+					if (conditionalsToggle)
+					{
+						HarmonyPatchers.ClothingMaskChange += (s, e) => RunUpdate((e as SMEventsAndArgs.ClothingMaskChangeEvent).Maid, true);
+					}
+					else
+					{
+						HarmonyPatchers.ClothingMaskChange -= (s, e) => RunUpdate((e as SMEventsAndArgs.ClothingMaskChangeEvent).Maid, true);
+					}
 				}
 			} 
 		}
 		private bool disableWhen;
 		public bool DisableWhen
 		{
-			get
-			{ return disableWhen; }
+			get	=> disableWhen;
 			set
 			{
 				if (value != disableWhen)
@@ -310,8 +308,7 @@ namespace ShapekeyMaster
 		private bool whenAll;
 		public bool WhenAll
 		{
-			get
-			{ return whenAll; }
+			get => whenAll;
 			set
 			{
 				if (value != whenAll)
@@ -324,8 +321,7 @@ namespace ShapekeyMaster
 		private DisableWhenEquipped slotFlags;
 		public DisableWhenEquipped SlotFlags
 		{
-			get
-			{ return slotFlags; }
+			get => slotFlags;
 			set
 			{
 				if (value != slotFlags)
@@ -370,20 +366,25 @@ namespace ShapekeyMaster
 
 			constructordone = true;
 		}
-		private void RunUpdate()
+		private void RunUpdate(string maid = null, bool avoidWait = false)
 		{
 #if (DEBUG)
 			Main.logger.LogDebug($"Change was detected in the shapekeys. Calling update.");
 #endif
-			if (constructordone)
+			if (constructordone && enabled)
 			{
 #if (DEBUG)
 				Main.logger.LogDebug($"Constructor found done. Calling.");
 #endif
-				//ShapekeyFetcherSetter.RunSingleEntry(this);
-				//ShapekeyFetcherSetter.RunSingleShapekey(this);
+				if (!String.IsNullOrEmpty(maid) && !String.IsNullOrEmpty(this.maid))
+				{
+					if (!maid.Equals(maid)) 
+					{
+						return;
+					}
+				}
 
-				ShapekeyUpdate.UpdateKeys(maid);
+				ShapekeyUpdate.UpdateKeys(this, avoidWait);
 
 #if (DEBUG)
 				Main.logger.LogDebug($"Finished update.");
@@ -433,7 +434,7 @@ namespace ShapekeyMaster
 						Main.logger.LogDebug($"Changed deform value for shapekey entry {EntryName}");
 #endif
 
-						ShapekeyUpdate.UpdateKeys(maid, true);
+						ShapekeyUpdate.UpdateKeys(this, true);
 
 						yield return new WaitForSecondsRealtime(AnimationPollFloat);
 					}

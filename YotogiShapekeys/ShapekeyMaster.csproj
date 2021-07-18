@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="ShapekeyUpdate.cs" />
     <Compile Include="SlotsFlags.cs" />
+    <Compile Include="SMEventsAndArgs.cs" />
     <None Include="0Old\PropsMenu.cs" />
     <Compile Include="HarmonyPatchers.cs" />
     <Compile Include="HelperClasses.cs" />

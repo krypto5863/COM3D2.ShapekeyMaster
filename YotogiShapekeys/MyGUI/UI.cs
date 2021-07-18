@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -320,9 +321,9 @@ namespace ShapekeyMaster
 			else
 			{
 				GUILayout.BeginHorizontal();
-				if (SKDatabase.ShapekeysCount() > 0 && GUILayout.Button("Apply"))
+				if (GUILayout.Button("Reload"))
 				{
-					ShapekeyUpdate.UpdateKeys();
+					SKDatabase.OverwriteDictionary(Main.LoadFromJson(BepInEx.Paths.ConfigPath + "\\ShapekeyMaster.json", false));
 				}
 				if (GUILayout.Button("Save"))
 				{

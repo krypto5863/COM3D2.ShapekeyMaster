@@ -18,7 +18,7 @@ using UnityEngine;
 
 namespace ShapekeyMaster
 {
-	[BepInPlugin("ShapekeyMaster", "ShapekeyMaster", "1.0")]
+	[BepInPlugin("ShapekeyMaster", "ShapekeyMaster", "1.1")]
 	[BepInDependency("deathweasel.com3d2.api")]
 	public class Main : BaseUnityPlugin
 	{
@@ -59,6 +59,8 @@ namespace ShapekeyMaster
 			HotkeyEnabled = Config.Bind("Hotkey", "1. Enable Hotkey", false, "Use a hotkey to open ShapekeyMaster.");
 			Hotkey = Config.Bind("Hotkey", "2. Hotkey", new KeyboardShortcut(KeyCode.F4, KeyCode.LeftControl), "Hotkey to open ShapekeyMaster with.");
 
+			Harmony.CreateAndPatchAll(typeof(HarmonyPatchers));
+
 			if (File.Exists(BepInEx.Paths.ConfigPath + "\\ShapekeyMaster.json"))
 			{
 				UI.SKDatabase.AllShapekeyDictionary = LoadFromJson(BepInEx.Paths.ConfigPath + "\\ShapekeyMaster.json");
@@ -73,10 +75,6 @@ namespace ShapekeyMaster
 				}
 
 			}, "Open/Close GUI", Convert.FromBase64String(iconBase64));
-
-			//StartCoroutine(ShapekeyFetcherSetter.TaskQueuer());
-
-			Harmony.CreateAndPatchAll(typeof(HarmonyPatchers));
 
 			Logger.LogInfo("ShapekeyMaster is online!");
 
@@ -136,7 +134,7 @@ namespace ShapekeyMaster
 				}
 			}
 
-			if (!String.IsNullOrEmpty(path))
+			if (!String.IsNullOrEmpty(path) && File.Exists(path))
 			{
 				string mconfig = (File.ReadAllText(path));
 

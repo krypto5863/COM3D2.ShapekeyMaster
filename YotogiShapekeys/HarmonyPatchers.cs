@@ -5,23 +5,33 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using UnityEngine.SceneManagement;
+using static ShapekeyMaster.SMEventsAndArgs;
 
 namespace ShapekeyMaster
 {
 	class HarmonyPatchers
 	{
+		public static event EventHandler MorphEvent;
+		public static event EventHandler ExcitementChange;
+		public static event EventHandler ClothingMaskChange;
+
 		private static readonly List<string> YotogiLvls = new List<string>() { "SceneYotogi", "SceneYotogiOld" };
 
-		[HarmonyPatch(typeof(TMorph), MethodType.Constructor, new Type[] {typeof(TBodySkin)})]
+		[HarmonyPatch(typeof(TMorph), MethodType.Constructor, new Type[] { typeof(TBodySkin) })]
 		[HarmonyPostfix]
 		private static void NotifyOfLoad(ref TMorph __instance)
 		{
 #if (DEBUG)
 			Main.logger.LogDebug("ShapekeyMaster picked up a morph creation!");
 #endif
-
 			ShapekeyUpdate.ListOfActiveMorphs.Add(__instance);
+			if (MorphEvent != null)
+			{
+				MorphEvent.Invoke(null, new MorphEventArgs(__instance));
+			}
 		}
+
+		//Now that we're done naming event classes, we can put out events to work...
 
 		[HarmonyPatch(typeof(TMorph), "DeleteObj")]
 		[HarmonyPostfix]
@@ -30,8 +40,12 @@ namespace ShapekeyMaster
 #if (DEBUG)
 			Main.logger.LogDebug("ShapekeyMaster picked up a morph deletion!");
 #endif
-
 			ShapekeyUpdate.ListOfActiveMorphs.Remove(__instance);
+
+			if (MorphEvent != null)
+				{
+				MorphEvent.Invoke(null, new MorphEventArgs(__instance, false));
+			}
 		}
 
 		[HarmonyPatch(typeof(Maid), "AllProcProp")]
@@ -42,7 +56,6 @@ namespace ShapekeyMaster
 #if (DEBUG)
 			Main.logger.LogDebug("ShapekeyMaster picked up a menu change!");
 #endif
-
 			ShapekeyUpdate.UpdateKeys(__instance.status.fullNameJpStyle);
 		}
 
@@ -53,45 +66,72 @@ namespace ShapekeyMaster
 #if (DEBUG)
 			Main.logger.LogDebug("ShapekeyMaster picked up mask change!");
 #endif
-
-			ShapekeyUpdate.UpdateKeys(__instance.maid.status.fullNameJpStyle);
+			if (ClothingMaskChange != null)
+			{
+				ClothingMaskChange.Invoke(null, new ClothingMaskChangeEvent(__instance.maid.status.fullNameJpStyle));
+			}
 		}
 
 		[HarmonyPatch(typeof(TMorph), "FixBlendValues")]
 		[HarmonyPatch(typeof(TMorph), "FixFixBlendValues")]
 		[HarmonyPatch(typeof(TMorph), "FixBlendValues_Face")]
 		[HarmonyPrefix]
-		private static void VerifyBlendValuesBeforeSet(ref TMorph __instance) 
+		private static void VerifyBlendValuesBeforeSet(ref TMorph __instance)
 		{
-			Stopwatch watch = new Stopwatch();
 
-			watch.Start();
-
-			var MaidName = __instance.bodyskin.body.maid.status.fullNameJpStyle;
-
-			if (__instance.hash == null) 
+#if (DEBUG)
+			Main.logger.LogDebug("Check morph dic for instance...");
+#endif
+			if (UI.SKDatabase.MorphShapekeyDictionary().ContainsKey(__instance))
 			{
-				return;
-			}
+				Stopwatch watch = new Stopwatch();
 
-			foreach (ShapeKeyEntry shapeKeyEntry in UI.SKDatabase.ShapekeysByMaid(MaidName).Values.Concat(UI.SKDatabase.GlobalShapekeyDictionary().Values)) 
-			{
-				if (__instance.hash.ContainsKey(shapeKeyEntry.ShapeKey)) 
+				watch.Start();
+#if (DEBUG)
+				Main.logger.LogDebug("Starting set check...");
+#endif
+				foreach (ShapeKeyEntry shapeKeyEntry in UI.SKDatabase.ShapekeysByMorph(__instance))
 				{
+#if (DEBUG)
+					Main.logger.LogDebug($"Checking hashset for key {shapeKeyEntry.ShapeKey}");
+#endif
+
+					if (!__instance.hash.ContainsKey(shapeKeyEntry.ShapeKey))
+					{
+						continue;
+					}
+#if (DEBUG)
+					Main.logger.LogDebug("Getting key index...");
+#endif
 					var index = (int)__instance.hash[shapeKeyEntry.ShapeKey];
+
+#if (DEBUG)
+					Main.logger.LogDebug("Running actual checks...");
+#endif
 
 					if (!shapeKeyEntry.Enabled)
 					{
+#if (DEBUG)
+						Main.logger.LogDebug("Disabling key");
+#endif
 						__instance.BlendValues[index] = 0;
 						__instance.BlendValuesBackup[index] = 0;
 					}
-					else if (shapeKeyEntry.ConditionalsToggle && SlotChecker.CheckIfSlotDisableApplies(shapeKeyEntry, __instance.bodyskin.body.maid))
+					else if (shapeKeyEntry.ConditionalsToggle && __instance.bodyskin != null && __instance.bodyskin.body && __instance.bodyskin.body.maid && SlotChecker.CheckIfSlotDisableApplies(shapeKeyEntry, __instance.bodyskin.body.maid))
 					{
+#if (DEBUG)
+						Main.logger.LogDebug("Checking conditionals.");
+#endif
+
 						__instance.BlendValues[index] = shapeKeyEntry.DisabledDeform / 100;
 						__instance.BlendValuesBackup[index] = shapeKeyEntry.DisabledDeform / 100;
 					}
 					else if (shapeKeyEntry.AnimateWithExcitement && YotogiLvls.Contains(SceneManager.GetActiveScene().name))
 					{
+#if (DEBUG)
+						Main.logger.LogDebug("Calcing excitement deform");
+#endif
+
 						var deform = HelperClasses.CalculateExcitementDeformation(shapeKeyEntry);
 
 						__instance.BlendValues[index] = deform / 100;
@@ -99,16 +139,25 @@ namespace ShapekeyMaster
 					}
 					else
 					{
+#if (DEBUG)
+						Main.logger.LogDebug("Doing basic deform.");
+#endif
+
 						__instance.BlendValues[index] = shapeKeyEntry.Deform / 100;
 						__instance.BlendValuesBackup[index] = shapeKeyEntry.Deform / 100;
 					}
 				}
-			}
 
-			watch.Stop();
-			if (watch.ElapsedMilliseconds > 5) {
-				Main.logger.LogWarning($"ShapekeyMaster's function finished in {watch.ElapsedMilliseconds} ms. This is really high for ShapekeyMaster and should be looked into...");
+				watch.Stop();
+				if (watch.ElapsedMilliseconds > 5)
+				{
+					Main.logger.LogWarning($"ShapekeyMaster's function finished in {watch.ElapsedMilliseconds} ms. This is really high for ShapekeyMaster, if you see this message 10 times or more within seconds, something is wrong...");
+				}
+				watch = null;
 			}
+#if (DEBUG)
+			Main.logger.LogDebug("Update precheck done.");
+#endif
 		}
 
 		//Patches the setter of the FPS value to run below code afterwards	
@@ -116,10 +165,14 @@ namespace ShapekeyMaster
 		[HarmonyPostfix]
 		public static void OnExciteSet(ref MaidStatus.Status __instance, ref int __0)
 		{
-			ShapekeyUpdate.UpdateKeys();
+			if (ExcitementChange != null)
+			{
+				ExcitementChange.Invoke(null, new ExcitementChangeEvent(__instance.fullNameJpStyle, __0));
+
 #if (DEBUG)
-			Main.logger.LogDebug($"{__instance.fullNameJpStyle }'s excitement changed to {__instance.currentExcite}! Making changes...");
+				Main.logger.LogDebug($"{__instance.fullNameJpStyle }'s excitement changed to {__instance.currentExcite}! Making changes...");
 #endif
+			}
 		}
 	}
 }
