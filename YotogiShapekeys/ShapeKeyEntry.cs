@@ -20,6 +20,19 @@ namespace ShapekeyMaster
 				if (value != enabled)
 				{
 					enabled = value;
+
+					if (animate && !enabled)
+					{
+						if (Animator != null) {
+							Main.@this.StopCoroutine(Animator);
+						}
+					} 
+					else if (animate)
+					{
+						Animator = AnimateCoRoute();
+						Main.@this.StartCoroutine(Animator);
+					}
+
 					RunUpdate();
 				}
 			}
@@ -371,7 +384,7 @@ namespace ShapekeyMaster
 #if (DEBUG)
 			Main.logger.LogDebug($"Change was detected in the shapekeys. Calling update.");
 #endif
-			if (constructordone && enabled)
+			if (constructordone)
 			{
 #if (DEBUG)
 				Main.logger.LogDebug($"Constructor found done. Calling.");
@@ -450,7 +463,6 @@ namespace ShapekeyMaster
 				}
 				else
 				{
-
 #if (DEBUG)
 					Main.logger.LogDebug($"Animate was false. Exiting the coroutine.");
 #endif

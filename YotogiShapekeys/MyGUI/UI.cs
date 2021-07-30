@@ -323,7 +323,14 @@ namespace ShapekeyMaster
 				GUILayout.BeginHorizontal();
 				if (GUILayout.Button("Reload"))
 				{
+					OpenSKMenu = Guid.Empty;
+					OpenMaidMenu = Guid.Empty;
+					OpenRenameMenu = Guid.Empty;
+					OpenSlotConditions = Guid.Empty;
+
 					SKDatabase.OverwriteDictionary(Main.LoadFromJson(BepInEx.Paths.ConfigPath + "\\ShapekeyMaster.json", false));
+
+					return;
 				}
 				if (GUILayout.Button("Save"))
 				{
@@ -342,6 +349,8 @@ namespace ShapekeyMaster
 				if (GUILayout.Button("Import"))
 				{
 					SKDatabase.ConcatenateDictionary(Main.LoadFromJson(null, true));
+
+					return;
 				}
 				GUILayout.EndHorizontal();
 			}
