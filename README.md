@@ -35,6 +35,8 @@ Since we understand that users may seek to share their maids or keys with other 
 3. Place both DLLs into your `BepinEx/plugins` folder.
 4. Profit! Simply open the UI with the icon in the gear menu or configure the hotkey in the config (you can use ConfigurationManager, F1 if ConfigurationManager is installed to configure the hotkey and other plugin settings too).
 
+Please make sure that your game version and BepinEx are at least `Game: 1.54+` and `Bepinex: 5.11+` or ShapekeyMaster might not work as expected.
+
 # Tips
 As always, I need to include some usage details to maximize the usage of SM.
 
