@@ -834,10 +834,6 @@ namespace ShapekeyMaster
 					if (GUILayout.Button("+"))
 					{
 						OpenSKMenu = s.Id;
-						Filter = oldSKMenuFilter;
-						oldPreSKMenuScrollPosition = scrollPosition;
-						scrollPosition = oldSKMenuScrollPosition;
-						ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
 						if (String.IsNullOrEmpty(s.Maid))
 						{
 							ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
@@ -851,6 +847,9 @@ namespace ShapekeyMaster
 								ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
 							}
 						}
+						Filter = oldSKMenuFilter;
+						oldPreSKMenuScrollPosition = scrollPosition;
+						scrollPosition = oldSKMenuScrollPosition;
 						ShapekeysNameList.Sort();
 						return;
 					}
