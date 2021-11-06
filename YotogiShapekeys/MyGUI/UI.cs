@@ -25,6 +25,11 @@ namespace ShapekeyMaster
 		private static bool runonce = true;
 		public static bool changewasmade = false;
 
+		// Used for remembering old values when entering SKMenu
+		private static string oldSKMenuFilter = "";
+		private static Vector2 oldSKMenuScrollPosition = Vector2.zero;
+		private static Vector2 oldPreSKMenuScrollPosition = Vector2.zero;
+
 		private static string Filter = "";
 		private static int FilterMode = 0;
 		private static int Page = 0;
@@ -690,6 +695,9 @@ namespace ShapekeyMaster
 					}
 					
 					OpenSKMenu = s.Id;
+					Filter = oldSKMenuFilter;
+					oldPreSKMenuScrollPosition = scrollPosition;
+					scrollPosition = oldSKMenuScrollPosition;
 				}
 
 				s.ShapeKey = GUILayout.TextField(s.ShapeKey, GUILayout.Width(120));
@@ -826,6 +834,10 @@ namespace ShapekeyMaster
 					if (GUILayout.Button("+"))
 					{
 						OpenSKMenu = s.Id;
+						Filter = oldSKMenuFilter;
+						oldPreSKMenuScrollPosition = scrollPosition;
+						scrollPosition = oldSKMenuScrollPosition;
+						ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
 						if (String.IsNullOrEmpty(s.Maid))
 						{
 							ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
@@ -957,6 +969,10 @@ namespace ShapekeyMaster
 			if (GUILayout.Button("None"))
 			{
 				OpenSKMenu = Guid.Empty;
+				oldSKMenuFilter = Filter;
+				oldSKMenuScrollPosition = scrollPosition;
+				scrollPosition = oldPreSKMenuScrollPosition;
+
 				s.ShapeKey = "";
 				Filter = "";
 			}
@@ -982,6 +998,9 @@ namespace ShapekeyMaster
 				{
 					OpenSKMenu = Guid.Empty;
 					s.ShapeKey = str;
+					oldSKMenuFilter = Filter;
+					oldSKMenuScrollPosition = scrollPosition;
+					scrollPosition = oldPreSKMenuScrollPosition;
 					Filter = "";
 				}
 			}
@@ -1009,6 +1028,9 @@ namespace ShapekeyMaster
 				{
 					OpenSKMenu = Guid.Empty;
 					s.ShapeKey = str;
+					oldSKMenuFilter = Filter;
+					oldSKMenuScrollPosition = scrollPosition;
+					scrollPosition = oldPreSKMenuScrollPosition;
 					Filter = "";
 				}
 			}
