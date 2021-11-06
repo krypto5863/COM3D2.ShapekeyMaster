@@ -47,6 +47,18 @@ namespace ShapekeyMaster
 				.Where(m => m != null && m.isActiveAndEnabled && m.status.fullNameJpStyle == name)
 				.Count() > 0;
 		}
+		public static Maid GetMaidByName(string name)
+		{
+			if (name == "")
+			{
+				return null;
+			}
+
+			return
+				GameMain.Instance.CharacterMgr
+				.GetStockMaidList()
+				.FirstOrDefault(m => m != null && m.isActiveAndEnabled && m.status.fullNameJpStyle == name);
+		}
 		public static IEnumerable<TMorph> GetAllMorphsFromMaidList(List<Maid> list)
 		{
 			return
@@ -75,6 +87,11 @@ namespace ShapekeyMaster
 		}
 		public static IEnumerable<string> GetAllShapeKeysFromMaid(Maid maid)
 		{
+			if (maid == null) 
+			{
+				return null;
+			}
+
 			return
 				GetAllMorphsFromMaid(maid)
 				.Select(m => m.hash)

@@ -17,6 +17,8 @@ namespace ShapekeyMaster
 
 		private static readonly List<string> YotogiLvls = new List<string>() { "SceneYotogi", "SceneYotogiOld" };
 
+		private static int SlowCounter = 0;
+
 		[HarmonyPatch(typeof(TMorph), MethodType.Constructor, new Type[] { typeof(TBodySkin) })]
 		[HarmonyPostfix]
 		private static void NotifyOfLoad(ref TMorph __instance)
@@ -78,7 +80,6 @@ namespace ShapekeyMaster
 		[HarmonyPrefix]
 		private static void VerifyBlendValuesBeforeSet(ref TMorph __instance)
 		{
-
 #if (DEBUG)
 			Main.logger.LogDebug("Check morph dic for instance...");
 #endif
@@ -151,7 +152,16 @@ namespace ShapekeyMaster
 				watch.Stop();
 				if (watch.ElapsedMilliseconds > 5)
 				{
-					Main.logger.LogWarning($"ShapekeyMaster's function finished in {watch.ElapsedMilliseconds} ms. This is really high for ShapekeyMaster, if you see this message 10 times or more within seconds, something is wrong...");
+					if (++SlowCounter >= 10)
+					{
+						Main.logger.LogWarning($"ShapekeyMaster's function finished slowly 10 times or more! This last time it finished in {watch.ElapsedMilliseconds} ms. This is really high for ShapekeyMaster, if you see this message then there could be an issue!");
+
+						SlowCounter = 0;
+					}
+				}
+				else 
+				{
+					SlowCounter = 0;
 				}
 				watch = null;
 			}

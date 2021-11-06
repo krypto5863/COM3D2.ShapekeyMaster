@@ -674,7 +674,20 @@ namespace ShapekeyMaster
 
 				if (GUILayout.Button("+", GUILayout.Width(40)))
 				{
-					ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
+
+					if (String.IsNullOrEmpty(s.Maid))
+					{
+						ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
+					}
+					else 
+					{
+						ShapekeysNameList = HelperClasses.GetAllShapeKeysFromMaid(HelperClasses.GetMaidByName(s.Maid)).ToList();
+
+						if (ShapekeysNameList == null || ShapekeysNameList.Count == 0)
+						{
+							ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
+						}
+					}
 					
 					OpenSKMenu = s.Id;
 				}
@@ -813,7 +826,19 @@ namespace ShapekeyMaster
 					if (GUILayout.Button("+"))
 					{
 						OpenSKMenu = s.Id;
-						ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
+						if (String.IsNullOrEmpty(s.Maid))
+						{
+							ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
+						}
+						else
+						{
+							ShapekeysNameList = HelperClasses.GetAllShapeKeysFromMaid(HelperClasses.GetMaidByName(s.Maid)).ToList();
+
+							if (ShapekeysNameList == null || ShapekeysNameList.Count == 0) 
+							{
+								ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
+							}
+						}
 						ShapekeysNameList.Sort();
 						return;
 					}
