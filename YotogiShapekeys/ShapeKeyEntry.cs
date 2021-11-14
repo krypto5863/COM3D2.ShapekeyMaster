@@ -351,7 +351,7 @@ namespace ShapekeyMaster
 		public ShapeKeyEntry(Guid id, string maid = "")
 		{
 			this.Id = id;
-			EntryName = "New Entry #" + Id.ToString();
+			EntryName = "";
 			enabled = true;
 			deform = 0;
 			shapeKey = "";

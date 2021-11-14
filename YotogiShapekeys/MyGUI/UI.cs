@@ -121,7 +121,7 @@ namespace ShapekeyMaster
 				DisplayMaidRenameMenu(MaidGroupRenameMenu);
 			} else if (MaidGroupCreateOpen) 
 			{
-				DisplayMaidGroupCreateMenu();
+				DisplayMaidGroupCreateMenu(SKDatabase.AllShapekeyDictionary);
 			}
 			else
 			{
@@ -693,11 +693,12 @@ namespace ShapekeyMaster
 							ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
 						}
 					}
-					
+
 					OpenSKMenu = s.Id;
 					Filter = oldSKMenuFilter;
 					oldPreSKMenuScrollPosition = scrollPosition;
 					scrollPosition = oldSKMenuScrollPosition;
+					ShapekeysNameList.Sort();
 				}
 
 				s.ShapeKey = GUILayout.TextField(s.ShapeKey, GUILayout.Width(120));
@@ -750,7 +751,11 @@ namespace ShapekeyMaster
 #if (DEBUG)
 				Main.logger.LogDebug("I've been clicked! Oh the humanity!!");
 #endif
-				SKDatabase.Add(new ShapeKeyEntry(Guid.NewGuid()));
+				Guid activeGUID = Guid.NewGuid();
+
+				SKDatabase.Add(new ShapeKeyEntry(activeGUID));
+
+				FocusToNewKey(activeGUID, GivenShapeKeys);
 
 				return;
 			}
@@ -763,7 +768,11 @@ namespace ShapekeyMaster
 #if (DEBUG)
 				Main.logger.LogDebug("I've been clicked! Oh the humanity!!");
 #endif
-				SKDatabase.Add(new ShapeKeyEntry(Guid.NewGuid()));
+				var activeGUID = Guid.NewGuid();
+
+				SKDatabase.Add(new ShapeKeyEntry(activeGUID));
+
+				FocusToNewKey(activeGUID, GivenShapeKeys);
 
 				return;
 			}
@@ -1077,7 +1086,7 @@ namespace ShapekeyMaster
 				}
 			}
 		}
-		private static void DisplayMaidGroupCreateMenu()
+		private static void DisplayMaidGroupCreateMenu(Dictionary<Guid, ShapeKeyEntry> GivenShapeKeys)
 		{
 			DisplaySearchMenu(true);
 
@@ -1092,6 +1101,8 @@ namespace ShapekeyMaster
 				var newGUID = Guid.NewGuid();
 
 				SKDatabase.Add(new ShapeKeyEntry(newGUID, $"None {i}"));
+
+				FocusToNewKey(newGUID, GivenShapeKeys);
 
 				MaidGroupCreateOpen = false;
 
@@ -1113,6 +1124,8 @@ namespace ShapekeyMaster
 					Guid newkey = Guid.NewGuid();
 
 					SKDatabase.Add(new ShapeKeyEntry(newkey, mn));
+
+					FocusToNewKey(newkey, GivenShapeKeys);
 
 					MaidGroupCreateOpen = false;
 
@@ -1327,6 +1340,24 @@ namespace ShapekeyMaster
 					MaidOnlyDatabase.AllShapekeyDictionary = SKDatabase.ShapekeysByMaid(m);
 
 					Main.SaveToJson(null, MaidOnlyDatabase, true);
+				}
+			}
+		}
+
+		//UI Helper funcs
+		internal static void FocusToNewKey(Guid guid, Dictionary<Guid, ShapeKeyEntry> GivenShapeKeys) 
+		{
+			double pos = 0;
+
+			foreach (ShapeKeyEntry s in GivenShapeKeys.Values.OrderBy(val => val.EntryName))
+			{
+				if (s.Id != guid)
+				{
+					++pos;
+				}
+				else
+				{
+					Page = ((int)Math.Floor(pos / 10)) * 10;
 				}
 			}
 		}
