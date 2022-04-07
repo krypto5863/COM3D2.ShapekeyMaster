@@ -1322,7 +1322,9 @@ namespace ShapekeyMaster
 		}
 		private static void DisplayExportMenu()
 		{
-			if (GUILayout.Button("All"))
+			Main.HideInactiveMaids.Value = GUILayout.Toggle(Main.HideInactiveMaids.Value, "Hide Inactive Maids");
+
+			if (Main.HideInactiveMaids.Value == false && GUILayout.Button("All"))
 			{
 				Main.SaveToJson(null, SKDatabase, true);
 			}
@@ -1338,12 +1340,16 @@ namespace ShapekeyMaster
 
 			foreach (string m in SKDatabase.ListOfMaidsWithKeys())
 			{
-				if (ThingsToExport.ContainsKey(m) == false)
-				{
-					ThingsToExport[m] = false;
-				}
 
-				ThingsToExport[m] = GUILayout.Toggle(ThingsToExport[m], m);
+				if (Main.HideInactiveMaids.Value == false || HelperClasses.IsMaidActive(m))
+				{
+					if (ThingsToExport.ContainsKey(m) == false)
+					{
+						ThingsToExport[m] = false;
+					}
+
+					ThingsToExport[m] = GUILayout.Toggle(ThingsToExport[m], m);
+				}
 			}
 
 			GUILayout.EndVertical();

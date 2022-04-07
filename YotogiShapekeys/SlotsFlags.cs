@@ -38,7 +38,7 @@ namespace ShapekeyMaster
 			{ DisableWhenEquipped.Stockings,(TBody.SlotID)Enum.Parse(typeof(TBody.SlotID),"stkg") },
 			{ DisableWhenEquipped.Shoes,(TBody.SlotID)Enum.Parse(typeof(TBody.SlotID),"shoes") },
 			{ DisableWhenEquipped.Headset,(TBody.SlotID)Enum.Parse(typeof(TBody.SlotID),"headset") },
-			{ DisableWhenEquipped.Hat,(TBody.SlotID)Enum.Parse(typeof(TBody.SlotID),"accHead") },
+			{ DisableWhenEquipped.Hat,(TBody.SlotID)Enum.Parse(typeof(TBody.SlotID),"accHat") },
 			{ DisableWhenEquipped.Glove,(TBody.SlotID)Enum.Parse(typeof(TBody.SlotID),"glove") },
 			{ DisableWhenEquipped.Arm,(TBody.SlotID)Enum.Parse(typeof(TBody.SlotID),"accUde") },
 			{ DisableWhenEquipped.Back,(TBody.SlotID)Enum.Parse(typeof(TBody.SlotID),"accSenaka") }
