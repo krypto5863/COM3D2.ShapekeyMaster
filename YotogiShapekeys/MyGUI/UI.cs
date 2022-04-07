@@ -16,6 +16,8 @@ namespace ShapekeyMaster
 		private static List<string> ShapekeysNameList = new List<string>();
 		private static List<string> MaidNameList = new List<string>();
 
+		private static Dictionary<string, bool> ThingsToExport = new Dictionary<string, bool>();
+
 		//private static readonly List<Guid> DeleteList = new List<Guid>();
 
 		internal static ShapekeyDatabase SKDatabase = new ShapekeyDatabase();
@@ -119,7 +121,8 @@ namespace ShapekeyMaster
 			else if (!String.IsNullOrEmpty(MaidGroupRenameMenu))
 			{
 				DisplayMaidRenameMenu(MaidGroupRenameMenu);
-			} else if (MaidGroupCreateOpen) 
+			}
+			else if (MaidGroupCreateOpen)
 			{
 				DisplayMaidGroupCreateMenu(SKDatabase.AllShapekeyDictionary);
 			}
@@ -145,7 +148,7 @@ namespace ShapekeyMaster
 							GUILayout.FlexibleSpace();
 							if (GUILayout.Button(">>"))
 							{
-								Page = Math.Min(SKDatabase.GlobalShapekeyDictionary().Count- Main.EntriesPerPage.Value, Page + Main.EntriesPerPage.Value);
+								Page = Math.Min(SKDatabase.GlobalShapekeyDictionary().Count - Main.EntriesPerPage.Value, Page + Main.EntriesPerPage.Value);
 							}
 							GUILayout.EndHorizontal();
 
@@ -275,7 +278,7 @@ namespace ShapekeyMaster
 
 			DisplaySearchMenu();
 		}
-		private static void DisplaySearchMenu(bool NoModes = false) 
+		private static void DisplaySearchMenu(bool NoModes = false)
 		{
 			GUILayout.BeginHorizontal(Sections2);
 
@@ -313,7 +316,7 @@ namespace ShapekeyMaster
 			GUILayout.EndHorizontal();
 		}
 
-		private static void DisplayFooter() 
+		private static void DisplayFooter()
 		{
 			GUILayout.BeginVertical(Sections2);
 			if (ExportMenuOpen)
@@ -368,8 +371,8 @@ namespace ShapekeyMaster
 
 			foreach (String MaidWithKey in SKDatabase.ListOfMaidsWithKeys().OrderBy(maid => maid))
 			{
-				if (Main.HideInactiveMaids.Value) 
-				{ 
+				if (Main.HideInactiveMaids.Value)
+				{
 					if (!HelperClasses.IsMaidActive(MaidWithKey))
 					{
 						continue;
@@ -378,9 +381,9 @@ namespace ShapekeyMaster
 
 				if (Filter != "")
 				{
-					if (FilterMode == 0) 
+					if (FilterMode == 0)
 					{
-						if (!SKDatabase.DoesMaidPartialEntryName(MaidWithKey, Filter)) 
+						if (!SKDatabase.DoesMaidPartialEntryName(MaidWithKey, Filter))
 						{
 							continue;
 						}
@@ -411,7 +414,7 @@ namespace ShapekeyMaster
 
 					foreach (ShapeKeyEntry sk in SKDatabase.ShapekeysByMaid(MaidWithKey).Values)
 					{
-						sk.Enabled= targettoggle;
+						sk.Enabled = targettoggle;
 					}
 
 					return;
@@ -486,7 +489,7 @@ namespace ShapekeyMaster
 
 					GUILayout.BeginHorizontal();
 
-					if (GUILayout.Button("+", GUILayout.Width(40)))  
+					if (GUILayout.Button("+", GUILayout.Width(40)))
 					{
 						SKDatabase.Add(new ShapeKeyEntry(Guid.NewGuid(), MaidWithKey));
 
@@ -684,7 +687,7 @@ namespace ShapekeyMaster
 					{
 						ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
 					}
-					else 
+					else
 					{
 						ShapekeysNameList = HelperClasses.GetAllShapeKeysFromMaid(HelperClasses.GetMaidByName(s.Maid)).ToList();
 
@@ -851,7 +854,7 @@ namespace ShapekeyMaster
 						{
 							ShapekeysNameList = HelperClasses.GetAllShapeKeysFromMaid(HelperClasses.GetMaidByName(s.Maid)).ToList();
 
-							if (ShapekeysNameList == null || ShapekeysNameList.Count == 0) 
+							if (ShapekeysNameList == null || ShapekeysNameList.Count == 0)
 							{
 								ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
 							}
@@ -971,7 +974,7 @@ namespace ShapekeyMaster
 		{
 
 			DisplaySearchMenu(true);
-			
+
 			GUILayout.Label($"{s.EntryName} Select ShapeKey");
 
 			if (GUILayout.Button("None"))
@@ -1064,7 +1067,7 @@ namespace ShapekeyMaster
 			if (GUILayout.Button("None"))
 			{
 				OpenMaidMenu = Guid.Empty;
-				s.Maid =  "";
+				s.Maid = "";
 				Filter = "";
 			}
 
@@ -1168,7 +1171,7 @@ namespace ShapekeyMaster
 			GUILayout.Label("Disabled Key Deform");
 			s.DisabledDeform = GUILayout.HorizontalSlider(s.DisabledDeform, 0, Main.MaxDeform.Value);
 
-			if (s.WhenAll) 
+			if (s.WhenAll)
 			{
 				s.WhenAll = GUILayout.Toggle(s.WhenAll, "If All in Slots is Equipped");
 			}
@@ -1189,10 +1192,10 @@ namespace ShapekeyMaster
 
 			int i = 0;
 
-			foreach (DisableWhenEquipped slot in Enum.GetValues(typeof(DisableWhenEquipped)).Cast<DisableWhenEquipped>()) 
+			foreach (DisableWhenEquipped slot in Enum.GetValues(typeof(DisableWhenEquipped)).Cast<DisableWhenEquipped>())
 			{
 
-				if (i == 0) 
+				if (i == 0)
 				{
 					GUILayout.BeginHorizontal();
 				}
@@ -1209,13 +1212,13 @@ namespace ShapekeyMaster
 				{
 					s.SlotFlags |= slot;
 				}
-				else 
+				else
 				{
 					s.SlotFlags &= ~slot;
 				}
 			}
 
-			if (i != 0) 
+			if (i != 0)
 			{
 				GUILayout.EndHorizontal();
 			}
@@ -1234,11 +1237,11 @@ namespace ShapekeyMaster
 
 			var TempMenuFileConditions = new Dictionary<Guid, string>(s.MenuFileConditionals);
 
-			foreach (Guid menu in TempMenuFileConditions.Keys) 
+			foreach (Guid menu in TempMenuFileConditions.Keys)
 			{
 				GUILayout.BeginHorizontal();
 
-				if (GUILayout.Button("X" , GUILayout.Width(20)))
+				if (GUILayout.Button("X", GUILayout.Width(20)))
 				{
 					s.MenuFileConditionals.Remove(menu);
 					return;
@@ -1323,29 +1326,54 @@ namespace ShapekeyMaster
 			{
 				Main.SaveToJson(null, SKDatabase, true);
 			}
-			if (GUILayout.Button("Global"))
+
+			GUILayout.BeginVertical(Sections);
+
+			if (ThingsToExport.ContainsKey("global") == false)
 			{
-				var GlobalOnlyDatabase = new ShapekeyDatabase();
-
-				GlobalOnlyDatabase.AllShapekeyDictionary = SKDatabase.GlobalShapekeyDictionary();
-
-				Main.SaveToJson(null, GlobalOnlyDatabase, true);
+				ThingsToExport["global"] = false;
 			}
+
+			ThingsToExport["global"] = GUILayout.Toggle(ThingsToExport["global"], "Global");
+
 			foreach (string m in SKDatabase.ListOfMaidsWithKeys())
 			{
-				if (GUILayout.Button(m))
+				if (ThingsToExport.ContainsKey(m) == false)
 				{
-					var MaidOnlyDatabase = new ShapekeyDatabase();
+					ThingsToExport[m] = false;
+				}
 
-					MaidOnlyDatabase.AllShapekeyDictionary = SKDatabase.ShapekeysByMaid(m);
+				ThingsToExport[m] = GUILayout.Toggle(ThingsToExport[m], m);
+			}
 
-					Main.SaveToJson(null, MaidOnlyDatabase, true);
+			GUILayout.EndVertical();
+
+			if (GUILayout.Button("Done"))
+			{
+				var SelectionDataBase = new ShapekeyDatabase();
+
+				if (ThingsToExport["global"] == true)
+				{
+					SelectionDataBase.AllShapekeyDictionary = SKDatabase.GlobalShapekeyDictionary();
+				}
+
+				foreach (string m in SKDatabase.ListOfMaidsWithKeys())
+				{
+					if (ThingsToExport[m] == true)
+					{
+						SelectionDataBase.AllShapekeyDictionary.Concat(SKDatabase.ShapekeysByMaid(m));
+					}
+				}
+
+				if (SelectionDataBase.AllShapekeyDictionary.Count > 0)
+				{
+					Main.SaveToJson(null, SelectionDataBase, true);
 				}
 			}
 		}
 
 		//UI Helper funcs
-		internal static void FocusToNewKey(Guid guid, Dictionary<Guid, ShapeKeyEntry> GivenShapeKeys) 
+		internal static void FocusToNewKey(Guid guid, Dictionary<Guid, ShapeKeyEntry> GivenShapeKeys)
 		{
 			double pos = 0;
 

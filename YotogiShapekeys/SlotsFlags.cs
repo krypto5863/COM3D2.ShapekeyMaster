@@ -44,7 +44,7 @@ namespace ShapekeyMaster
 			{ DisableWhenEquipped.Back,(TBody.SlotID)Enum.Parse(typeof(TBody.SlotID),"accSenaka") }
 		};
 
-		internal static bool CheckIfSlotDisableApplies(ShapeKeyEntry entry, Maid maid) 
+		internal static bool CheckIfSlotDisableApplies(ShapeKeyEntry entry, Maid maid)
 		{
 #if (DEBUG)
 			Main.logger.LogDebug("Running slot check...");
@@ -76,14 +76,14 @@ namespace ShapekeyMaster
 #if (DEBUG)
 					Main.logger.LogDebug($"Checking {menu}");
 #endif
-					var TBodySkins = maid.body0.goSlot.Select(tbody => tbody).Where(str => str.m_mp != null && Regex.IsMatch(str.m_mp.strFileName.ToLower(), menu, RegexOptions.IgnoreCase));
+					var TBodySkins = HelperClasses.FetchGoSlot(maid.body0).Select(tbody => tbody).Where(str => str.m_mp != null && Regex.IsMatch(str.m_mp.strFileName.ToLower(), menu, RegexOptions.IgnoreCase));
 
-					if (TBodySkins.Count() == 0) 
+					if (TBodySkins.Count() == 0)
 					{
 						return entry.DisableWhen;
 					}
 
-					foreach(TBodySkin skin in TBodySkins) 
+					foreach (TBodySkin skin in TBodySkins)
 					{
 						if (!maid.body0.GetMask(skin.SlotId))
 						{
@@ -94,7 +94,7 @@ namespace ShapekeyMaster
 
 				return !entry.DisableWhen;
 			}
-			else 
+			else
 			{
 #if (DEBUG)
 				Main.logger.LogDebug("WhenAny");
@@ -119,9 +119,9 @@ namespace ShapekeyMaster
 					Main.logger.LogDebug($"Checking {menu}");
 #endif
 
-					var TBodySkins = maid.body0.goSlot.Select(tbody => tbody).Where(str => str.m_mp != null && Regex.IsMatch(str.m_mp.strFileName.ToLower(), menu, RegexOptions.IgnoreCase));
+					var TBodySkins = HelperClasses.FetchGoSlot(maid.body0).Select(tbody => tbody).Where(str => str.m_mp != null && Regex.IsMatch(str.m_mp.strFileName.ToLower(), menu, RegexOptions.IgnoreCase));
 
-					foreach (TBodySkin skin in TBodySkins) 
+					foreach (TBodySkin skin in TBodySkins)
 					{
 						if (maid.body0.GetMask(skin.SlotId))
 						{

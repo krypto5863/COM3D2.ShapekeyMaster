@@ -23,13 +23,14 @@ namespace ShapekeyMaster
 
 					if (animate && !enabled)
 					{
-						if (Animator != null) {
+						if (Animator != null)
+						{
 							Main.@this.StopCoroutine(Animator);
 						}
-					} 
+					}
 					else if (animate)
 					{
-						Animator = AnimateCoRoute();
+						Animator = AnimateCoRoute(this);
 						Main.@this.StartCoroutine(Animator);
 					}
 
@@ -49,14 +50,17 @@ namespace ShapekeyMaster
 					animateWithExcitement = value;
 					RunUpdate();
 
+					var instance = this;
+
 					//We figured it would be much much more efficient to just have our shapekey entries themselves be individually notified when they want ExcitementChanged events instead of just updating every key.
 					if (animateWithExcitement)
 					{
-						HarmonyPatchers.ExcitementChange += (s, e) => this.RunUpdate(null, true);
+						HarmonyPatchers.ExcitementChange += (s, e) => instance.RunUpdate(null, true);
 					}
 					else
 					{
-						HarmonyPatchers.ExcitementChange -= (s, e) => this.RunUpdate(null, true);
+
+						HarmonyPatchers.ExcitementChange -= (s, e) => instance.RunUpdate(null, true);
 					}
 				}
 			}
@@ -117,11 +121,12 @@ namespace ShapekeyMaster
 					}
 					else
 					{
-						Animator = AnimateCoRoute();
+						Animator = AnimateCoRoute(this);
 						Main.@this.StartCoroutine(Animator);
 					}
 				}
-			} get => animate;
+			}
+			get => animate;
 		}
 		private string animationRate;
 		public string AnimationRate
@@ -135,7 +140,7 @@ namespace ShapekeyMaster
 
 				return "0";
 			}
-			set 
+			set
 			{
 				animationRate = value.ToString();
 			}
@@ -159,8 +164,8 @@ namespace ShapekeyMaster
 		private string animationPoll;
 		public string AnimationPoll
 		{
-			get => animationPoll; 
-			set 
+			get => animationPoll;
+			set
 			{
 				animationPoll = value;
 			}
@@ -250,7 +255,7 @@ namespace ShapekeyMaster
 					RunUpdate();
 				}
 
-			}		
+			}
 		}
 
 		private string shapeKey;
@@ -284,31 +289,33 @@ namespace ShapekeyMaster
 
 
 		private bool conditionalsToggle;
-		public bool ConditionalsToggle 
+		public bool ConditionalsToggle
 		{
 			get => conditionalsToggle;
-			set 
+			set
 			{
-				if (value != conditionalsToggle) 
+				if (value != conditionalsToggle)
 				{
 					conditionalsToggle = value;
 					RunUpdate();
 
+					var instance = this;
+
 					if (conditionalsToggle)
 					{
-						HarmonyPatchers.ClothingMaskChange += (s, e) => RunUpdate((e as SMEventsAndArgs.ClothingMaskChangeEvent).Maid, true);
+						HarmonyPatchers.ClothingMaskChange += (s, e) => instance.RunUpdate((e as SMEventsAndArgs.ClothingMaskChangeEvent).Maid, true);
 					}
 					else
 					{
-						HarmonyPatchers.ClothingMaskChange -= (s, e) => RunUpdate((e as SMEventsAndArgs.ClothingMaskChangeEvent).Maid, true);
+						HarmonyPatchers.ClothingMaskChange -= (s, e) => instance.RunUpdate((e as SMEventsAndArgs.ClothingMaskChangeEvent).Maid, true);
 					}
 				}
-			} 
+			}
 		}
 		private bool disableWhen;
 		public bool DisableWhen
 		{
-			get	=> disableWhen;
+			get => disableWhen;
 			set
 			{
 				if (value != disableWhen)
@@ -347,7 +354,7 @@ namespace ShapekeyMaster
 		public Dictionary<Guid, string> MenuFileConditionals { get; set; }
 		public bool Collapsed { get; set; }
 
-		private readonly bool constructordone = false;
+		private readonly bool constructordone;
 		public ShapeKeyEntry(Guid id, string maid = "")
 		{
 			this.Id = id;
@@ -369,15 +376,22 @@ namespace ShapekeyMaster
 			animationRate = "1";
 			animationPoll = "0.01633";
 
+			animateWithOrgasm = false;
+			disableddeform = 0;
+			conditionalsToggle = false;
+			disableWhen = false;
+			whenAll = false;
+			slotFlags = 0;
+
 			Collapsed = true;
 
 			MenuFileConditionals = new Dictionary<Guid, string>();
 
-			Animator = AnimateCoRoute();
-
-			Main.@this.StartCoroutine(Animator);
-
 			constructordone = true;
+
+			Animator = null;
+
+			//Main.@this.StartCoroutine(Animator);
 		}
 		private void RunUpdate(string maid = null, bool avoidWait = false)
 		{
@@ -391,7 +405,7 @@ namespace ShapekeyMaster
 #endif
 				if (!String.IsNullOrEmpty(maid) && !String.IsNullOrEmpty(this.maid))
 				{
-					if (!maid.Equals(maid)) 
+					if (!maid.Equals(maid))
 					{
 						return;
 					}
@@ -404,7 +418,7 @@ namespace ShapekeyMaster
 #endif
 			}
 		}
-		private IEnumerator AnimateCoRoute()
+		private static IEnumerator AnimateCoRoute(ShapeKeyEntry key)
 		{
 			bool reverse = false;
 
@@ -412,44 +426,44 @@ namespace ShapekeyMaster
 
 			while (true)
 			{
-				if (animate == true)
+				if (key.animate == true)
 				{
-					if (enabled && HelperClasses.IsMaidActive(maid))
+					if (key.enabled && HelperClasses.IsMaidActive(key.maid))
 					{
-						if (deform >= animationMaximum)
+						if (key.deform >= key.animationMaximum)
 						{
 							reverse = true;
 						}
-						else if (deform <= animationMinimum)
+						else if (key.deform <= key.animationMinimum)
 						{
 							reverse = false;
 						}
 
 						if (reverse)
 						{
-							deform -= AnimationRateFloat;
+							key.deform -= key.AnimationRateFloat;
 						}
 						else
 						{
-							deform += AnimationRateFloat;
+							key.deform += key.AnimationRateFloat;
 						}
 
-						if (deform > animationMaximum)
+						if (key.deform > key.animationMaximum)
 						{
-							deform = animationMaximum;
+							key.deform = key.animationMaximum;
 						}
-						else if (deform < animationMinimum)
+						else if (key.deform < key.animationMinimum)
 						{
-							deform = animationMinimum;
+							key.deform = key.animationMinimum;
 						}
 
 #if (DEBUG)
 						Main.logger.LogDebug($"Changed deform value for shapekey entry {EntryName}");
 #endif
 
-						ShapekeyUpdate.UpdateKeys(this, true);
+						ShapekeyUpdate.UpdateKeys(key, true);
 
-						yield return new WaitForSecondsRealtime(AnimationPollFloat);
+						yield return new WaitForSecondsRealtime(key.AnimationPollFloat);
 					}
 					else
 					{

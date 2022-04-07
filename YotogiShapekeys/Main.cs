@@ -18,7 +18,7 @@ using UnityEngine;
 
 namespace ShapekeyMaster
 {
-	[BepInPlugin("ShapekeyMaster", "ShapekeyMaster", "1.1.1")]
+	[BepInPlugin("ShapekeyMaster", "ShapekeyMaster", "1.4")]
 	[BepInDependency("deathweasel.com3d2.api")]
 	public class Main : BaseUnityPlugin
 	{
@@ -33,7 +33,7 @@ namespace ShapekeyMaster
 		private static OpenFileDialog FileOpen = new OpenFileDialog();
 
 		private static readonly string iconBase64 = "iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAANRSURBVEhLzVZdK6RhGL6G8TFjFTOrEWnGiRgRocmhA2rbAzmwp+IfOPMLHDsnKaG2FA5WkhSJspPPGSTyEWYyFsn4Zp/rnvfVDLNrD2amverufZ73fue+nvvrmdsA4JOSz0psSqxKTEqSlMQCz0qCSn4p8Sk5UwJ7RUVF8+rqquclTpifn/9JDsXlIKGLLzRd3ECHyMWQflH7H2SONwwGw1fmyhzaJgQmEsaqQP4FSYkkE/xfhEtLS+jt7UVXVxdGRkZwcnKiaaLD7Xajr68PT09Pst/Z2UFPTw8WFxdlT/yRcG5uDmNjYwgEAsjNzcXm5iYGBgY07Xs8PDxgamoK+/v72N3dhcfjke+Pjo5wf3+vffUBodVqRXt7OxobG5GXl4fb21tN+x480M3NjaxnZ2cxPDwM1W5ITk6Ganp5Txi1p4CnGRoawvX1texpoLOzU9ZEWVmZtnoPhpPGzWYzDg8PkZ+fL/aKi4uRkZGhffWGMDU1FVVVVbLe2tqC3++H3W4XycrKQnl5ueiYS+bl+PhY1XkS6uvrJZSlpaUoKSmRtdFoFELdno6IkObk5MDhcOD09FS8SUlJgc/nE6LKykrxYHp6Gt3d3VJQFxcXsFgsWFtbk9/TOEl5gOXlZUlJYWGh6HREELKq+vv7cXBwgKKiIjQ1NeHu7g6jo6OiJ8nMzIyQtLW1oaOjQ/LL/IUbV/empIOHfIsIQhpOT09HS0uLeMvw0FPmhF7TO3pJfUFBgfxmfX1djIeHbmNjQ56Xl5dYWVmRtY5XQiqvrq7gdDqFTAcPQDC01LNaMzMz5R37jRWZlpYWUYksGB6MeWZUwvFaNCwYgoWgg+FkeNQtL71IsC/Zc8Tk5CTOz8/hcrlgMvF/O4S6ujqRaODfU7Pql+/cDA4OYnt7GzabTTzxer1CWltbi4aGBrlFWIF6mbN9+G1ra6t4+RHUwb9FENLAxMSEEDFc2dnZqKmpEUKCYR8fH8fe3p60CXNcXV0d0Wd/Awn5JGEEHh8fX4LBoLaLHcgV9WpjwsNzEktEJYwnSMhRLlF4JmHoik8MgiQ8U3ehN7SPHxYWFtzqwYEYDg6p8ZxNOZNqg7BdH/U54vMqsSjh2BirYmJ9MGUc8f0AAr8BwP7aKtdTkPoAAAAASUVORK5CYII=";
-		
+
 		internal static ConfigEntry<float> MaxDeform;
 		internal static ConfigEntry<bool> SimpleMode;
 		internal static ConfigEntry<bool> HideInactiveMaids;
@@ -70,7 +70,8 @@ namespace ShapekeyMaster
 			{
 				enablegui = !enablegui;
 
-				if (Autosave.Value) {
+				if (Autosave.Value)
+				{
 					SaveToJson(BepInEx.Paths.ConfigPath + "\\ShapekeyMaster.json", UI.SKDatabase);
 				}
 
@@ -79,7 +80,7 @@ namespace ShapekeyMaster
 			Logger.LogInfo("ShapekeyMaster is online!");
 
 		}
-		private void Update() 
+		private void Update()
 		{
 			if (HotkeyEnabled.Value && Hotkey.Value.IsDown())
 			{
@@ -95,7 +96,8 @@ namespace ShapekeyMaster
 		}
 		private void OnDestroy()
 		{
-			if (Autosave.Value) {
+			if (Autosave.Value)
+			{
 				SaveToJson(BepInEx.Paths.ConfigPath + "\\ShapekeyMaster.json", UI.SKDatabase);
 			}
 		}

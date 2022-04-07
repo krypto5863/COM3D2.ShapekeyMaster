@@ -1,12 +1,43 @@
-﻿using System;
+﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace ShapekeyMaster
 {
 	internal static class HelperClasses
 	{
+
+		readonly static FieldInfo goSlotField = typeof(TBody).GetField("goSlot", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
+		readonly static Type goSlotType = goSlotField.FieldType;
+
+		readonly static MethodInfo goSlotMethod = goSlotType.GetMethod("GetListParents", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public) ?? null;
+
+		public static List<TBodySkin> FetchGoSlot(TBody body)
+		{
+			List<TBodySkin> result;
+
+			if (goSlotField.FieldType == typeof(List<TBodySkin>))
+			{
+				result = (List<TBodySkin>)goSlotField.GetValue(body);
+			}
+			else
+			{
+				var goSlotVal = goSlotField.GetValue(body);
+
+				result = (List<TBodySkin>)goSlotMethod.Invoke(goSlotVal, new object[0]);
+			}
+
+			if (result != null)
+			{
+				return result;
+			}
+
+			return null;
+		}
 		public static bool HasFlag(this Enum variable, Enum value)
 		{
 			// check if from the same type.
@@ -69,9 +100,8 @@ namespace ShapekeyMaster
 		public static IEnumerable<TMorph> GetAllMorphsFromMaid(Maid maid)
 		{
 			return
-				maid
-				.body0
-				.goSlot
+				FetchGoSlot(maid
+				.body0)
 				.Concat(new[] { maid.body0.Face })
 				.Where(s => s != null)
 				.Select(s => s.morph)
@@ -87,7 +117,7 @@ namespace ShapekeyMaster
 		}
 		public static IEnumerable<string> GetAllShapeKeysFromMaid(Maid maid)
 		{
-			if (maid == null) 
+			if (maid == null)
 			{
 				return null;
 			}
@@ -100,7 +130,7 @@ namespace ShapekeyMaster
 				.SelectMany(k => k)
 				.Distinct();
 		}
-		public static IEnumerable<string> GetAllShapeKeysFromAllMaids() 
+		public static IEnumerable<string> GetAllShapeKeysFromAllMaids()
 		{
 			var result = GetAllShapeKeysFromMaidList(GameMain.Instance.CharacterMgr
 				.GetStockMaidList().Where(m => m.isActiveAndEnabled).ToList()).ToList();
@@ -109,7 +139,7 @@ namespace ShapekeyMaster
 
 			return result;
 		}
-		public static bool IsFaceKey(string Keyname) 
+		public static bool IsFaceKey(string Keyname)
 		{
 			return GameMain.Instance.CharacterMgr.GetStockMaidList()
 			.Where(maid => maid != null && maid.body0 != null && maid.body0.Face != null && maid.body0.Face.morph != null)
