@@ -1326,6 +1326,8 @@ namespace ShapekeyMaster
 
 			if (Main.HideInactiveMaids.Value == false && GUILayout.Button("All"))
 			{
+				Main.logger.LogMessage("Exporting All");
+
 				Main.SaveToJson(null, SKDatabase, true);
 			}
 
@@ -1340,7 +1342,6 @@ namespace ShapekeyMaster
 
 			foreach (string m in SKDatabase.ListOfMaidsWithKeys())
 			{
-
 				if (Main.HideInactiveMaids.Value == false || HelperClasses.IsMaidActive(m))
 				{
 					if (ThingsToExport.ContainsKey(m) == false)
@@ -1358,23 +1359,27 @@ namespace ShapekeyMaster
 			{
 				var SelectionDataBase = new ShapekeyDatabase();
 
-				if (ThingsToExport["global"] == true)
+				if (ThingsToExport.TryGetValue("global", out var toExport) && toExport == true)
 				{
 					SelectionDataBase.AllShapekeyDictionary = SKDatabase.GlobalShapekeyDictionary();
 				}
 
 				foreach (string m in SKDatabase.ListOfMaidsWithKeys())
 				{
-					if (ThingsToExport[m] == true)
+					if (ThingsToExport.TryGetValue(m, out var toExport1) && toExport1 == true)
 					{
-						SelectionDataBase.AllShapekeyDictionary.Concat(SKDatabase.ShapekeysByMaid(m));
+						SelectionDataBase.AllShapekeyDictionary = SelectionDataBase.AllShapekeyDictionary.Concat(SKDatabase.ShapekeysByMaid(m)).ToDictionary(r => r.Key, f => f.Value);
 					}
 				}
 
 				if (SelectionDataBase.AllShapekeyDictionary.Count > 0)
 				{
 					Main.SaveToJson(null, SelectionDataBase, true);
+
+					ExportMenuOpen = false;
 				}
+
+				ThingsToExport.Clear();
 			}
 		}
 
