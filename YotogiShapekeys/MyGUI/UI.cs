@@ -55,6 +55,8 @@ namespace ShapekeyMaster
 		private static bool ExportMenuOpen;
 
 		private static Rect windowRect = new Rect(Screen.width / 3, Screen.height / 4, Screen.width / 3f, Screen.height / 1.5f);
+		private static int currentHeight = 0;
+		private static int currentWidth = 0;
 
 		private static GUIStyle seperator;
 		private static GUIStyle MainWindow;
@@ -85,6 +87,21 @@ namespace ShapekeyMaster
 
 				runonce = false;
 			}
+
+			if (currentHeight != Screen.height || currentWidth != Screen.width) 
+			{
+				windowRect.height = Math.Max(Screen.height / 1.5f, 200);
+				windowRect.width = Math.Max(Screen.width / 3f, 500);
+
+				windowRect.y = Screen.height / 4;
+				windowRect.x = Screen.width / 3;
+
+				Main.logger.LogDebug($"Changing sizes of SKM UI to {windowRect.width} x {windowRect.height}");
+
+				currentHeight = Screen.height;
+				currentWidth = Screen.width;
+			}
+
 			windowRect = GUILayout.Window(WindowID, windowRect, GuiWindowControls, "ShapekeyMaster", MainWindow);
 		}
 
@@ -724,17 +741,11 @@ namespace ShapekeyMaster
 
 				GUILayout.FlexibleSpace();
 
-				if (TabSelection == 0)
-				{
-					if (String.IsNullOrEmpty(s.Maid))
-					{
-						GUILayout.Label("Global");
-					}
-					else
-					{
-						GUILayout.Label(s.Maid);
-					}
-				}
+				string cateNameLabel = !String.IsNullOrEmpty(s.EntryName) ? s.EntryName : "";
+				cateNameLabel += TabSelection == 0 && !String.IsNullOrEmpty(cateNameLabel) ? " | " : "";
+				cateNameLabel += TabSelection == 0 ? String.IsNullOrEmpty(s.Maid) ? "Global" : s.Maid : "";
+
+				GUILayout.Label(cateNameLabel);
 
 				GUILayout.FlexibleSpace();
 
