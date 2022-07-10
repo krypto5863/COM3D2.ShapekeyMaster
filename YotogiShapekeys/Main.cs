@@ -18,7 +18,7 @@ using UnityEngine;
 
 namespace ShapekeyMaster
 {
-	[BepInPlugin("ShapekeyMaster", "ShapekeyMaster", "1.4.2")]
+	[BepInPlugin("ShapekeyMaster", "ShapekeyMaster", "1.4.3")]
 	[BepInDependency("deathweasel.com3d2.api")]
 	public class Main : BaseUnityPlugin
 	{
