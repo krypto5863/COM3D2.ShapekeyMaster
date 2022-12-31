@@ -1,29 +1,40 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using UnityEngine;
 
 namespace ShapekeyMaster
 {
-	class ShapekeyDatabase
+	internal class ShapekeyDatabase
 	{
+		[JsonIgnore]
 		private Dictionary<Guid, ShapeKeyEntry> allShapekeyDictionary;
+
+		[JsonIgnore]
 		private Dictionary<string, List<ShapeKeyEntry>> maidShapekeyDictionary;
+
+		[JsonIgnore]
 		private Dictionary<Guid, ShapeKeyEntry> globalShapekeyDictionary;
+
+		[JsonProperty]
+		public ShapekeyBlacklist BlacklistedShapekeys { get; internal set; } = new ShapekeyBlacklist();
+
 		//These below handle morph specifics. They're important because they shorthand alot of the work involved tremendously.
+		[JsonIgnore]
 		private List<TMorph> ListOfActiveMorphs = ShapekeyUpdate.ListOfActiveMorphs;
+
+		[JsonIgnore]
 		private Dictionary<TMorph, HashSet<ShapeKeyEntry>> morphShapekeyDictionary;
 
-		public Dictionary<Guid, ShapeKeyEntry> AllShapekeyDictionary 
+		[JsonProperty]
+		public Dictionary<Guid, ShapeKeyEntry> AllShapekeyDictionary
 		{
-			get 
+			get
 			{
 				return allShapekeyDictionary;
 			}
-			set 
+			set
 			{
 				allShapekeyDictionary = value;
 				RefreshSubDictionaries();
@@ -34,22 +45,26 @@ namespace ShapekeyMaster
 		{
 			return globalShapekeyDictionary;
 		}
+
 		internal Dictionary<TMorph, HashSet<ShapeKeyEntry>> MorphShapekeyDictionary()
 		{
 			return morphShapekeyDictionary;
 		}
-		internal List<string> ListOfMaidsWithKeys() 
+
+		internal List<string> ListOfMaidsWithKeys()
 		{
 			return maidShapekeyDictionary.Keys.ToList();
 		}
-		internal ShapekeyDatabase() 
+
+		internal ShapekeyDatabase()
 		{
 			allShapekeyDictionary = new Dictionary<Guid, ShapeKeyEntry>();
 			morphShapekeyDictionary = new Dictionary<TMorph, HashSet<ShapeKeyEntry>>();
-			HarmonyPatchers.MorphEvent += (s ,e) => Main.@this.StartCoroutine(UpdateMorphDic(e));
+			HarmonyPatchers.MorphEvent += (s, e) => Main.@this.StartCoroutine(UpdateMorphDic(e));
 
 			RefreshSubDictionaries();
 		}
+
 		internal void RefreshSubDictionaries()
 		{
 			maidShapekeyDictionary = new Dictionary<string, List<ShapeKeyEntry>>();
@@ -73,7 +88,7 @@ namespace ShapekeyMaster
 
 			globalShapekeyDictionary = allShapekeyDictionary.Where(kv => String.IsNullOrEmpty(kv.Value.Maid)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-			if (ListOfActiveMorphs.Count > 0) 
+			if (ListOfActiveMorphs.Count > 0)
 			{
 				Main.@this.StartCoroutine(ReloadMorphDic());
 			}
@@ -172,21 +187,28 @@ namespace ShapekeyMaster
 
 		internal bool DoesMaidPartialEntryName(string Maid, string Entry)
 		{
-			return (maidShapekeyDictionary[Maid].Where(t => Regex.IsMatch(t.EntryName.ToLower(), $@".*{Entry.ToLower()}.*")).Count() > 0);
+			return maidShapekeyDictionary[Maid]
+				.Where(t => t.EntryName.Contains(Entry, StringComparison.OrdinalIgnoreCase))
+				.Count() > 0;
 		}
+
 		internal bool DoesMaidPartialShapekey(string Maid, string shapekey)
 		{
-			return maidShapekeyDictionary[Maid].Where(t => Regex.IsMatch(t.ShapeKey.ToLower(), $@".*{shapekey.ToLower()}.*")).Count() > 0;
+			return maidShapekeyDictionary[Maid]
+				.Where(t => t.ShapeKey.Contains(shapekey, StringComparison.OrdinalIgnoreCase))
+				.Count() > 0;
 		}
+
 		internal Dictionary<Guid, ShapeKeyEntry> ShapekeysByMaid(string Maid)
 		{
-			if (!maidShapekeyDictionary.ContainsKey(Maid)) 
+			if (!maidShapekeyDictionary.ContainsKey(Maid))
 			{
 				return new Dictionary<Guid, ShapeKeyEntry>();
 			}
 
 			return new Dictionary<Guid, ShapeKeyEntry>(maidShapekeyDictionary[Maid].ToDictionary(sk => sk.Id, sk => sk));
 		}
+
 		internal HashSet<ShapeKeyEntry> ShapekeysByMorph(TMorph morph)
 		{
 			if (!morphShapekeyDictionary.ContainsKey(morph))
@@ -196,19 +218,22 @@ namespace ShapekeyMaster
 
 			return morphShapekeyDictionary[morph];
 		}
+
 		internal void Add(ShapeKeyEntry newVal)
 		{
 			allShapekeyDictionary[newVal.Id] = newVal;
 			RefreshSubDictionaries();
 		}
+
 		internal void Remove(ShapeKeyEntry newVal)
 		{
 			allShapekeyDictionary.Remove(newVal.Id);
 			RefreshSubDictionaries();
 		}
+
 		internal void ConcatenateDictionary(Dictionary<Guid, ShapeKeyEntry> newDictionary, bool overwrite = false)
 		{
-			if (!overwrite) 
+			if (!overwrite)
 			{
 				allShapekeyDictionary = new Dictionary<Guid, ShapeKeyEntry>(
 						allShapekeyDictionary
@@ -217,7 +242,8 @@ namespace ShapekeyMaster
 						.Where(kv => !allShapekeyDictionary.ContainsKey(kv.Key))
 						)
 						.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
-			} else 
+			}
+			else
 			{
 				allShapekeyDictionary = new Dictionary<Guid, ShapeKeyEntry>(
 						newDictionary
@@ -229,6 +255,7 @@ namespace ShapekeyMaster
 
 			RefreshSubDictionaries();
 		}
+
 		internal void OverwriteDictionary(Dictionary<Guid, ShapeKeyEntry> newDictionary)
 		{
 			allShapekeyDictionary = newDictionary;

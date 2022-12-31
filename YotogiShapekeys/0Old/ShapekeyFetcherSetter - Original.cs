@@ -45,9 +45,8 @@ namespace ShapekeyMaster
 			return maidslist;
 		}
 		//The main idea behind MissionControl is to eventually have it drive everything on first thread and simply instruct the worker threads allowing flexibility for when we need to run something on thread 1. As a result, Mission control will have a few versions.
-		public async Task MissionControl() 
-		{ 
-			
+		public async Task MissionControl()
+		{
 		}
 		//Async way of running the run all func.
 		public async static void RunAllBackgroundAsync()
@@ -80,7 +79,6 @@ namespace ShapekeyMaster
 			Main.logger.Log("Finished RunAll");
 
 			return null;
-
 		}
 		//Another async entry point for run on single maids. Only called by external functions, higher functions in the chain don't call these async as they themselves are already running async. This helps with stability.
 		public async static void RunSingleMaidBackgroundAsync(Maid maid)
@@ -89,7 +87,7 @@ namespace ShapekeyMaster
 			{
 				await Task.Factory.StartNew(() => RunSingleMaid(maid));
 			}
-			else 
+			else
 			{
 				await RunSingleMaid(maid);
 			}
@@ -116,16 +114,15 @@ namespace ShapekeyMaster
 
 			//Filters the list and only returns viable shapekey entries to reduce processing times.
 			var templist = UI.ShapeKeys.Values
-			.Where(s => s.Enabled == true 
-			&& s.IsProp == false 
-			&& (s.Maid.Equals("") || m.bodyskin.body.maid.status.fullNameJpStyle.Equals(s.Maid)) 
+			.Where(s => s.Enabled == true
+			&& s.IsProp == false
+			&& (s.Maid.Equals("") || m.bodyskin.body.maid.status.fullNameJpStyle.Equals(s.Maid))
 			&& m.Contains(s.ShapeKey))
 			.ToList();
 
 			//Checks every held shapekeyentry and works as required.
 			foreach (ShapeKeyEntry s in templist)
 			{
-
 #if (DEBUG)
 				Main.logger.Log($"Checking that it isn't a face morph...");
 #endif
@@ -158,7 +155,7 @@ namespace ShapekeyMaster
 					continue;
 				}
 
-				//If nothing special is happening, 
+				//If nothing special is happening,
 				Main.@this.StartCoroutine(RunShapekeyChange(m, shapekeyIndex, s.Deform));
 			}
 			return null;
@@ -169,7 +166,7 @@ namespace ShapekeyMaster
 			{
 				await Task.Factory.StartNew(() => RunSingleShapekey(s));
 			}
-			else 
+			else
 			{
 				await RunSingleShapekey(s);
 			}
@@ -191,9 +188,9 @@ namespace ShapekeyMaster
 			{
 				return null;
 			}
-			
+
 			List<TMorph> templist = GetAllMorphsFromMaidList(maidslist)
-			.Where(m => 
+			.Where(m =>
 			(s.Maid.Equals("") || m.bodyskin.body.maid.status.fullNameJpStyle.Equals(s.Maid))
 			&& m.Contains(s.ShapeKey))
 			.ToList();
@@ -234,7 +231,8 @@ namespace ShapekeyMaster
 				if (coroute)
 				{
 					Main.@this.StartCoroutine(RunShapekeyChange(m, shapekeyIndex, s.Deform));
-				} else 
+				}
+				else
 				{
 					RunShapekeyChange(m, shapekeyIndex, s.Deform);
 				}
@@ -245,12 +243,12 @@ namespace ShapekeyMaster
 			return null;
 		}
 		//The actual changes are pushed to a coroutine. Coroutines have the property of always running on the main thread, in time with the main thread so pushing this function to a coroutine from a worker thread ensures safe changes. However when possible. It should be avoided as creating too many coroutines is asking for trouble.
-		public static IEnumerator RunShapekeyChange(TMorph m, int shapekeyIndex, float deform) 
+		public static IEnumerator RunShapekeyChange(TMorph m, int shapekeyIndex, float deform)
 		{
 			yield return new WaitForEndOfFrame();
 
 			//Setting a value of less than 0 can cause the game to crash. As such, we ensure we never set a 0 val.
-			if (deform < 0) 
+			if (deform < 0)
 			{
 				deform = 0;
 			}
@@ -270,8 +268,8 @@ namespace ShapekeyMaster
 			}
 		}
 		/*
-		//The animator can be considered something of a manager. It simply calculates orgasms and 
-		public static IEnumerator OrgasmAnimator() 
+		//The animator can be considered something of a manager. It simply calculates orgasms and
+		public static IEnumerator OrgasmAnimator()
 		{
 #if (DEBUG)
 			Main.logger.Log($"Orgasm animator has started!!");
@@ -292,7 +290,7 @@ namespace ShapekeyMaster
 			{
 				s2.Start();
 
-				while (OrgasmDeform < 100) 
+				while (OrgasmDeform < 100)
 				{
 					OrgasmDeform += 25;
 
@@ -304,12 +302,11 @@ namespace ShapekeyMaster
 					yield return new WaitForSeconds(.1f);
 				}
 
-				while (OrgasmDeform > 0 && s.Elapsed < TimeSpan.FromSeconds(1)) 
+				while (OrgasmDeform > 0 && s.Elapsed < TimeSpan.FromSeconds(1))
 				{
-
 					OrgasmDeform -= 10;
 
-					if (OrgasmDeform < 0) 
+					if (OrgasmDeform < 0)
 					{
 						OrgasmDeform = 0;
 					}
@@ -341,12 +338,12 @@ namespace ShapekeyMaster
 			Main.logger.Log($"Orgasm animator has finished: {s.Elapsed}");
 #endif
 		}
-		private static IEnumerator UpdateOrgasmKeys() 
+		private static IEnumerator UpdateOrgasmKeys()
 		{
-			while (IsOrgasming) 
+			while (IsOrgasming)
 			{
 				RunAllBackground
-				
+
 				();
 
 				yield return new WaitForSecondsRealtime(.5f);

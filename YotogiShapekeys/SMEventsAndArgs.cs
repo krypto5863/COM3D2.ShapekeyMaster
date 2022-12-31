@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ShapekeyMaster
 {
-	class SMEventsAndArgs
+	internal class SMEventsAndArgs
 	{
 		//Cleaner for instancing.
 		public class MorphEventArgs : EventArgs
@@ -31,6 +28,7 @@ namespace ShapekeyMaster
 				Excitement = excite;
 			}
 		}
+
 		public class ClothingMaskChangeEvent : EventArgs
 		{
 			public string Maid { get; private set; }

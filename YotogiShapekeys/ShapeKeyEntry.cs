@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace ShapekeyMaster
 {
@@ -11,8 +10,10 @@ namespace ShapekeyMaster
 		private IEnumerator Animator;
 		public Guid Id { get; set; }
 		public string EntryName { get; set; }
+		public DateTime CreationDate { get; set; }
 
 		private bool enabled;
+
 		public bool Enabled
 		{
 			set
@@ -41,6 +42,7 @@ namespace ShapekeyMaster
 		}
 
 		private bool animateWithExcitement;
+
 		public bool AnimateWithExcitement
 		{
 			set
@@ -59,14 +61,15 @@ namespace ShapekeyMaster
 					}
 					else
 					{
-
 						HarmonyPatchers.ExcitementChange -= (s, e) => instance.RunUpdate(null, true);
 					}
 				}
 			}
 			get => animateWithExcitement;
 		}
+
 		private float excitementMax;
+
 		public float ExcitementMax
 		{
 			get => excitementMax;
@@ -79,7 +82,9 @@ namespace ShapekeyMaster
 				}
 			}
 		}
+
 		private float excitementMin;
+
 		public float ExcitementMin
 		{
 			get => excitementMin;
@@ -93,7 +98,9 @@ namespace ShapekeyMaster
 				}
 			}
 		}
+
 		private bool animateWithOrgasm;
+
 		public bool AnimateWithOrgasm
 		{
 			get => false;
@@ -106,7 +113,9 @@ namespace ShapekeyMaster
 				}
 			}
 		}
+
 		private bool animate;
+
 		public bool Animate
 		{
 			set
@@ -128,7 +137,9 @@ namespace ShapekeyMaster
 			}
 			get => animate;
 		}
+
 		private string animationRate;
+
 		public string AnimationRate
 		{
 			get
@@ -145,6 +156,7 @@ namespace ShapekeyMaster
 				animationRate = value.ToString();
 			}
 		}
+
 		public float AnimationRateFloat
 		{
 			get
@@ -161,7 +173,9 @@ namespace ShapekeyMaster
 				animationRate = value.ToString();
 			}
 		}
+
 		private string animationPoll;
+
 		public string AnimationPoll
 		{
 			get => animationPoll;
@@ -170,6 +184,7 @@ namespace ShapekeyMaster
 				animationPoll = value;
 			}
 		}
+
 		public float AnimationPollFloat
 		{
 			get
@@ -186,7 +201,9 @@ namespace ShapekeyMaster
 				animationPoll = value.ToString();
 			}
 		}
+
 		private float animationMaximum;
+
 		public float AnimationMaximum
 		{
 			get => animationMaximum;
@@ -195,7 +212,9 @@ namespace ShapekeyMaster
 				animationMaximum = value;
 			}
 		}
+
 		private float animationMinimum;
+
 		public float AnimationMinimum
 		{
 			get => animationMinimum;
@@ -204,7 +223,9 @@ namespace ShapekeyMaster
 				animationMinimum = value;
 			}
 		}
+
 		private float deform;
+
 		public float Deform
 		{
 			get => deform;
@@ -217,7 +238,9 @@ namespace ShapekeyMaster
 				}
 			}
 		}
+
 		private float disableddeform;
+
 		public float DisabledDeform
 		{
 			get => disableddeform;
@@ -230,7 +253,9 @@ namespace ShapekeyMaster
 				}
 			}
 		}
+
 		private float deformMax;
+
 		public float DeformMax
 		{
 			get => deformMax;
@@ -243,7 +268,9 @@ namespace ShapekeyMaster
 				}
 			}
 		}
+
 		private float deformMin;
+
 		public float DeformMin
 		{
 			get => deformMin;
@@ -254,11 +281,11 @@ namespace ShapekeyMaster
 					deformMin = value;
 					RunUpdate();
 				}
-
 			}
 		}
 
 		private string shapeKey;
+
 		public string ShapeKey
 		{
 			get => shapeKey;
@@ -272,7 +299,9 @@ namespace ShapekeyMaster
 				}
 			}
 		}
+
 		private string maid;
+
 		public string Maid
 		{
 			get => maid;
@@ -287,8 +316,8 @@ namespace ShapekeyMaster
 			}
 		}
 
-
 		private bool conditionalsToggle;
+
 		public bool ConditionalsToggle
 		{
 			get => conditionalsToggle;
@@ -312,7 +341,24 @@ namespace ShapekeyMaster
 				}
 			}
 		}
+
+		private bool ignoreCategoriesWithShapekey;
+
+		public bool IgnoreCategoriesWithShapekey
+		{
+			get => ignoreCategoriesWithShapekey;
+			set
+			{
+				if (value != ignoreCategoriesWithShapekey)
+				{
+					ignoreCategoriesWithShapekey = value;
+					RunUpdate();
+				}
+			}
+		}
+
 		private bool disableWhen;
+
 		public bool DisableWhen
 		{
 			get => disableWhen;
@@ -325,7 +371,9 @@ namespace ShapekeyMaster
 				}
 			}
 		}
+
 		private bool whenAll;
+
 		public bool WhenAll
 		{
 			get => whenAll;
@@ -338,7 +386,9 @@ namespace ShapekeyMaster
 				}
 			}
 		}
+
 		private DisableWhenEquipped slotFlags;
+
 		public DisableWhenEquipped SlotFlags
 		{
 			get => slotFlags;
@@ -351,14 +401,17 @@ namespace ShapekeyMaster
 				}
 			}
 		}
+
 		public Dictionary<Guid, string> MenuFileConditionals { get; set; }
 		public bool Collapsed { get; set; }
 
 		private readonly bool constructordone;
+
 		public ShapeKeyEntry(Guid id, string maid = "")
 		{
 			this.Id = id;
 			EntryName = "";
+			CreationDate = DateTime.Now;
 			enabled = true;
 			deform = 0;
 			shapeKey = "";
@@ -393,6 +446,7 @@ namespace ShapekeyMaster
 
 			//Main.@this.StartCoroutine(Animator);
 		}
+
 		private void RunUpdate(string maid = null, bool avoidWait = false)
 		{
 #if (DEBUG)
@@ -418,6 +472,7 @@ namespace ShapekeyMaster
 #endif
 			}
 		}
+
 		private static IEnumerator AnimateCoRoute(ShapeKeyEntry key)
 		{
 			bool reverse = false;
@@ -458,7 +513,7 @@ namespace ShapekeyMaster
 						}
 
 #if (DEBUG)
-						Main.logger.LogDebug($"Changed deform value for shapekey entry {EntryName}");
+						Main.logger.LogDebug($"Changed deform value for shapekey entry {key.EntryName}");
 #endif
 
 						ShapekeyUpdate.UpdateKeys(key, true);

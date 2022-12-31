@@ -12,7 +12,6 @@ namespace ShapekeyMaster
 	{
 		public static void RunAll()
 		{
-
 #if (DEBUG)
 			Main.logger.Log($"Updated called. Running on all.");
 #endif

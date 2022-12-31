@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace ShapekeyMaster
 {
@@ -63,8 +61,15 @@ namespace ShapekeyMaster
 #endif
 
 					//If a maid has any clothing item of a type unequipped, we return false to disable.
-					if (entry.SlotFlags.HasFlag(slot) && !maid.body0.GetMask(SlotToSlotList[slot]) && maid.body0.GetSlotLoaded(SlotToSlotList[slot]))
+					if (entry.SlotFlags.HasFlag(slot)
+						&& !maid.body0.GetMask(SlotToSlotList[slot])
+						&& maid.body0.GetSlotLoaded(SlotToSlotList[slot]))
 					{
+						if (entry.IgnoreCategoriesWithShapekey && maid.DoesCategoryContainKey(SlotToSlotList[slot], entry.ShapeKey))
+						{
+							continue;
+						}
+
 						return entry.DisableWhen;
 					}
 				}
@@ -76,7 +81,10 @@ namespace ShapekeyMaster
 #if (DEBUG)
 					Main.logger.LogDebug($"Checking {menu}");
 #endif
-					var TBodySkins = HelperClasses.FetchGoSlot(maid.body0).Select(tbody => tbody).Where(str => str.m_mp != null && Regex.IsMatch(str.m_mp.strFileName.ToLower(), menu, RegexOptions.IgnoreCase));
+					var TBodySkins = HelperClasses
+						.FetchGoSlot(maid.body0)
+						.Select(tbody => tbody)
+						.Where(str => str.m_mp != null && str.m_mp.strFileName.Contains(menu, StringComparison.OrdinalIgnoreCase));
 
 					if (TBodySkins.Count() == 0)
 					{
@@ -107,7 +115,10 @@ namespace ShapekeyMaster
 					Main.logger.LogDebug($"Checking {slot}");
 #endif
 					//If a maid has any clothing item of a type equipped, we return true to disable.
-					if (entry.SlotFlags.HasFlag(slot) && maid.body0.GetMask(SlotToSlotList[slot]) && maid.body0.GetSlotLoaded(SlotToSlotList[slot]))
+					if (entry.SlotFlags.HasFlag(slot)
+						&& maid.body0.GetMask(SlotToSlotList[slot])
+						&& maid.body0.GetSlotLoaded(SlotToSlotList[slot])
+						&& (entry.IgnoreCategoriesWithShapekey == false || maid.DoesCategoryContainKey(SlotToSlotList[slot], entry.ShapeKey) == false))
 					{
 						return !entry.DisableWhen;
 					}
@@ -118,8 +129,10 @@ namespace ShapekeyMaster
 #if (DEBUG)
 					Main.logger.LogDebug($"Checking {menu}");
 #endif
-
-					var TBodySkins = HelperClasses.FetchGoSlot(maid.body0).Select(tbody => tbody).Where(str => str.m_mp != null && Regex.IsMatch(str.m_mp.strFileName.ToLower(), menu, RegexOptions.IgnoreCase));
+					var TBodySkins = HelperClasses
+						.FetchGoSlot(maid.body0)
+						.Select(tbody => tbody)
+						.Where(str => str.m_mp != null && str.m_mp.strFileName.Contains(menu, StringComparison.OrdinalIgnoreCase));
 
 					foreach (TBodySkin skin in TBodySkins)
 					{

@@ -74,7 +74,6 @@ namespace ShapekeyMaster
 		}
 		public static void RunSingleEntry(ShapeKeyEntry sk)
 		{
-
 #if (DEBUG)
 			Stopwatch stop = new Stopwatch();
 			stop.Start();
@@ -162,12 +161,11 @@ namespace ShapekeyMaster
 			//Checks every held shapekeyentry and works as required.
 			foreach (ShapeKeyEntry s in templist)
 			{
-
 #if (DEBUG)
 				Main.logger.LogDebug($"Checking that it isn't a face morph...");
 #endif
 
-				if (m.bodyskin.body.Face != null && m.bodyskin.body.Face.morph != null &&  m.bodyskin.body.Face.morph.Contains(s.ShapeKey))
+				if (m.bodyskin.body.Face != null && m.bodyskin.body.Face.morph != null && m.bodyskin.body.Face.morph.Contains(s.ShapeKey))
 				{
 #if (DEBUG)
 					Main.logger.LogDebug($"We are processing a facial key of {s.ShapeKey}");
@@ -223,7 +221,6 @@ namespace ShapekeyMaster
 		//Even though this goes against my mission control's idea. I wanted to save myself the trouble of rewriting the same code 3 times As such, I decided to go for it. This will be run sync though.
 		public static void ProcessChanges(IEnumerable<ShapekeyChangeForm> changes)
 		{
-
 #if (DEBUG)
 			Main.logger.LogDebug($"Checking if changes are not zero and running coroutine if needed...");
 #endif
@@ -240,7 +237,6 @@ namespace ShapekeyMaster
 		}
 		public static IEnumerator RunShapekeyChange()
 		{
-
 			CorouteRunning = true;
 
 #if (DEBUG)
@@ -251,16 +247,15 @@ namespace ShapekeyMaster
 
 			while (ChangeList.Count > 0)
 			{
-
 #if (DEBUG)
 				Main.logger.LogDebug($"Running the while...");
 #endif
 
-				ShapekeyChangeForm nextKey = 
+				ShapekeyChangeForm nextKey =
 				ChangeList
 				.FirstOrDefault(t => t.Morph != null && t.Morph.bodyskin != null && t.Morph.bodyskin.body != null && t.Morph.bodyskin.body.maid.isActiveAndEnabled);
 
-				if (nextKey == null) 
+				if (nextKey == null)
 				{
 #if (DEBUG)
 					Main.logger.LogDebug($"It seems no keys were ready to be changed. Waiting for next frame...");
@@ -324,7 +319,6 @@ namespace ShapekeyMaster
 		}
 		public static void RunShapekeyChangeNormal()
 		{
-
 #if (DEBUG)
 			Main.logger.LogDebug($"Started Changer Normal...");
 #endif

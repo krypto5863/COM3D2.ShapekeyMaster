@@ -25,7 +25,6 @@ namespace ShapekeyMaster._0Old
 
 			foreach (ShapeKeyEntry s in ShapeKeys.Values)
 			{
-
 				if (s.IsProp == false)
 				{
 					continue;
@@ -35,21 +34,21 @@ namespace ShapekeyMaster._0Old
 				{
 					if (FilterMode == 0)
 					{
-						if (!Regex.IsMatch(s.EntryName.ToLower(), $@".*{Filter.ToLower()}.*"))
+						if (s.EntryName.Contains(Filter, StringComparison.OrdinalIgnoreCase) == false)
 						{
 							continue;
 						}
 					}
 					else if (FilterMode == 1)
 					{
-						if (!Regex.IsMatch(s.Maid.ToLower(), $@".*{Filter.ToLower()}.*"))
+						if (s.Maid.Contains(Filter, StringComparison.OrdinalIgnoreCase) == false)
 						{
 							continue;
 						}
 					}
 					else if (FilterMode == 2)
 					{
-						if (!Regex.IsMatch(s.ShapeKey.ToLower(), $@".*{Filter.ToLower()}.*"))
+						if (s.ShapeKey.Contains(Filter, StringComparison.OrdinalIgnoreCase) == false)
 						{
 							continue;
 						}
@@ -72,7 +71,6 @@ namespace ShapekeyMaster._0Old
 
 					if (GUILayout.Button("+"))
 					{
-
 					}
 
 					s.SetShapeKey(GUILayout.TextField(s.ShapeKey));

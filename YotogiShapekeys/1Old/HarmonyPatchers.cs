@@ -14,7 +14,6 @@ namespace ShapekeyMaster
 			("ShapekeyMaster picked up a maid load! Registering maid...");
 #endif
 			ShapekeyFetcherSetter.RegisterMaid(__1.bodyskin.body.maid);
-
 		}
 
 		//A bit of a shotgun solution but basically it makes it so that our plugin has ultimate say so of what blend values are changed to what. Might not be the most compatible in the long run so a more friendly solution should eventually be seeked out.
@@ -55,7 +54,7 @@ namespace ShapekeyMaster
 			ShapekeyFetcherSetter.RegisterMaid(maid);
 		}
 
-		//Patches the setter of the FPS value to run below code afterwards	
+		//Patches the setter of the FPS value to run below code afterwards
 		[HarmonyPatch(typeof(MaidStatus.Status), "currentExcite", MethodType.Setter)]
 		[HarmonyPostfix]
 		public static void OnExciteSet(ref MaidStatus.Status __instance)
