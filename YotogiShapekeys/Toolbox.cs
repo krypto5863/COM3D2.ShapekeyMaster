@@ -7,28 +7,45 @@ using UnityEngine;
 
 namespace ShapekeyMaster
 {
-	public class Tuple<T1, T2>
+	internal class SMEventsAndArgs
 	{
-		public T1 First { get; private set; }
-		public T2 Second { get; private set; }
-
-		internal Tuple(T1 first, T2 second)
+		//Cleaner for instancing.
+		public class MorphEventArgs : EventArgs
 		{
-			First = first;
-			Second = second;
+			public TMorph Morph { get; private set; }
+			public bool Creation { get; private set; }
+
+			public MorphEventArgs(TMorph changedMorph, bool wasCreated = true)
+			{
+				Morph = changedMorph;
+				Creation = wasCreated;
+			}
+		}
+
+		public class ExcitementChangeEvent : EventArgs
+		{
+			public string Maid { get; private set; }
+			public int Excitement { get; private set; }
+
+			public ExcitementChangeEvent(string maid, int excite)
+			{
+				Maid = maid;
+				Excitement = excite;
+			}
+		}
+
+		public class ClothingMaskChangeEvent : EventArgs
+		{
+			public string Maid { get; private set; }
+
+			public ClothingMaskChangeEvent(string maid)
+			{
+				Maid = maid;
+			}
 		}
 	}
 
-	public static class Tuple
-	{
-		public static Tuple<T1, T2> New<T1, T2>(T1 first, T2 second)
-		{
-			var tuple = new Tuple<T1, T2>(first, second);
-			return tuple;
-		}
-	}
-
-	internal static class HelperClasses
+	internal static class Extensions
 	{
 		private static readonly FieldInfo goSlotField = typeof(TBody).GetField("goSlot", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
@@ -36,27 +53,20 @@ namespace ShapekeyMaster
 
 		private static readonly MethodInfo goSlotMethod = goSlotType.GetMethod("GetListParents", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public) ?? null;
 
-		public static List<TBodySkin> FetchGoSlot(TBody body)
+		/// <summary>
+		/// A convenience method meant to provide support for 2.00 and 3.00 which vary in this field. The ultimate values are the same, they just need to be fetched differently. :P
+		/// </summary>
+		/// <param name="body"></param>
+		/// <returns></returns>
+		public static List<TBodySkin> FetchGoSlot(this TBody body)
 		{
-			List<TBodySkin> result;
-
 			if (goSlotField.FieldType == typeof(List<TBodySkin>))
 			{
-				result = (List<TBodySkin>)goSlotField.GetValue(body);
-			}
-			else
-			{
-				var goSlotVal = goSlotField.GetValue(body);
-
-				result = (List<TBodySkin>)goSlotMethod.Invoke(goSlotVal, new object[0]);
+				return (List<TBodySkin>)goSlotField.GetValue(body) ?? null;
 			}
 
-			if (result != null)
-			{
-				return result;
-			}
-
-			return null;
+			var goSlotVal = goSlotField.GetValue(body);
+			return (List<TBodySkin>)goSlotMethod.Invoke(goSlotVal, new object[0]) ?? null;
 		}
 
 		public static bool HasFlag(this Enum variable, Enum value)
@@ -74,6 +84,11 @@ namespace ShapekeyMaster
 			return (num2 & num) == num;
 		}
 
+		public static bool IsMaidActive(this Maid maid) 
+		{
+			return maid != null && maid.isActiveAndEnabled;
+		}
+
 		public static bool IsMaidActive(string name)
 		{
 			if (name == "")
@@ -81,9 +96,8 @@ namespace ShapekeyMaster
 				bool result =
 					GameMain.Instance.CharacterMgr
 					.GetStockMaidList()
-					.Where(m => m != null)
+					.Where(m => m.IsMaidActive())
 					.Count() > 0;
-
 #if (DEBUG)
 
 				Main.logger.LogDebug("Maids active to edit = " + result);
@@ -92,23 +106,16 @@ namespace ShapekeyMaster
 				return result;
 			}
 
-			return
-				GameMain.Instance.CharacterMgr
-				.GetStockMaidList()
-				.FirstOrDefault(m => m != null && m.isActiveAndEnabled && m.status.fullNameJpStyle == name) != null;
+			return GetMaidByName(name).IsMaidActive();
 		}
 
 		public static Maid GetMaidByName(string name)
 		{
-			if (name == "")
-			{
-				return null;
-			}
-
-			return
+			//If name string is empty, return null. Otherwise, execute link to find.
+			return name.IsNullOrWhiteSpace() ? null :
 				GameMain.Instance.CharacterMgr
 				.GetStockMaidList()
-				.FirstOrDefault(m => m != null && m.isActiveAndEnabled && m.status.fullNameJpStyle == name);
+				.FirstOrDefault(m => m != null && m.status.fullNameJpStyle.Equals(name));
 		}
 
 		public static IEnumerable<Tuple<string, TMorph>> GetAllMorphsFromMaidList(List<Maid> list)
@@ -116,19 +123,18 @@ namespace ShapekeyMaster
 			return
 				list
 				.SelectMany(m => GetAllMorphsFromMaid(m))
-				.Select(r => new Tuple<string, TMorph>(r.First, r.Second));
+				.Select(r => new Tuple<string, TMorph>(r.item1, r.item2));
 		}
 
-		public static IEnumerable<Tuple<string, TMorph>> GetAllMorphsFromMaid(Maid maid)
+		public static IEnumerable<Tuple<string, TMorph>> GetAllMorphsFromMaid(this Maid maid)
 		{
 			return
-				FetchGoSlot(maid
-				.body0)
-				.Concat(maid.body0.goSlot)
-				.Where(s => s != null && s.morph != null)
+				maid
+				.body0
+				.FetchGoSlot()
+				.Where(s => s?.morph != null)
 				.Select(r => new Tuple<string, TMorph>(r.Category, r.morph));
 		}
-
 		public static bool DoesCategoryContainKey(this Maid maid, TBody.SlotID category, string shapekey)
 		{
 			return
@@ -136,7 +142,6 @@ namespace ShapekeyMaster
 				.FirstOrDefault(r => r.Equals(shapekey))
 				.IsNullOrWhiteSpace() == false;
 		}
-
 		public static IEnumerable<string> GetAllShapekeysInCategory(this Maid maid, TBody.SlotID category)
 		{
 			return
@@ -148,15 +153,9 @@ namespace ShapekeyMaster
 		public static IEnumerable<TMorph> GetAllMorphsInMaidOfCategory(this Maid maid, TBody.SlotID category)
 		{
 			return
-				FetchGoSlot(maid
-				.body0)
-				.Concat(maid.body0.goSlot)
-				.Where(s => s != null && s.morph != null && s.Category == category.ToString())
-				.Select(m => m.morph);
-		}
-		public static bool ContainsShapekey(this TMorph morph, string shapekey) 
-		{ 
-			return morph.hash != null && morph.hash.Keys.Cast<string>().Contains(shapekey);
+				maid.GetAllMorphsFromMaid()
+				.Where(r => r.item1.Equals(category.ToString()))
+				.Select(m => m.item2);
 		}
 		public static IEnumerable<Tuple<string, string>> GetAllShapeKeysFromMaidList(List<Maid> maids)
 		{
@@ -166,7 +165,7 @@ namespace ShapekeyMaster
 				.SelectMany(r => r);
 		}
 
-		public static IEnumerable<Tuple<string, string>> GetAllShapeKeysFromMaid(Maid maid)
+		public static IEnumerable<Tuple<string, string>> GetAllShapeKeysFromMaid(this Maid maid)
 		{
 			if (maid == null)
 			{
@@ -177,16 +176,16 @@ namespace ShapekeyMaster
 
 			foreach (var keyPair in GetAllMorphsFromMaid(maid))
 			{
-				var keyNameList = keyPair.Second.hash.Keys.Cast<string>();
+				var keyNameList = keyPair.item2.hash.Keys.Cast<string>();
 
 				foreach (var stringKey in keyNameList)
 				{
-					result.Add(new Tuple<string, string>(keyPair.First, stringKey));
+					result.Add(new Tuple<string, string>(keyPair.item1, stringKey));
 				}
 			}
 
 			result = result
-			  .GroupBy(p => new { p.First, p.Second })
+			  .GroupBy(p => new { p.item1, p.item2 })
 			  .Select(g => g.First())
 			  .ToList();
 
@@ -198,12 +197,12 @@ namespace ShapekeyMaster
 			var result = GetAllShapeKeysFromMaidList
 				(GameMain.Instance.CharacterMgr
 				.GetStockMaidList()
-				.Where(m => m.isActiveAndEnabled)
+				.Where(m => m.IsMaidActive())
 				.ToList()
 				);
 
 			result = result
-			  .GroupBy(p => new { p.First, p.Second })
+			  .GroupBy(p => new { p.item1, p.item2 })
 			  .Select(g => g.First())
 			  .ToList();
 
@@ -213,7 +212,7 @@ namespace ShapekeyMaster
 		public static bool IsFaceKey(string Keyname)
 		{
 			return GameMain.Instance.CharacterMgr.GetStockMaidList()
-			.Where(maid => maid != null && maid.body0 != null && maid.body0.Face != null && maid.body0.Face.morph != null)
+			.Where(maid => maid?.body0?.Face?.morph != null)
 			.Select(m => m.body0.Face.morph)
 			.Where(mr => mr.Contains(Keyname))
 			.Count() > 0;
@@ -221,41 +220,17 @@ namespace ShapekeyMaster
 
 		public static IEnumerable<string> GetNameOfAllMaids()
 		{
-			var result = GameMain.Instance.CharacterMgr.GetStockMaidList().Select(m => m.status.fullNameJpStyle).ToList();
+			var result = GameMain.Instance.CharacterMgr
+				.GetStockMaidList()
+				.Select(m => m.status.fullNameJpStyle)
+				.ToList();
 
 			result.Sort();
 
 			return result;
 		}
 
-		public static IEnumerable<string> GetAllBlendShapes(Mesh mesh)
-		{
-#if (DEBUG)
-			Main.logger.LogDebug($"Was called, getting all blendshapes in {mesh.name}, there should be {mesh.blendShapeCount} blendshapes.");
-#endif
-			string blendshape;
-
-			List<string> res = new List<string>();
-
-			int shapecount = 0;
-
-			for (int i = 0; mesh.blendShapeCount > i && shapecount < mesh.blendShapeCount; i++)
-			{
-#if (DEBUG)
-				Main.logger.LogDebug($"Found blendshape with name {mesh.GetBlendShapeName(i)}");
-#endif
-
-				if ((blendshape = mesh.GetBlendShapeName(i)) != null)
-				{
-					res.Add(blendshape);
-					++shapecount;
-				}
-			}
-
-			return res;
-		}
-
-		public static float CalculateExcitementDeformation(ShapeKeyEntry sk)
+		public static float CalculateExcitementDeformation(this ShapeKeyEntry sk)
 		{
 			float excitement = GetHighestExcitement();
 #if (DEBUG)
@@ -299,6 +274,13 @@ namespace ShapekeyMaster
 			return 0;
 		}
 
+		/// <summary>
+		/// A faster way to check if a string contains another while using StringComparison.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="cont"></param>
+		/// <param name="compare"></param>
+		/// <returns></returns>
 		public static bool Contains(this string source, string cont, StringComparison compare)
 		{
 			return source.IndexOf(cont, compare) >= 0;

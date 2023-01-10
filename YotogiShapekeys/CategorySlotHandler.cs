@@ -24,7 +24,7 @@ namespace ShapekeyMaster
 
 	internal class SlotChecker
 	{
-		private static readonly Dictionary<DisableWhenEquipped, TBody.SlotID> SlotToSlotList = new Dictionary<DisableWhenEquipped, TBody.SlotID>()
+		public static readonly Dictionary<DisableWhenEquipped, TBody.SlotID> SlotToSlotList = new Dictionary<DisableWhenEquipped, TBody.SlotID>()
 		{
 			//Why do you parse the enum?? Because it's way more update proof as the enum number won't slide if they add or subtract values.
 			{ DisableWhenEquipped.Wear,(TBody.SlotID)Enum.Parse(typeof(TBody.SlotID),"wear") },
@@ -81,7 +81,7 @@ namespace ShapekeyMaster
 #if (DEBUG)
 					Main.logger.LogDebug($"Checking {menu}");
 #endif
-					var TBodySkins = HelperClasses
+					var TBodySkins = Extensions
 						.FetchGoSlot(maid.body0)
 						.Select(tbody => tbody)
 						.Where(str => str.m_mp != null && str.m_mp.strFileName.Contains(menu, StringComparison.OrdinalIgnoreCase));
@@ -129,7 +129,7 @@ namespace ShapekeyMaster
 #if (DEBUG)
 					Main.logger.LogDebug($"Checking {menu}");
 #endif
-					var TBodySkins = HelperClasses
+					var TBodySkins = Extensions
 						.FetchGoSlot(maid.body0)
 						.Select(tbody => tbody)
 						.Where(str => str.m_mp != null && str.m_mp.strFileName.Contains(menu, StringComparison.OrdinalIgnoreCase));

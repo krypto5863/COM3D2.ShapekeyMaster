@@ -21,8 +21,7 @@ namespace ShapekeyMaster
 		private static readonly Dictionary<ShapeKeyEntry, IEnumerator> CoroutinesUpdatingMorph = new Dictionary<ShapeKeyEntry, IEnumerator>();
 
 		private static IEnumerator UpdateAllCo;
-
-		private static IEnumerator PreviewKeyCo;
+		//private static IEnumerator PreviewKeyCo;
 
 		internal static void UpdateKeys(bool avoidwait = false)
 		{
@@ -257,4 +256,6 @@ namespace ShapekeyMaster
 		}
 		*/
 	}
+
+
 }

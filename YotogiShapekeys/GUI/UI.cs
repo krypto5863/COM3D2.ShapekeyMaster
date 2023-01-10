@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static ShapekeyMaster.MyGUI.Helpers;
+using static RootMotion.FinalIK.IKSolverVR;
+using static ShapekeyMaster.MyGUI.UIToolbox;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace ShapekeyMaster
 {
@@ -54,6 +56,8 @@ namespace ShapekeyMaster
 		private static bool ExportMenuOpen;
 
 		public static Rect windowRect = new Rect(Screen.width / 3, Screen.height / 4, Screen.width / 3f, Screen.height / 1.5f);
+		private static Rect dragWindow = new Rect(0, 0, 10000, 20);
+		private static Rect closeButton = new Rect(0, 0, 25, 15);
 		private static int currentHeight = 0;
 		private static int currentWidth = 0;
 
@@ -73,24 +77,24 @@ namespace ShapekeyMaster
 			{
 				seperator = new GUIStyle(GUI.skin.horizontalSlider);
 				seperator.fixedHeight = 1f;
-				seperator.normal.background = MyGUI.Helpers.MakeTex(2, 2, new Color(0, 0, 0, 0.8f));
+				seperator.normal.background = MyGUI.UIToolbox.MakeTex(2, 2, new Color(0, 0, 0, 0.8f));
 				seperator.margin.top = 10;
 				seperator.margin.bottom = 10;
 
 				MainWindow = new GUIStyle(GUI.skin.window);
-				MainWindow.normal.background = MyGUI.Helpers.MakeWindowTex(new Color(0, 0, 0, 0.05f), new Color(0, 0, 0, 0.5f));
+				MainWindow.normal.background = MyGUI.UIToolbox.MakeWindowTex(new Color(0, 0, 0, 0.05f), new Color(0, 0, 0, 0.5f));
 				MainWindow.normal.textColor = new Color(1, 1, 1, 0.05f);
-				MainWindow.hover.background = MyGUI.Helpers.MakeWindowTex(new Color(0.3f, 0.3f, 0.3f, 0.3f), new Color(1, 0, 0, 0.5f));
+				MainWindow.hover.background = MyGUI.UIToolbox.MakeWindowTex(new Color(0.3f, 0.3f, 0.3f, 0.3f), new Color(1, 0, 0, 0.5f));
 				MainWindow.hover.textColor = new Color(1, 1, 1, 0.3f);
-				MainWindow.onNormal.background = MyGUI.Helpers.MakeWindowTex(new Color(0.3f, 0.3f, 0.3f, 0.6f), new Color(1, 0, 0, 0.5f));
+				MainWindow.onNormal.background = MyGUI.UIToolbox.MakeWindowTex(new Color(0.3f, 0.3f, 0.3f, 0.6f), new Color(1, 0, 0, 0.5f));
 
 				Sections = new GUIStyle(GUI.skin.box);
-				Sections.normal.background = MyGUI.Helpers.MakeTex(2, 2, new Color(0, 0, 0, 0.3f));
+				Sections.normal.background = MyGUI.UIToolbox.MakeTex(2, 2, new Color(0, 0, 0, 0.3f));
 				Sections2 = new GUIStyle(GUI.skin.box);
-				Sections2.normal.background = MyGUI.Helpers.MakeTexWithRoundedCorner(new Color(0, 0, 0, 0.6f));
+				Sections2.normal.background = MyGUI.UIToolbox.MakeTexWithRoundedCorner(new Color(0, 0, 0, 0.6f));
 
 				ShineSections = new GUIStyle(GUI.skin.box);
-				ShineSections.normal.background = MyGUI.Helpers.MakeTex(2, 2, new Color(0.92f, 0.74f, 0.2f, 0.3f));
+				ShineSections.normal.background = MyGUI.UIToolbox.MakeTex(2, 2, new Color(0.92f, 0.74f, 0.2f, 0.3f));
 
 				BlacklistedButton = new GUIStyle(GUI.skin.button);
 				BlacklistedButton.normal.textColor = Color.red;
@@ -124,12 +128,20 @@ namespace ShapekeyMaster
 				currentWidth = Screen.width;
 			}
 
-			windowRect = GUILayout.Window(WindowID, windowRect, GuiWindowControls, "ShapekeyMaster", MainWindow);
+			windowRect = GUILayout.Window(WindowID, windowRect, GuiWindowControls, Main.CurrentLanguage["title"], MainWindow);
 		}
 
 		private static void GuiWindowControls(int windowID)
 		{
-			GUI.DragWindow(new Rect(0, 0, 10000, 20));
+			closeButton.x = windowRect.width - (closeButton.width + 5);
+			dragWindow.width = windowRect.width - (closeButton.width + 5);
+
+			GUI.DragWindow(dragWindow);
+
+			if (GUI.Button(closeButton, "X"))
+			{
+				Main.enablegui = false;
+			}
 
 			scrollPosition = GUILayout.BeginScrollView(scrollPosition);
 
@@ -172,7 +184,7 @@ namespace ShapekeyMaster
 
 				DisplayHeaderMenu();
 
-				Main.SimpleMode.Value = GUILayout.Toggle(Main.SimpleMode.Value, "Simple");
+				Main.SimpleMode.Value = GUILayout.Toggle(Main.SimpleMode.Value, Main.CurrentLanguage["simple"]);
 
 				switch (TabSelection)
 				{
@@ -200,13 +212,13 @@ namespace ShapekeyMaster
 						break;
 
 					case 2:
-						Main.HideInactiveMaids.Value = GUILayout.Toggle(Main.HideInactiveMaids.Value, "Hide Inactive Maids");
+						Main.HideInactiveMaids.Value = GUILayout.Toggle(Main.HideInactiveMaids.Value, Main.CurrentLanguage["hideInactiveMaids"]);
 
 						GUILayout.BeginVertical(Sections);
 
 						GUILayout.BeginHorizontal(Sections2);
 						GUILayout.FlexibleSpace();
-						GUILayout.Label("Maids");
+						GUILayout.Label(Main.CurrentLanguage["maids"]);
 						GUILayout.FlexibleSpace();
 						GUILayout.EndHorizontal();
 
@@ -244,17 +256,17 @@ namespace ShapekeyMaster
 			GUILayout.EndScrollView();
 
 			DisplayFooter();
-			ShapekeyMaster.MyGUI.Helpers.ChkMouseClick(windowRect);
+			ShapekeyMaster.MyGUI.UIToolbox.ChkMouseClick(windowRect);
 		}
 
 		private static void DisplayHeaderMenu()
 		{
 			GUILayout.BeginHorizontal(Sections2);
 
-			var modeLabel = entryComparer.Mode == 0 ? "Date" : entryComparer.Mode == 1 ? "Name" : "Shapekey";
+			var modeLabel = entryComparer.Mode == 0 ? Main.CurrentLanguage["date"] : entryComparer.Mode == 1 ? Main.CurrentLanguage["name"] : Main.CurrentLanguage["shapekey"];
 			var ascendLabel = entryComparer.Ascending ? "↑" : "↓";
 
-			GUILayout.Label("Sort By:");
+			GUILayout.Label(Main.CurrentLanguage["sortBy"] + ":");
 			if (GUILayout.Button(modeLabel))
 			{
 				++entryComparer.Mode;
@@ -266,17 +278,17 @@ namespace ShapekeyMaster
 
 			GUILayout.FlexibleSpace();
 
-			if (GUILayout.Button("All"))
+			if (GUILayout.Button(Main.CurrentLanguage["all"]))
 			{
 				Page = 0;
 				TabSelection = 0;
 			}
-			else if (GUILayout.Button("Globals"))
+			else if (GUILayout.Button(Main.CurrentLanguage["globals"]))
 			{
 				Page = 0;
 				TabSelection = 1;
 			}
-			else if (GUILayout.Button("Maids"))
+			else if (GUILayout.Button(Main.CurrentLanguage["maids"]))
 			{
 				Page = 0;
 				TabSelection = 2;
@@ -293,34 +305,34 @@ namespace ShapekeyMaster
 
 			if (OpenSKMenu != Guid.Empty)
 			{
-				FilterCommonKeys = GUILayout.Toggle(FilterCommonKeys, "Filter Common Keys");
+				FilterCommonKeys = GUILayout.Toggle(FilterCommonKeys, Main.CurrentLanguage["filterCommonKeys"]);
 
-				HideBlacklistedKeys = GUILayout.Toggle(HideBlacklistedKeys, "Hide Blacklisted Keys");
+				HideBlacklistedKeys = GUILayout.Toggle(HideBlacklistedKeys, Main.CurrentLanguage["hideBlacklistedKeys"]);
 			}
 
 			GUILayout.FlexibleSpace();
 
-			GUILayout.Label("Search by ");
+			GUILayout.Label(Main.CurrentLanguage["searchBy"] + ":");
 
 			if (NoModes == false)
 			{
 				if (FilterMode == 0)
 				{
-					if (GUILayout.Button("Entry Name"))
+					if (GUILayout.Button(Main.CurrentLanguage["name"]))
 					{
 						FilterMode = 1;
 					}
 				}
 				else if (FilterMode == 1)
 				{
-					if (GUILayout.Button("Maid Name"))
+					if (GUILayout.Button(Main.CurrentLanguage["maid"]))
 					{
 						FilterMode = 2;
 					}
 				}
 				else if (FilterMode == 2)
 				{
-					if (GUILayout.Button("Shapekey Name"))
+					if (GUILayout.Button(Main.CurrentLanguage["shapekey"]))
 					{
 						FilterMode = 0;
 					}
@@ -340,7 +352,7 @@ namespace ShapekeyMaster
 			switch (TabSelection)
 			{
 				case 1:
-					headerString = "Globals";
+					headerString = Main.CurrentLanguage["globals"];
 					applicantcount = SKDatabase.GlobalShapekeyDictionary().Count;
 					break;
 
@@ -350,7 +362,7 @@ namespace ShapekeyMaster
 					break;
 
 				default:
-					headerString = "All";
+					headerString = Main.CurrentLanguage["all"];
 					applicantcount = SKDatabase.AllShapekeyDictionary.Count;
 					break;
 			}
@@ -378,7 +390,7 @@ namespace ShapekeyMaster
 			GUILayout.BeginVertical(Sections2);
 			if (ExportMenuOpen)
 			{
-				if (GUILayout.Button("Cancel"))
+				if (GUILayout.Button(Main.CurrentLanguage["cancel"]))
 				{
 					ExportMenuOpen = false;
 				}
@@ -386,7 +398,7 @@ namespace ShapekeyMaster
 			else
 			{
 				GUILayout.BeginHorizontal();
-				if (GUILayout.Button("Reload"))
+				if (GUILayout.Button(Main.CurrentLanguage["reload"]))
 				{
 					OpenSKMenu = Guid.Empty;
 					OpenMaidMenu = Guid.Empty;
@@ -400,7 +412,7 @@ namespace ShapekeyMaster
 
 					return;
 				}
-				if (GUILayout.Button("Save"))
+				if (GUILayout.Button(Main.CurrentLanguage["save"]))
 				{
 #if (DEBUG)
 					Main.logger.LogDebug("Saving data to configs now!");
@@ -410,11 +422,11 @@ namespace ShapekeyMaster
 				}
 				GUILayout.EndHorizontal();
 				GUILayout.BeginHorizontal();
-				if (GUILayout.Button("Export"))
+				if (GUILayout.Button(Main.CurrentLanguage["export"]))
 				{
 					ExportMenuOpen = true;
 				}
-				if (GUILayout.Button("Import"))
+				if (GUILayout.Button(Main.CurrentLanguage["import"]))
 				{
 					SKDatabase.ConcatenateDictionary(Main.LoadFromJson(null, true).AllShapekeyDictionary);
 
@@ -433,7 +445,7 @@ namespace ShapekeyMaster
 			{
 				if (Main.HideInactiveMaids.Value)
 				{
-					if (!HelperClasses.IsMaidActive(MaidWithKey))
+					if (!Extensions.IsMaidActive(MaidWithKey))
 					{
 						continue;
 					}
@@ -480,17 +492,17 @@ namespace ShapekeyMaster
 					return;
 				}
 
-				if (GUILayout.Button("Rename"))
+				if (GUILayout.Button(Main.CurrentLanguage["rename"]))
 				{
 					MaidGroupRenameMenu = MaidWithKey;
 					MaidGroupRename = MaidGroupRenameMenu;
 
-					MaidNameList = HelperClasses.GetNameOfAllMaids().ToList();
+					MaidNameList = Extensions.GetNameOfAllMaids().ToList();
 
 					return;
 				}
 
-				if (GUILayout.Button("Del"))
+				if (GUILayout.Button(Main.CurrentLanguage["delete"]))
 				{
 					foreach (ShapeKeyEntry skp in SKDatabase.ShapekeysByMaid(MaidWithKey).Values)
 					{
@@ -553,9 +565,9 @@ namespace ShapekeyMaster
 				GUILayout.EndVertical();
 			}
 
-			if (GUILayout.Button("New Maid Group"))
+			if (GUILayout.Button(Main.CurrentLanguage["newMaidGroup"]))
 			{
-				MaidNameList = HelperClasses.GetNameOfAllMaids().ToList();
+				MaidNameList = Extensions.GetNameOfAllMaids().ToList();
 
 				MaidGroupCreateOpen = true;
 
@@ -616,15 +628,15 @@ namespace ShapekeyMaster
 				{
 					if (String.IsNullOrEmpty(s.Maid))
 					{
-						ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
+						ShapekeysNameList = Extensions.GetAllShapeKeysFromAllMaids().ToList();
 					}
 					else
 					{
-						ShapekeysNameList = HelperClasses.GetAllShapeKeysFromMaid(HelperClasses.GetMaidByName(s.Maid)).ToList();
+						ShapekeysNameList = Extensions.GetMaidByName(s.Maid)?.GetAllShapeKeysFromMaid()?.ToList();
 
 						if (ShapekeysNameList == null || ShapekeysNameList.Count == 0)
 						{
-							ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
+							ShapekeysNameList = Extensions.GetAllShapeKeysFromAllMaids().ToList();
 						}
 					}
 
@@ -632,7 +644,6 @@ namespace ShapekeyMaster
 					Filter = oldSKMenuFilter;
 					oldPreSKMenuScrollPosition = scrollPosition;
 					scrollPosition = oldSKMenuScrollPosition;
-					//ShapekeysNameList.Sort();
 				}
 
 				s.ShapeKey = GUILayout.TextField(s.ShapeKey, GUILayout.Width(120));
@@ -645,25 +656,25 @@ namespace ShapekeyMaster
 
 				GUILayout.BeginHorizontal(Style);
 
-				if (GUILayout.Button($"Open Slot Conditions Menu"))
+				if (GUILayout.Button(Main.CurrentLanguage["openSlotCondMenu"]))
 				{
 					OpenSlotConditions = s.Id;
 					return;
 				}
 
-				s.ConditionalsToggle = GUILayout.Toggle(s.ConditionalsToggle, "Enable Conditionals");
+				s.ConditionalsToggle = GUILayout.Toggle(s.ConditionalsToggle, Main.CurrentLanguage["enableConditionals"]);
 
 				GUILayout.FlexibleSpace();
 
 				string cateNameLabel = !String.IsNullOrEmpty(s.EntryName) ? s.EntryName : "";
 				cateNameLabel += TabSelection == 0 && !String.IsNullOrEmpty(cateNameLabel) ? " | " : "";
-				cateNameLabel += TabSelection == 0 ? String.IsNullOrEmpty(s.Maid) ? "Global" : s.Maid : "";
+				cateNameLabel += TabSelection == 0 ? String.IsNullOrEmpty(s.Maid) ? Main.CurrentLanguage["global"] : s.Maid : "";
 
 				GUILayout.Label(cateNameLabel);
 
 				GUILayout.FlexibleSpace();
 
-				if (GUILayout.Button($"Del"))
+				if (GUILayout.Button(Main.CurrentLanguage["delete"]))
 				{
 					SKDatabase.Remove(s);
 					return;
@@ -691,7 +702,7 @@ namespace ShapekeyMaster
 
 		private static void DisplayShapeKeyEntriesMenu(Dictionary<Guid, ShapeKeyEntry> GivenShapeKeys)
 		{
-			if (TabSelection != 2 && GUILayout.Button("Add New Shapekey"))
+			if (TabSelection != 2 && GUILayout.Button(Main.CurrentLanguage["addNewShapekey"]))
 			{
 #if (DEBUG)
 				Main.logger.LogDebug("I've been clicked! Oh the humanity!!");
@@ -758,12 +769,12 @@ namespace ShapekeyMaster
 					}
 					GUILayout.EndHorizontal();
 
-					s.Enabled = GUILayout.Toggle(s.Enabled, $"Enable");
+					s.Enabled = GUILayout.Toggle(s.Enabled, Main.CurrentLanguage["enable"]);
 					GUILayout.BeginHorizontal();
 					GUILayout.FlexibleSpace();
-					GUILayout.Label("ShapeKey", GUILayout.Width(200));
+					GUILayout.Label(Main.CurrentLanguage["shapekey"], GUILayout.Width(200));
 					GUILayout.FlexibleSpace();
-					GUILayout.Label("Maid (Optional)", GUILayout.Width(200));
+					GUILayout.Label(Main.CurrentLanguage["maidOptional"], GUILayout.Width(200));
 					GUILayout.FlexibleSpace();
 					GUILayout.EndHorizontal();
 
@@ -775,15 +786,15 @@ namespace ShapekeyMaster
 						OpenSKMenu = s.Id;
 						if (String.IsNullOrEmpty(s.Maid))
 						{
-							ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
+							ShapekeysNameList = Extensions.GetAllShapeKeysFromAllMaids().ToList();
 						}
 						else
 						{
-							ShapekeysNameList = HelperClasses.GetAllShapeKeysFromMaid(HelperClasses.GetMaidByName(s.Maid)).ToList();
+							ShapekeysNameList = Extensions.GetMaidByName(s.Maid)?.GetAllShapeKeysFromMaid()?.ToList();
 
 							if (ShapekeysNameList == null || ShapekeysNameList.Count == 0)
 							{
-								ShapekeysNameList = HelperClasses.GetAllShapeKeysFromAllMaids().ToList();
+								ShapekeysNameList = Extensions.GetAllShapeKeysFromAllMaids().ToList();
 							}
 						}
 
@@ -802,7 +813,7 @@ namespace ShapekeyMaster
 					if (GUILayout.Button("+"))
 					{
 						OpenMaidMenu = s.Id;
-						MaidNameList = HelperClasses.GetNameOfAllMaids().ToList();
+						MaidNameList = Extensions.GetNameOfAllMaids().ToList();
 						return;
 					}
 					GUILayout.Label(s.Maid, GUILayout.Width(200));
@@ -813,67 +824,67 @@ namespace ShapekeyMaster
 
 					//s.SetAnimateWithOrgasm(GUILayout.Toggle(s.GetAnimateWithOrgasm(), $"Animate during orgasm"));
 
-					s.Animate = GUILayout.Toggle(s.Animate, $"Animate");
+					s.Animate = GUILayout.Toggle(s.Animate, Main.CurrentLanguage["animate"]);
 
-					s.AnimateWithExcitement = GUILayout.Toggle(s.AnimateWithExcitement, $"Animate with yotogi excitement");
+					s.AnimateWithExcitement = GUILayout.Toggle(s.AnimateWithExcitement, Main.CurrentLanguage["animateWithYotogiExcitement"]);
 
 					if (s.Animate)
 					{
-						GUILayout.Label($"Animation speed = (1000 ms / {s.AnimationPollFloat * 1000} ms) x {s.AnimationRate} = {1000 / (s.AnimationPollFloat * 1000) * s.AnimationRateFloat} %/Second");
-						GUILayout.Label($"Shapekey Deformation: {s.Deform}");
+						GUILayout.Label($"{Main.CurrentLanguage["animationSpeed"]} = (1000 ms / {s.AnimationPollFloat * 1000} ms) x {s.AnimationRate} = {1000 / (s.AnimationPollFloat * 1000) * s.AnimationRateFloat} %/{Main.CurrentLanguage["seconds"]}");
+						GUILayout.Label($"{Main.CurrentLanguage["shapekeyDeformation"]}: {s.Deform}");
 						s.Deform = (GUILayout.HorizontalSlider(s.Deform, 0, Main.MaxDeform.Value));
-						GUILayout.Label($"Max Animation Deformation: {s.AnimationMaximum}");
+						GUILayout.Label($"{Main.CurrentLanguage["maxAnimationDeformation"]}: {s.AnimationMaximum}");
 						s.AnimationMaximum = Mathf.RoundToInt(GUILayout.HorizontalSlider(s.AnimationMaximum, s.AnimationMinimum, Main.MaxDeform.Value));
-						GUILayout.Label($"Minimum Animation Deformation: {s.AnimationMinimum}");
+						GUILayout.Label($"{Main.CurrentLanguage["minAnimationDeformation"]}: {s.AnimationMinimum}");
 						s.AnimationMinimum = Mathf.RoundToInt(GUILayout.HorizontalSlider(s.AnimationMinimum, 0, s.AnimationMaximum));
-						GUILayout.Label($"Animation Rate (Amount to increase/decrease deformation on poll): {s.AnimationRate}");
+						GUILayout.Label($"{Main.CurrentLanguage["animationRate"]}: {s.AnimationRate}");
 						GUILayout.BeginHorizontal();
 						//s.SetAnimationRate(GUILayout.HorizontalSlider(s.GetAnimationRate(), 0, 100).ToString());
 						s.AnimationRate = GUILayout.TextField(s.AnimationRate.ToString());
 						GUILayout.EndHorizontal();
-						GUILayout.Label($"Animation Polling Rate in Seconds (Lower = Faster): {s.AnimationPoll}");
+						GUILayout.Label($"{Main.CurrentLanguage["animationPollingRate"]}: {s.AnimationPoll}");
 						s.AnimationPoll = GUILayout.TextField(s.AnimationPoll.ToString());
 					}
 					else if (s.Animate == false && s.AnimateWithExcitement)
 					{
-						GUILayout.Label($"Max Excitement Threshold: {s.ExcitementMax}");
+						GUILayout.Label($"{Main.CurrentLanguage["maxExcitementThreshold"]}: {s.ExcitementMax}");
 						s.ExcitementMax = Mathf.RoundToInt(GUILayout.HorizontalSlider(s.ExcitementMax, s.ExcitementMin, 300.0F));
 
-						GUILayout.Label($"Min Excitement Threshold: {s.ExcitementMin}");
+						GUILayout.Label($"{Main.CurrentLanguage["minExcitementThreshold"]}: {s.ExcitementMin}");
 						s.ExcitementMin = Mathf.RoundToInt(GUILayout.HorizontalSlider(s.ExcitementMin, 0.0F, s.ExcitementMax));
 
-						GUILayout.Label($"Default Shapekey Deformation: {s.Deform}");
+						GUILayout.Label($"{Main.CurrentLanguage["defShapekeyDeformation"]}: {s.Deform}");
 						s.Deform = (Mathf.RoundToInt(GUILayout.HorizontalSlider(s.Deform, 0, Main.MaxDeform.Value)));
-						GUILayout.Label($"Max Shapekey Deformation: {s.DeformMax}");
+						GUILayout.Label($"{Main.CurrentLanguage["maxShapekeyDeformation"]}: {s.DeformMax}");
 						s.DeformMax = Mathf.RoundToInt(GUILayout.HorizontalSlider(s.DeformMax, s.DeformMin, Main.MaxDeform.Value));
-						GUILayout.Label($"Min Shapekey Deformation: {s.DeformMin}");
+						GUILayout.Label($"{Main.CurrentLanguage["minShapekeyDeformation"]}: {s.DeformMin}");
 						s.DeformMin = Mathf.RoundToInt(GUILayout.HorizontalSlider(s.DeformMin, 0.0F, s.DeformMax));
 					}
 					else
 					{
-						GUILayout.Label($"Shapekey Deformation: {s.Deform}");
+						GUILayout.Label($"{Main.CurrentLanguage["shapekeyDeformation"]}: {s.Deform}");
 						s.Deform = (Mathf.RoundToInt(GUILayout.HorizontalSlider(s.Deform, 0, Main.MaxDeform.Value)));
 					}
 
 					GUILayout.BeginHorizontal(Style);
 
-					if (GUILayout.Button($"Open Slot Conditions Menu"))
+					if (GUILayout.Button(Main.CurrentLanguage["openSlotCondMenu"]))
 					{
 						OpenSlotConditions = s.Id;
 						return;
 					}
 
-					s.ConditionalsToggle = GUILayout.Toggle(s.ConditionalsToggle, "Enable Conditionals");
+					s.ConditionalsToggle = GUILayout.Toggle(s.ConditionalsToggle, Main.CurrentLanguage["enableConditionals"]);
 
 					GUILayout.FlexibleSpace();
 
-					if (GUILayout.Button($"Rename"))
+					if (GUILayout.Button(Main.CurrentLanguage["rename"]))
 					{
 						OpenRenameMenu = s.Id;
 						return;
 					}
 
-					if (GUILayout.Button($"Delete"))
+					if (GUILayout.Button(Main.CurrentLanguage["delete"]))
 					{
 						SKDatabase.Remove(s);
 						return;
@@ -903,15 +914,25 @@ namespace ShapekeyMaster
 
 			GUILayout.BeginHorizontal();
 
-			GUILayout.Label($"{s.EntryName} Select ShapeKey");
+			GUILayout.Label($"{s.EntryName}: {Main.CurrentLanguage["selectShapekey"]}");
 
 			GUILayout.FlexibleSpace();
 
-			GUILayout.Label($"R-Click To Blacklist!");
+			GUILayout.Label(Main.CurrentLanguage["rclickToBlacklist"]);
 
 			GUILayout.EndHorizontal();
 
-			if (GUILayout.Button("None"))
+			if (GUILayout.Button(Main.CurrentLanguage["finish"]))
+			{
+				OpenSKMenu = Guid.Empty;
+				oldSKMenuFilter = Filter;
+				oldSKMenuScrollPosition = scrollPosition;
+				scrollPosition = oldPreSKMenuScrollPosition;
+
+				Filter = "";
+			}
+
+			if (GUILayout.Button(Main.CurrentLanguage["none"]))
 			{
 				OpenSKMenu = Guid.Empty;
 				oldSKMenuFilter = Filter;
@@ -926,19 +947,19 @@ namespace ShapekeyMaster
 			int totalGroupsWorked = 0;
 
 			var groupedKeys = ShapekeysNameList
-				.GroupBy(r => r.First)
+				.GroupBy(r => r.item1)
 				.OrderBy(r => r.Key);
 
 			var bodyKeys = groupedKeys
 				.Where(r => r.Key.Equals("body"))
 				.SelectMany(r => r)
-				.Select(t => t.Second)
+				.Select(t => t.item2)
 				.ToList();
 
 			var headKeys = groupedKeys
 				.Where(r => r.Key.Equals("head"))
 				.SelectMany(r => r)
-				.Select(t => t.Second)
+				.Select(t => t.item2)
 				.ToList();
 
 			foreach (var group in groupedKeys)
@@ -951,18 +972,18 @@ namespace ShapekeyMaster
 				{
 					if (group.Key.Equals("body") == false)
 					{
-						filteredList = filteredList.Where(t => !bodyKeys.Contains(t.Second)).ToList();
+						filteredList = filteredList.Where(t => !bodyKeys.Contains(t.item2)).ToList();
 					}
 
 					if (group.Key.Equals("head") == false)
 					{
-						filteredList = filteredList.Where(t => !headKeys.Contains(t.Second)).ToList();
+						filteredList = filteredList.Where(t => !headKeys.Contains(t.item2)).ToList();
 					}
 				}
 
 				if (HideBlacklistedKeys)
 				{
-					filteredList = filteredList.Where(t => SKDatabase.BlacklistedShapekeys.IsBlacklisted(t.Second) == false).ToList();
+					filteredList = filteredList.Where(t => SKDatabase.BlacklistedShapekeys.IsBlacklisted(t.item2) == false).ToList();
 				}
 
 				if (filteredList.Count > 0)
@@ -979,22 +1000,22 @@ namespace ShapekeyMaster
 					//Header for category
 					GUILayout.BeginHorizontal(Sections2);
 					GUILayout.FlexibleSpace();
-					GUILayout.Label($"{group.Key}");
+					GUILayout.Label(Main.CurrentLanguage[group.Key]);
 					GUILayout.FlexibleSpace();
 					GUILayout.EndHorizontal();
 
-					foreach (var str in filteredList.OrderBy(r => r.Second))
+					foreach (var str in filteredList.OrderBy(r => r.item2))
 					{
 						if (Filter != "")
 						{
-							if (str.Second.Contains(Filter, StringComparison.OrdinalIgnoreCase) == false)
+							if (str.item2.Contains(Filter, StringComparison.OrdinalIgnoreCase) == false)
 							{
 								continue;
 							}
 						}
 
-						var style = HideBlacklistedKeys == false && SKDatabase.BlacklistedShapekeys.IsBlacklisted(str.Second) ? BlacklistedButton : GUI.skin.button;
-						if (GUILayout.Button(str.Second, style))
+						var style = HideBlacklistedKeys == false && SKDatabase.BlacklistedShapekeys.IsBlacklisted(str.item2) ? BlacklistedButton : GUI.skin.button;
+						if (GUILayout.Button(str.item2, style))
 						{
 							/*
 							if (LastMouseButtonUp == 2)
@@ -1004,19 +1025,19 @@ namespace ShapekeyMaster
 							*/
 							if (LastMouseButtonUp == 1)
 							{
-								if (SKDatabase.BlacklistedShapekeys.IsBlacklisted(str.Second) == false)
+								if (SKDatabase.BlacklistedShapekeys.IsBlacklisted(str.item2) == false)
 								{
-									SKDatabase.BlacklistedShapekeys.AddItem(str.Second);
+									SKDatabase.BlacklistedShapekeys.AddItem(str.item2);
 								}
 								else
 								{
-									SKDatabase.BlacklistedShapekeys.RemoveItem(str.Second);
+									SKDatabase.BlacklistedShapekeys.RemoveItem(str.item2);
 								}
 							}
 							else if (LastMouseButtonUp == 0)
 							{
 								OpenSKMenu = Guid.Empty;
-								s.ShapeKey = str.Second;
+								s.ShapeKey = str.item2;
 								oldSKMenuFilter = Filter;
 								oldSKMenuScrollPosition = scrollPosition;
 								scrollPosition = oldPreSKMenuScrollPosition;
@@ -1040,20 +1061,20 @@ namespace ShapekeyMaster
 		{
 			DisplaySearchMenu(true);
 
-			GUILayout.Label($"{s.EntryName} Select Maid");
+			GUILayout.Label($"{s.EntryName} {Main.CurrentLanguage["selectMaid"]}");
 
 			GUILayout.BeginHorizontal(Sections2);
 
 			s.Maid = GUILayout.TextField(s.Maid, GUILayout.Width(200));
 
-			if (GUILayout.Button("Finish", GUILayout.Width(80)))
+			if (GUILayout.Button(Main.CurrentLanguage["finish"], GUILayout.Width(80)))
 			{
 				OpenMaidMenu = Guid.Empty;
 			}
 
 			GUILayout.EndHorizontal();
 
-			if (GUILayout.Button("None"))
+			if (GUILayout.Button(Main.CurrentLanguage["none"]))
 			{
 				OpenMaidMenu = Guid.Empty;
 				s.Maid = "";
@@ -1083,9 +1104,9 @@ namespace ShapekeyMaster
 		{
 			DisplaySearchMenu(true);
 
-			GUILayout.Label($"Select Maid To Make New Group For...");
+			GUILayout.Label(Main.CurrentLanguage["selectNewMaidGroup"]);
 
-			if (GUILayout.Button("None"))
+			if (GUILayout.Button(Main.CurrentLanguage["none"]))
 			{
 				int i = 0;
 
@@ -1129,11 +1150,11 @@ namespace ShapekeyMaster
 
 		private static void DisplayRenameMenu(ShapeKeyEntry s)
 		{
-			GUILayout.Label($"Now renaming {s.EntryName}");
+			GUILayout.Label($"{Main.CurrentLanguage["nowRenaming"]} {s.EntryName}");
 
 			s.EntryName = GUILayout.TextField(s.EntryName);
 
-			if (GUILayout.Button("Finish"))
+			if (GUILayout.Button(Main.CurrentLanguage["finish"]))
 			{
 				OpenRenameMenu = Guid.Empty;
 			}
@@ -1145,42 +1166,41 @@ namespace ShapekeyMaster
 
 			GUILayout.BeginHorizontal(Sections2);
 			GUILayout.FlexibleSpace();
-			GUILayout.Label("General Settings");
+			GUILayout.Label(Main.CurrentLanguage["generalSettings"]);
 			GUILayout.FlexibleSpace();
 			GUILayout.EndHorizontal();
 
-			s.ConditionalsToggle = GUILayout.Toggle(s.ConditionalsToggle, "Enable Conditionals");
+			s.ConditionalsToggle = GUILayout.Toggle(s.ConditionalsToggle, Main.CurrentLanguage["enableConditionals"]);
 
-			s.IgnoreCategoriesWithShapekey = GUILayout.Toggle(s.IgnoreCategoriesWithShapekey, "Ignore Categories With Shapekey");
+			s.IgnoreCategoriesWithShapekey = GUILayout.Toggle(s.IgnoreCategoriesWithShapekey, Main.CurrentLanguage["ignoreCateWithKey"]);
 
 			if (s.DisableWhen)
 			{
-				s.DisableWhen = GUILayout.Toggle(s.DisableWhen, "Set Shapekey if");
+				s.DisableWhen = GUILayout.Toggle(s.DisableWhen, Main.CurrentLanguage["setShapekeyIf"]);
 			}
 			else
 			{
-				s.DisableWhen = GUILayout.Toggle(s.DisableWhen, "Do Not Set Shapekey if");
+				s.DisableWhen = GUILayout.Toggle(s.DisableWhen, Main.CurrentLanguage["doNotSetShapekeyIf"]);
 			}
 
-			GUILayout.Label("Disabled Key Deform");
+			GUILayout.Label(Main.CurrentLanguage["disabledKeyDeform"]);
 			s.DisabledDeform = GUILayout.HorizontalSlider(s.DisabledDeform, 0, Main.MaxDeform.Value);
 
 			if (s.WhenAll)
 			{
-				s.WhenAll = GUILayout.Toggle(s.WhenAll, "If All in Slots is Equipped");
+				s.WhenAll = GUILayout.Toggle(s.WhenAll, Main.CurrentLanguage["ifAllSlotsEquipped"]);
 			}
 			else
 			{
-				s.WhenAll = GUILayout.Toggle(s.WhenAll, "If Any in Slots is Equipped");
+				s.WhenAll = GUILayout.Toggle(s.WhenAll, Main.CurrentLanguage["ifAnySlotEquipped"]);
 			}
-
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginVertical(Sections);
 
 			GUILayout.BeginHorizontal(Sections2);
 			GUILayout.FlexibleSpace();
-			GUILayout.Label("Slots");
+			GUILayout.Label(Main.CurrentLanguage["slots"]);
 			GUILayout.FlexibleSpace();
 			GUILayout.EndHorizontal();
 
@@ -1193,7 +1213,7 @@ namespace ShapekeyMaster
 					GUILayout.BeginHorizontal();
 				}
 
-				var temp = GUILayout.Toggle(HelperClasses.HasFlag(s.SlotFlags, slot), slot.ToString(), GUILayout.Width(100));
+				var temp = GUILayout.Toggle(Extensions.HasFlag(s.SlotFlags, slot), Main.CurrentLanguage[SlotChecker.SlotToSlotList[slot].ToString()], GUILayout.Width(100));
 
 				if (i++ == 4)
 				{
@@ -1222,7 +1242,7 @@ namespace ShapekeyMaster
 
 			GUILayout.BeginHorizontal(Sections2);
 			GUILayout.FlexibleSpace();
-			GUILayout.Label("Menu Files");
+			GUILayout.Label(Main.CurrentLanguage["menuFiles"]);
 			GUILayout.FlexibleSpace();
 			GUILayout.EndHorizontal();
 
@@ -1247,14 +1267,14 @@ namespace ShapekeyMaster
 
 			GUILayout.EndScrollView();
 
-			if (GUILayout.Button("Add New Menu File"))
+			if (GUILayout.Button(Main.CurrentLanguage["addNewMenuFile"]))
 			{
 				s.MenuFileConditionals[Guid.NewGuid()] = "";
 			}
 
 			GUILayout.EndVertical();
 
-			if (GUILayout.Button("Finish"))
+			if (GUILayout.Button(Main.CurrentLanguage["finish"]))
 			{
 				OpenSlotConditions = Guid.Empty;
 			}
@@ -1264,13 +1284,13 @@ namespace ShapekeyMaster
 		{
 			DisplaySearchMenu(true);
 
-			GUILayout.Label($"Now renaming maid group: {s}");
+			GUILayout.Label($"{Main.CurrentLanguage["renamingMaidGroup"]}: {s}");
 
 			GUILayout.BeginHorizontal();
 
 			MaidGroupRename = GUILayout.TextField(MaidGroupRename);
 
-			if (GUILayout.Button("Apply"))
+			if (GUILayout.Button(Main.CurrentLanguage["apply"]))
 			{
 				SKDatabase.AllShapekeyDictionary.Values.ToList().ForEach(sk =>
 				{
@@ -1316,11 +1336,11 @@ namespace ShapekeyMaster
 
 		private static void DisplayExportMenu()
 		{
-			Main.HideInactiveMaids.Value = GUILayout.Toggle(Main.HideInactiveMaids.Value, "Hide Inactive Maids");
+			Main.HideInactiveMaids.Value = GUILayout.Toggle(Main.HideInactiveMaids.Value, Main.CurrentLanguage["hideInactiveMaids"]);
 
-			if (Main.HideInactiveMaids.Value == false && GUILayout.Button("All"))
+			if (Main.HideInactiveMaids.Value == false && GUILayout.Button(Main.CurrentLanguage["all"]))
 			{
-				Main.logger.LogMessage("Exporting All");
+				Main.logger.LogMessage(Main.CurrentLanguage["exportingAll"]);
 
 				Main.SaveToJson(null, SKDatabase, true);
 			}
@@ -1332,11 +1352,11 @@ namespace ShapekeyMaster
 				ThingsToExport["global"] = false;
 			}
 
-			ThingsToExport["global"] = GUILayout.Toggle(ThingsToExport["global"], "Global");
+			ThingsToExport["global"] = GUILayout.Toggle(ThingsToExport["global"], Main.CurrentLanguage["global"]);
 
 			foreach (string m in SKDatabase.ListOfMaidsWithKeys())
 			{
-				if (Main.HideInactiveMaids.Value == false || HelperClasses.IsMaidActive(m))
+				if (Main.HideInactiveMaids.Value == false || Extensions.IsMaidActive(m))
 				{
 					if (ThingsToExport.ContainsKey(m) == false)
 					{
@@ -1349,7 +1369,7 @@ namespace ShapekeyMaster
 
 			GUILayout.EndVertical();
 
-			if (GUILayout.Button("Done"))
+			if (GUILayout.Button(Main.CurrentLanguage["done"]))
 			{
 				var SelectionDataBase = new ShapekeyDatabase();
 

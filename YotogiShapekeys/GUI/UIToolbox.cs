@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ShapekeyMaster.MyGUI
 {
-	internal class Helpers
+	internal class UIToolbox
 	{
 		public static int LastMouseButtonUp { private set; get; } = -1;
 
@@ -155,6 +155,9 @@ namespace ShapekeyMaster.MyGUI
 			return result;
 		}
 
+		/// <summary>
+		/// This whole class is used to compare our classes for sorting via LINQ OrderBy which is what we use to populate the UI.
+		/// </summary>
 		public class ShapekeyEntryComparer : IComparer<ShapeKeyEntry>
 		{
 			public bool Ascending = true;

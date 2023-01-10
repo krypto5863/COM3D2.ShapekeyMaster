@@ -233,6 +233,11 @@ namespace ShapekeyMaster
 
 		internal void ConcatenateDictionary(Dictionary<Guid, ShapeKeyEntry> newDictionary, bool overwrite = false)
 		{
+			if (newDictionary is null) 
+			{
+				return;
+			}
+
 			if (!overwrite)
 			{
 				allShapekeyDictionary = new Dictionary<Guid, ShapeKeyEntry>(

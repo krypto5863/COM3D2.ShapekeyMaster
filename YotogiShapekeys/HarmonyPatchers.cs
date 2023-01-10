@@ -130,7 +130,7 @@ namespace ShapekeyMaster
 						Main.logger.LogDebug($"Applying Excitement Deformation @ {__instance.bodyskin.body.maid.status.fullNameJpStyle} :: {__instance.Category} ::: {shapeKeyEntry.EntryName} :::: {shapeKeyEntry.ShapeKey}");
 #endif
 
-						var deform = HelperClasses.CalculateExcitementDeformation(shapeKeyEntry);
+						var deform = Extensions.CalculateExcitementDeformation(shapeKeyEntry);
 
 						__instance.BlendValues[index] = deform / 100;
 						__instance.BlendValuesBackup[index] = deform / 100;
@@ -202,7 +202,7 @@ namespace ShapekeyMaster
 		[HarmonyPrefix]
 		public static bool InputCheck()
 		{
-			if (MyGUI.Helpers.IsMouseOnGUI())
+			if (MyGUI.UIToolbox.IsMouseOnGUI())
 			{
 				return false;
 			}

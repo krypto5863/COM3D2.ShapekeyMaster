@@ -22,17 +22,18 @@ namespace ShapekeyMaster
 				{
 					enabled = value;
 
-					if (animate && !enabled)
+					if (animate)
 					{
-						if (Animator != null)
+						if (!enabled && Animator != null)
 						{
 							Main.@this.StopCoroutine(Animator);
+							Animator = null;
 						}
-					}
-					else if (animate)
-					{
-						Animator = AnimateCoRoute(this);
-						Main.@this.StartCoroutine(Animator);
+						else if (enabled && Animator == null)
+						{
+							Animator = AnimateCoRoute(this);
+							Main.@this.StartCoroutine(Animator);
+						}
 					}
 
 					RunUpdate();
@@ -127,6 +128,7 @@ namespace ShapekeyMaster
 					if (value == false)
 					{
 						Main.@this.StopCoroutine(Animator);
+						Animator = null;
 					}
 					else
 					{
@@ -388,7 +390,6 @@ namespace ShapekeyMaster
 		}
 
 		private DisableWhenEquipped slotFlags;
-
 		public DisableWhenEquipped SlotFlags
 		{
 			get => slotFlags;
@@ -483,7 +484,7 @@ namespace ShapekeyMaster
 			{
 				if (key.animate == true)
 				{
-					if (key.enabled && HelperClasses.IsMaidActive(key.maid))
+					if (key.enabled && Extensions.IsMaidActive(key.maid))
 					{
 						if (key.deform >= key.animationMaximum)
 						{
@@ -540,5 +541,6 @@ namespace ShapekeyMaster
 				}
 			}
 		}
+
 	}
 }

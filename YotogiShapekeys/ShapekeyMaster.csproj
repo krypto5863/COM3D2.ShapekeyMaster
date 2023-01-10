@@ -38,22 +38,14 @@
   <ItemGroup>
     <Compile Include="ShapekeyBlacklist.cs" />
     <Compile Include="ShapekeyUpdate.cs" />
-    <Compile Include="SlotsFlags.cs" />
-    <Compile Include="SMEventsAndArgs.cs" />
-    <None Include="0Old\PropsMenu.cs" />
+    <Compile Include="CategorySlotHandler.cs" />
+    <Compile Include="TranslationResource.cs" />
     <Compile Include="HarmonyPatchers.cs" />
-    <Compile Include="HelperClasses.cs" />
-    <None Include="0Old\PrivateSettersContractResolver.cs" />
-    <Compile Include="MyGUI\Helpers.cs" />
-    <None Include="1Old\ShapekeyChangeForm.cs" />
+    <Compile Include="Toolbox.cs" />
+    <Compile Include="GUI\UIToolbox.cs" />
     <Compile Include="ShapekeyDatabase.cs" />
     <Compile Include="ShapeKeyEntry.cs" />
-    <None Include="0Old\BlendShapeFetcherSetter.cs" />
-    <None Include="0Old\ShapekeyFetcherSetter - Original.cs" />
-    <None Include="0Old\0Old1ShapekeyFetcherSetter.cs" />
-    <None Include="1Old\ShapekeyFetcherSetter.cs" />
-    <Compile Include="MyGUI\UI.cs" />
-    <None Include="1Old\HarmonyPatchers.cs" />
+    <Compile Include="GUI\UI.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="packages.config" />
