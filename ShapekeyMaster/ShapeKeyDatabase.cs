@@ -4,9 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ShapekeyMaster
+namespace ShapeKeyMaster
 {
-	internal class ShapekeyDatabase
+	internal class ShapeKeyDatabase
 	{
 		[JsonIgnore]
 		private Dictionary<Guid, ShapeKeyEntry> allShapekeyDictionary;
@@ -18,11 +18,11 @@ namespace ShapekeyMaster
 		private Dictionary<Guid, ShapeKeyEntry> globalShapekeyDictionary;
 
 		[JsonProperty]
-		public ShapekeyBlacklist BlacklistedShapekeys { get; internal set; } = new ShapekeyBlacklist();
+		public ShapeKeyBlacklist BlacklistedShapeKeys { get; internal set; } = new ShapeKeyBlacklist();
 
 		//These below handle morph specifics. They're important because they shorthand alot of the work involved tremendously.
 		[JsonIgnore]
-		private List<TMorph> ListOfActiveMorphs = ShapekeyUpdate.ListOfActiveMorphs;
+		private List<TMorph> ListOfActiveMorphs = ShapeKeyUpdate.ListOfActiveMorphs;
 
 		[JsonIgnore]
 		private Dictionary<TMorph, HashSet<ShapeKeyEntry>> morphShapekeyDictionary;
@@ -30,10 +30,7 @@ namespace ShapekeyMaster
 		[JsonProperty]
 		public Dictionary<Guid, ShapeKeyEntry> AllShapekeyDictionary
 		{
-			get
-			{
-				return allShapekeyDictionary;
-			}
+			get => allShapekeyDictionary;
 			set
 			{
 				allShapekeyDictionary = value;
@@ -56,11 +53,11 @@ namespace ShapekeyMaster
 			return maidShapekeyDictionary.Keys.ToList();
 		}
 
-		internal ShapekeyDatabase()
+		internal ShapeKeyDatabase()
 		{
 			allShapekeyDictionary = new Dictionary<Guid, ShapeKeyEntry>();
 			morphShapekeyDictionary = new Dictionary<TMorph, HashSet<ShapeKeyEntry>>();
-			HarmonyPatchers.MorphEvent += (s, e) => Main.@this.StartCoroutine(UpdateMorphDic(e));
+			HarmonyPatchers.MorphEvent += (s, e) => ShapeKeyMaster.instance.StartCoroutine(UpdateMorphDic(e));
 
 			RefreshSubDictionaries();
 		}
@@ -69,9 +66,9 @@ namespace ShapekeyMaster
 		{
 			maidShapekeyDictionary = new Dictionary<string, List<ShapeKeyEntry>>();
 
-			foreach (ShapeKeyEntry shapeKeyEntry in allShapekeyDictionary.Values)
+			foreach (var shapeKeyEntry in allShapekeyDictionary.Values)
 			{
-				if (String.IsNullOrEmpty(shapeKeyEntry.Maid))
+				if (string.IsNullOrEmpty(shapeKeyEntry.Maid))
 				{
 					continue;
 				}
@@ -86,11 +83,11 @@ namespace ShapekeyMaster
 
 			globalShapekeyDictionary = new Dictionary<Guid, ShapeKeyEntry>();
 
-			globalShapekeyDictionary = allShapekeyDictionary.Where(kv => String.IsNullOrEmpty(kv.Value.Maid)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+			globalShapekeyDictionary = allShapekeyDictionary.Where(kv => string.IsNullOrEmpty(kv.Value.Maid)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
 			if (ListOfActiveMorphs.Count > 0)
 			{
-				Main.@this.StartCoroutine(ReloadMorphDic());
+				ShapeKeyMaster.instance.StartCoroutine(ReloadMorphDic());
 			}
 		}
 
@@ -98,11 +95,11 @@ namespace ShapekeyMaster
 		{
 			morphShapekeyDictionary = new Dictionary<TMorph, HashSet<ShapeKeyEntry>>();
 
-			foreach (TMorph morph in ListOfActiveMorphs)
+			foreach (var morph in ListOfActiveMorphs)
 			{
-				bool done = false;
+				var done = false;
 
-				string maid = "";
+				var maid = "";
 
 				while (!done)
 				{
@@ -122,101 +119,97 @@ namespace ShapekeyMaster
 					yield return null;
 				}
 
-				foreach (ShapeKeyEntry shapeKeyEntry in ShapekeysByMaid(maid).Values.Concat(globalShapekeyDictionary.Values))
+				foreach (var shapeKeyEntry in ShapeKeysByMaid(maid).Values.Concat(globalShapekeyDictionary.Values))
 				{
-					if (morph.hash.ContainsKey(shapeKeyEntry.ShapeKey))
+					if (!morph.hash.ContainsKey(shapeKeyEntry.ShapeKey))
 					{
-						if (!morphShapekeyDictionary.ContainsKey(morph))
-						{
-							morphShapekeyDictionary[morph] = new HashSet<ShapeKeyEntry>();
-						}
-
-						morphShapekeyDictionary[morph].Add(shapeKeyEntry);
+						continue;
 					}
+
+					if (!morphShapekeyDictionary.ContainsKey(morph))
+					{
+						morphShapekeyDictionary[morph] = new HashSet<ShapeKeyEntry>();
+					}
+
+					morphShapekeyDictionary[morph].Add(shapeKeyEntry);
 				}
 			}
 		}
 
 		internal IEnumerator UpdateMorphDic(EventArgs args)
 		{
-			if (args is SMEventsAndArgs.MorphEventArgs morphArgs)
+			if (!(args is SmEventsAndArgs.MorphEventArgs morphArgs))
 			{
-				if (morphArgs.Creation)
+				yield break;
+			}
+
+			if (morphArgs.Creation)
+			{
+				var done = false;
+
+				var maid = "";
+
+				while (!done)
 				{
-					bool done = false;
-
-					string maid = "";
-
-					while (!done)
+					try
 					{
-						try
-						{
-							maid = morphArgs.Morph.bodyskin.body.maid.status.fullNameJpStyle;
-							done = true;
-						}
-						catch
-						{
-							done = false;
-						}
-
-						yield return null;
+						maid = morphArgs.Morph.bodyskin.body.maid.status.fullNameJpStyle;
+						done = true;
+					}
+					catch
+					{
+						done = false;
 					}
 
-					foreach (ShapeKeyEntry shapeKeyEntry in globalShapekeyDictionary.Values.Concat(ShapekeysByMaid(maid).Values))
-					{
-						if (morphArgs.Morph.hash.ContainsKey(shapeKeyEntry.ShapeKey))
-						{
-							if (!morphShapekeyDictionary.ContainsKey(morphArgs.Morph))
-							{
-								morphShapekeyDictionary[morphArgs.Morph] = new HashSet<ShapeKeyEntry>();
-							}
-
-							morphShapekeyDictionary[morphArgs.Morph].Add(shapeKeyEntry);
-						}
-					}
+					yield return null;
 				}
-				else
+
+				foreach (var shapeKeyEntry in globalShapekeyDictionary.Values.Concat(ShapeKeysByMaid(maid).Values))
 				{
-					if (morphShapekeyDictionary.ContainsKey(morphArgs.Morph))
+					if (!morphArgs.Morph.hash.ContainsKey(shapeKeyEntry.ShapeKey))
 					{
-						morphShapekeyDictionary.Remove(morphArgs.Morph);
+						continue;
 					}
+
+					if (!morphShapekeyDictionary.ContainsKey(morphArgs.Morph))
+					{
+						morphShapekeyDictionary[morphArgs.Morph] = new HashSet<ShapeKeyEntry>();
+					}
+
+					morphShapekeyDictionary[morphArgs.Morph].Add(shapeKeyEntry);
 				}
 			}
-		}
-
-		internal bool DoesMaidPartialEntryName(string Maid, string Entry)
-		{
-			return maidShapekeyDictionary[Maid]
-				.Where(t => t.EntryName.Contains(Entry, StringComparison.OrdinalIgnoreCase))
-				.Count() > 0;
-		}
-
-		internal bool DoesMaidPartialShapekey(string Maid, string shapekey)
-		{
-			return maidShapekeyDictionary[Maid]
-				.Where(t => t.ShapeKey.Contains(shapekey, StringComparison.OrdinalIgnoreCase))
-				.Count() > 0;
-		}
-
-		internal Dictionary<Guid, ShapeKeyEntry> ShapekeysByMaid(string Maid)
-		{
-			if (!maidShapekeyDictionary.ContainsKey(Maid))
+			else
 			{
-				return new Dictionary<Guid, ShapeKeyEntry>();
+				if (morphShapekeyDictionary.ContainsKey(morphArgs.Morph))
+				{
+					morphShapekeyDictionary.Remove(morphArgs.Morph);
+				}
 			}
-
-			return new Dictionary<Guid, ShapeKeyEntry>(maidShapekeyDictionary[Maid].ToDictionary(sk => sk.Id, sk => sk));
 		}
 
-		internal HashSet<ShapeKeyEntry> ShapekeysByMorph(TMorph morph)
+		internal bool DoesMaidPartialEntryName(string maid, string entry)
 		{
-			if (!morphShapekeyDictionary.ContainsKey(morph))
-			{
-				return new HashSet<ShapeKeyEntry>();
-			}
+			return maidShapekeyDictionary[maid]
+				.Any(t => t.EntryName.Contains(entry, StringComparison.OrdinalIgnoreCase));
+		}
 
-			return morphShapekeyDictionary[morph];
+		internal bool DoesMaidPartialShapeKey(string maid, string shapeKey)
+		{
+			return maidShapekeyDictionary[maid]
+				.Any(t => t.ShapeKey.Contains(shapeKey, StringComparison.OrdinalIgnoreCase));
+		}
+
+		internal Dictionary<Guid, ShapeKeyEntry> ShapeKeysByMaid(string maid)
+		{
+			return !maidShapekeyDictionary.ContainsKey(maid)
+				? new Dictionary<Guid, ShapeKeyEntry>()
+				: new Dictionary<Guid, ShapeKeyEntry>(maidShapekeyDictionary[maid].ToDictionary(sk => sk.Id, sk => sk));
+		}
+
+		internal HashSet<ShapeKeyEntry> ShapeKeysByMorph(TMorph morph)
+		{
+			return !morphShapekeyDictionary.ContainsKey(morph) ? new HashSet<ShapeKeyEntry>() : morphShapekeyDictionary[morph];
 		}
 
 		internal void Add(ShapeKeyEntry newVal)
@@ -233,7 +226,7 @@ namespace ShapekeyMaster
 
 		internal void ConcatenateDictionary(Dictionary<Guid, ShapeKeyEntry> newDictionary, bool overwrite = false)
 		{
-			if (newDictionary is null) 
+			if (newDictionary is null)
 			{
 				return;
 			}

@@ -1,12 +1,12 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace ShapekeyMaster
+namespace ShapeKeyMaster
 {
-	public class ShapekeyBlacklist
+	public class ShapeKeyBlacklist
 	{
 		[JsonProperty]
-		public List<string> Blacklist { get; private set; } = new List<string>()
+		public List<string> Blacklist { get; private set; } = new List<string>
 		{
 			"arml",
 			"hara",
@@ -117,9 +117,9 @@ namespace ShapekeyMaster
 			"yodare"
 		};
 
-		public void RemoveItem(string keyToUnlist)
+		public void RemoveItem(string keyToUnList)
 		{
-			Blacklist.Remove(keyToUnlist);
+			Blacklist.Remove(keyToUnList);
 		}
 
 		public void AddItem(string keyToBlackList)

@@ -3,17 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
 
-namespace ShapekeyMaster
+namespace ShapeKeyMaster
 {
-	internal class SMEventsAndArgs
+	internal class SmEventsAndArgs
 	{
 		//Cleaner for instancing.
 		public class MorphEventArgs : EventArgs
 		{
-			public TMorph Morph { get; private set; }
-			public bool Creation { get; private set; }
+			public TMorph Morph { get; }
+			public bool Creation { get; }
 
 			public MorphEventArgs(TMorph changedMorph, bool wasCreated = true)
 			{
@@ -24,8 +23,8 @@ namespace ShapekeyMaster
 
 		public class ExcitementChangeEvent : EventArgs
 		{
-			public string Maid { get; private set; }
-			public int Excitement { get; private set; }
+			public string Maid { get; }
+			public int Excitement { get; }
 
 			public ExcitementChangeEvent(string maid, int excite)
 			{
@@ -36,7 +35,7 @@ namespace ShapekeyMaster
 
 		public class ClothingMaskChangeEvent : EventArgs
 		{
-			public string Maid { get; private set; }
+			public string Maid { get; }
 
 			public ClothingMaskChangeEvent(string maid)
 			{
@@ -47,11 +46,11 @@ namespace ShapekeyMaster
 
 	internal static class Extensions
 	{
-		private static readonly FieldInfo goSlotField = typeof(TBody).GetField("goSlot", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+		private static readonly FieldInfo GoSlotField = typeof(TBody).GetField("goSlot", BindingFlags.Public | BindingFlags.Instance);
 
-		private static readonly Type goSlotType = goSlotField.FieldType;
+		private static readonly Type GoSlotType = GoSlotField.FieldType;
 
-		private static readonly MethodInfo goSlotMethod = goSlotType.GetMethod("GetListParents", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public) ?? null;
+		private static readonly MethodInfo GoSlotMethod = GoSlotType.GetMethod("GetListParents", BindingFlags.Instance | BindingFlags.Public);
 
 		/// <summary>
 		/// A convenience method meant to provide support for 2.00 and 3.00 which vary in this field. The ultimate values are the same, they just need to be fetched differently. :P
@@ -60,13 +59,13 @@ namespace ShapekeyMaster
 		/// <returns></returns>
 		public static List<TBodySkin> FetchGoSlot(this TBody body)
 		{
-			if (goSlotField.FieldType == typeof(List<TBodySkin>))
+			if (GoSlotField.FieldType == typeof(List<TBodySkin>))
 			{
-				return (List<TBodySkin>)goSlotField.GetValue(body) ?? null;
+				return (List<TBodySkin>)GoSlotField.GetValue(body);
 			}
 
-			var goSlotVal = goSlotField.GetValue(body);
-			return (List<TBodySkin>)goSlotMethod.Invoke(goSlotVal, new object[0]) ?? null;
+			var goSlotVal = GoSlotField.GetValue(body);
+			return (List<TBodySkin>)GoSlotMethod.Invoke(goSlotVal, new object[0]);
 		}
 
 		public static bool HasFlag(this Enum variable, Enum value)
@@ -77,36 +76,30 @@ namespace ShapekeyMaster
 				throw new ArgumentException("The checked flag is not from the same type as the checked variable.");
 			}
 
-			Convert.ToUInt64(value);
-			ulong num = Convert.ToUInt64(value);
-			ulong num2 = Convert.ToUInt64(variable);
+			_ = Convert.ToUInt64(value);
+			var num = Convert.ToUInt64(value);
+			var num2 = Convert.ToUInt64(variable);
 
 			return (num2 & num) == num;
 		}
 
-		public static bool IsMaidActive(this Maid maid) 
+		public static bool IsMaidActive(this Maid maid)
 		{
 			return maid != null && maid.isActiveAndEnabled;
 		}
 
 		public static bool IsMaidActive(string name)
 		{
-			if (name == "")
-			{
-				bool result =
-					GameMain.Instance.CharacterMgr
-					.GetStockMaidList()
-					.Where(m => m.IsMaidActive())
-					.Count() > 0;
+			if (name != "") return GetMaidByName(name).IsMaidActive();
+			var result =
+				GameMain.Instance.CharacterMgr
+					.GetStockMaidList().Any(m => m.IsMaidActive());
 #if (DEBUG)
 
-				Main.logger.LogDebug("Maids active to edit = " + result);
+			ShapeKeyMaster.pluginLogger.LogDebug("Maids active to edit = " + result);
 #endif
 
-				return result;
-			}
-
-			return GetMaidByName(name).IsMaidActive();
+			return result;
 		}
 
 		public static Maid GetMaidByName(string name)
@@ -122,7 +115,7 @@ namespace ShapekeyMaster
 		{
 			return
 				list
-				.SelectMany(m => GetAllMorphsFromMaid(m))
+				.SelectMany(GetAllMorphsFromMaid)
 				.Select(r => new Tuple<string, TMorph>(r.item1, r.item2));
 		}
 
@@ -135,14 +128,16 @@ namespace ShapekeyMaster
 				.Where(s => s?.morph != null)
 				.Select(r => new Tuple<string, TMorph>(r.Category, r.morph));
 		}
-		public static bool DoesCategoryContainKey(this Maid maid, TBody.SlotID category, string shapekey)
+
+		public static bool DoesCategoryContainKey(this Maid maid, TBody.SlotID category, string shapeKey)
 		{
 			return
-				maid.GetAllShapekeysInCategory(category)
-				.FirstOrDefault(r => r.Equals(shapekey))
+				maid.GetAllShapeKeysInCategory(category)
+				.FirstOrDefault(r => r.Equals(shapeKey))
 				.IsNullOrWhiteSpace() == false;
 		}
-		public static IEnumerable<string> GetAllShapekeysInCategory(this Maid maid, TBody.SlotID category)
+
+		public static IEnumerable<string> GetAllShapeKeysInCategory(this Maid maid, TBody.SlotID category)
 		{
 			return
 				maid.GetAllMorphsInMaidOfCategory(category)
@@ -157,11 +152,12 @@ namespace ShapekeyMaster
 				.Where(r => r.item1.Equals(category.ToString()))
 				.Select(m => m.item2);
 		}
+
 		public static IEnumerable<Tuple<string, string>> GetAllShapeKeysFromMaidList(List<Maid> maids)
 		{
 			return
 				maids
-				.Select(m => GetAllShapeKeysFromMaid(m))
+				.Select(GetAllShapeKeysFromMaid)
 				.SelectMany(r => r);
 		}
 
@@ -172,7 +168,7 @@ namespace ShapekeyMaster
 				return null;
 			}
 
-			List<Tuple<string, string>> result = new List<Tuple<string, string>>();
+			var result = new List<Tuple<string, string>>();
 
 			foreach (var keyPair in GetAllMorphsFromMaid(maid))
 			{
@@ -209,13 +205,13 @@ namespace ShapekeyMaster
 			return result;
 		}
 
-		public static bool IsFaceKey(string Keyname)
+		public static bool IsFaceKey(string keyName)
 		{
-			return GameMain.Instance.CharacterMgr.GetStockMaidList()
-			.Where(maid => maid?.body0?.Face?.morph != null)
-			.Select(m => m.body0.Face.morph)
-			.Where(mr => mr.Contains(Keyname))
-			.Count() > 0;
+			return GameMain.Instance.CharacterMgr
+				.GetStockMaidList()
+				.Where(maid => maid?.body0?.Face?.morph != null)
+				.Select(m => m.body0.Face.morph)
+				.Any(mr => mr.Contains(keyName));
 		}
 
 		public static IEnumerable<string> GetNameOfAllMaids()
@@ -232,26 +228,26 @@ namespace ShapekeyMaster
 
 		public static float CalculateExcitementDeformation(this ShapeKeyEntry sk)
 		{
-			float excitement = GetHighestExcitement();
+			var excitement = GetHighestExcitement();
 #if (DEBUG)
-			Main.logger.LogDebug($"Highest excitement found was {excitement}");
+			ShapeKeyMaster.pluginLogger.LogDebug($"Highest excitement found was {excitement}");
 #endif
 			float percent;
 
 			if (excitement >= sk.ExcitementMax)
 			{
-				percent = ((sk.ExcitementMax - sk.ExcitementMin) / 300);
+				percent = (sk.ExcitementMax - sk.ExcitementMin) / 300;
 			}
 			else
 			{
-				percent = ((excitement - sk.ExcitementMin) / 300);
+				percent = (excitement - sk.ExcitementMin) / 300;
 			}
 
-			float result = (sk.DeformMax - sk.DeformMin) * percent;
+			var result = (sk.DeformMax - sk.DeformMin) * percent;
 #if (DEBUG)
-			Main.logger.LogDebug($"Yotogi settings were found! Returning a value of : {result + sk.DeformMin}");
+			ShapeKeyMaster.pluginLogger.LogDebug($"Yotogi settings were found! Returning a value of : {result + sk.DeformMin}");
 #endif
-			return (result + sk.DeformMin);
+			return result + sk.DeformMin;
 		}
 
 		public static float GetHighestExcitement()
@@ -260,10 +256,10 @@ namespace ShapekeyMaster
 			.Where(m => m != null && m.isActiveAndEnabled)
 			.ToList();
 
-			if (maids.Count() > 0)
+			if (maids.Any())
 			{
 #if (DEBUG)
-				Main.logger.LogDebug($"Getting highest excitement! We have to query results from this many maids: {maids.Count()}");
+				ShapeKeyMaster.pluginLogger.LogDebug($"Getting highest excitement! We have to query results from this many maids: {maids.Count()}");
 #endif
 
 				return

@@ -36,17 +36,17 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ShapekeyBlacklist.cs" />
-    <Compile Include="ShapekeyUpdate.cs" />
+    <Compile Include="ShapeKeyBlacklist.cs" />
+    <Compile Include="ShapeKeyUpdate.cs" />
     <Compile Include="CategorySlotHandler.cs" />
     <Compile Include="TranslationResource.cs" />
     <Compile Include="HarmonyPatchers.cs" />
     <Compile Include="Toolbox.cs" />
     <Compile Include="GUI\UIToolbox.cs" />
-    <Compile Include="ShapekeyDatabase.cs" />
+    <Compile Include="ShapeKeyDatabase.cs" />
     <Compile Include="ShapeKeyEntry.cs" />
     <Compile Include="GUI\UI.cs" />
-    <Compile Include="Main.cs" />
+    <Compile Include="ShapeKeyMaster.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="packages.config" />
   </ItemGroup>
