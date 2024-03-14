@@ -1,6 +1,8 @@
-﻿using System;
+﻿using BepInEx;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace ShapeKeyMaster.GUI
@@ -28,6 +30,60 @@ namespace ShapeKeyMaster.GUI
 
 			var point = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
 			return ShapeKeyMaster.EnableGui && windowRect.Value.Contains(point);
+		}
+
+		private static readonly Regex NotNumPeriod = new Regex("[^0-9]");
+
+		internal static float FloatField(float initialVal, float min = 0, float max = 100)
+		{
+			var stringReturn = GUILayout.TextField(initialVal.ToString("0"), GUILayout.Width(75));
+			stringReturn = NotNumPeriod.Replace(stringReturn, "");
+			stringReturn = stringReturn.IsNullOrWhiteSpace() ? "0" : stringReturn;
+
+			return float.TryParse(stringReturn, out var floatReturn) ? Math.Min(max, Math.Max(floatReturn, min)) : initialVal;
+		}
+
+		internal static float HorizontalSliderWithInputBox(float initialVal, float min = 0, float max = 100, string label = null, bool doButtons = true)
+		{
+			GUILayout.BeginHorizontal();
+
+			if (label.IsNullOrWhiteSpace() == false)
+			{
+				GUILayout.Label(label);
+			}
+
+			if (GUILayout.Button("0"))
+			{
+				initialVal = 0;
+			}
+
+			initialVal = GUILayout.HorizontalSlider(initialVal, min, max, GUILayout.MaxWidth(9999));
+
+			if (doButtons)
+			{
+				GUILayout.BeginHorizontal();
+
+				GUILayout.FlexibleSpace();
+
+				if (GUILayout.Button("<"))
+				{
+					var addition = initialVal - (max * 0.01f);
+					initialVal = Math.Max(addition, min);
+				}
+
+				if (GUILayout.Button(">"))
+				{
+					var addition = initialVal + (max * 0.01f);
+					initialVal = Math.Min(addition, max);
+				}
+
+				GUILayout.EndHorizontal();
+			}
+
+			initialVal = FloatField(initialVal, min, max);
+			GUILayout.EndHorizontal();
+
+			return initialVal;
 		}
 
 		public static Texture2D MakeTex(int width, int height, Color col)

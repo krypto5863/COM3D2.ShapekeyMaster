@@ -1,10 +1,10 @@
 ﻿using BepInEx;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using UnityEngine;
 using static ShapeKeyMaster.GUI.UiToolbox;
+using Random = System.Random;
 
 namespace ShapeKeyMaster.GUI
 {
@@ -496,12 +496,43 @@ namespace ShapeKeyMaster.GUI
 						break;
 					}
 
-					var targetToggle = first != null && !first.Enabled;
+					var targetToggle = (first.Enabled - 1);
 
 					foreach (var sk in SkDatabase.ShapeKeysByMaid(maidWithKey).Values)
 					{
 						sk.Enabled = targetToggle;
 					}
+
+					return;
+				}
+
+				if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage["copy_to"]))
+				{
+					var keysToCopy = SkDatabase.ShapeKeysByMaid(maidWithKey).Values;
+					var newKeys = keysToCopy.Select(r => r.Clone() as ShapeKeyEntry).ToDictionary(r => r.Id, m => m);
+
+					ShapeKeyMaster.pluginLogger.LogInfo($"Key count {newKeys.Count}");
+
+					var rand = new Random();
+					string tempMaidGroupName;
+
+					do
+					{
+						tempMaidGroupName = "Temporary Maid Group Name" + rand.Next();
+					} 
+					while (SkDatabase.ShapeKeysByMaid(tempMaidGroupName).Count > 0);
+
+					foreach (var key in newKeys)
+					{
+						key.Value.Maid = tempMaidGroupName;
+					}
+
+					SkDatabase.ConcatenateDictionary(newKeys);
+
+					_maidGroupRenameMenu = newKeys.FirstOrDefault().Value.Maid;
+					_maidGroupRename = _maidGroupRenameMenu;
+
+					_maidNameList = Extensions.GetNameOfAllMaids().ToList();
 
 					return;
 				}
@@ -593,6 +624,71 @@ namespace ShapeKeyMaster.GUI
 
 		private static void SimpleDisplayShapeKeyEntriesMenu(Dictionary<Guid, ShapeKeyEntry> givenShapeKeys)
 		{
+			var filteredKeys = givenShapeKeys.Values
+				.Where(s => string.IsNullOrEmpty(_filter) ||
+							(_filterMode == 0 && s.EntryName.Contains(_filter, StringComparison.OrdinalIgnoreCase)) ||
+							(_filterMode == 1 && s.Maid.Contains(_filter, StringComparison.OrdinalIgnoreCase)) ||
+							(_filterMode == 2 && s.ShapeKey.Contains(_filter, StringComparison.OrdinalIgnoreCase)))
+				.OrderBy(s => s, EntryComparer);
+
+			foreach (var s in filteredKeys.Skip(_page).Take(ShapeKeyMaster.EntriesPerPage.Value))
+			{
+				var style = (_newKeyToShine.HasValue && s.Id == _newKeyToShine) ? _shineSections : _sections;
+
+				GUILayout.BeginVertical(style);
+
+				GUILayout.BeginHorizontal();
+				var status = s.Enabled == 0 ? "ignore" : (s.Enabled == 1 ? "zero" : "on");
+				if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage[status], GUILayout.MaxWidth(60)))
+				{
+					s.Enabled -= 1;
+				}
+				s.ShapeKey = GUILayout.TextField(s.ShapeKey, GUILayout.Width(120));
+				s.Deform = Mathf.RoundToInt(HorizontalSliderWithInputBox(s.Deform, 0, ShapeKeyMaster.MaxDeform.Value));
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal(style);
+				if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage["openSlotCondMenu"], GUILayout.MaxWidth(80)))
+				{
+					_openSlotConditions = s.Id;
+				}
+				s.ConditionalsToggle = GUILayout.Toggle(s.ConditionalsToggle, ShapeKeyMaster.CurrentLanguage["enableConditionals"]);
+				var cateNameLabel = !string.IsNullOrEmpty(s.EntryName) ? s.EntryName : "";
+				cateNameLabel += _tabSelection == 0 && !string.IsNullOrEmpty(cateNameLabel) ? " | " : "";
+				cateNameLabel += _tabSelection == 0 ? string.IsNullOrEmpty(s.Maid) ? ShapeKeyMaster.CurrentLanguage["global"] : s.Maid : "";
+				cateNameLabel = cateNameLabel.Length > 25 ? cateNameLabel.Substring(0, 25) + "..." : cateNameLabel;
+				GUILayout.Label(cateNameLabel);
+				if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage["copy"], GUILayout.MaxWidth(60)))
+				{
+					var newEntry = s.Clone() as ShapeKeyEntry;
+					newEntry.EntryName += "(Copy)";
+					SkDatabase.Add(newEntry);
+					FocusToNewKey(newEntry.Id, givenShapeKeys);
+				}
+				if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage["delete"], GUILayout.MaxWidth(40)))
+				{
+					SkDatabase.Remove(s);
+				}
+				GUILayout.EndHorizontal();
+
+				GUILayout.EndVertical();
+			}
+
+			if (_tabSelection != 2 && GUILayout.Button("+", GUILayout.Width(40)))
+			{
+#if (DEBUG)
+        ShapeKeyMaster.pluginLogger.LogDebug("I've been clicked! Oh the humanity!!");
+#endif
+				var activeGuid = Guid.NewGuid();
+				SkDatabase.Add(new ShapeKeyEntry(activeGuid));
+				FocusToNewKey(activeGuid, givenShapeKeys);
+			}
+		}
+
+
+		/*
+		private static void SimpleDisplayShapeKeyEntriesMenu(Dictionary<Guid, ShapeKeyEntry> givenShapeKeys)
+		{
 			var i = 0;
 
 			foreach (var s in givenShapeKeys.Values.OrderBy(val => val, EntryComparer))
@@ -621,9 +717,14 @@ namespace ShapeKeyMaster.GUI
 				var style = _newKeyToShine.HasValue && s.Id == _newKeyToShine ? _shineSections : _sections;
 
 				GUILayout.BeginVertical(style);
-
 				GUILayout.BeginHorizontal();
-				s.Enabled = GUILayout.Toggle(s.Enabled, "I/O", GUILayout.Width(40));
+
+				var status = s.Enabled == 0 ? "ignore" : s.Enabled == 1 ? "zero" : "on";
+
+				if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage[status], GUILayout.Width(60)))
+				{
+					s.Enabled -= 1;
+				}
 
 				if (GUILayout.Button("+", GUILayout.Width(40)))
 				{
@@ -649,9 +750,9 @@ namespace ShapeKeyMaster.GUI
 
 				s.ShapeKey = GUILayout.TextField(s.ShapeKey, GUILayout.Width(120));
 
-				s.Deform = Mathf.RoundToInt(GUILayout.HorizontalSlider(s.Deform, 0, ShapeKeyMaster.MaxDeform.Value));
-
-				GUILayout.Label(s.Deform.ToString(CultureInfo.InvariantCulture), GUILayout.Width(30));
+				s.Deform = Mathf.RoundToInt(HorizontalSliderWithInputBox(s.Deform, 0, ShapeKeyMaster.MaxDeform.Value));
+				//s.Deform = Mathf.RoundToInt(GUILayout.HorizontalSlider(s.Deform, 0, ShapeKeyMaster.MaxDeform.Value));
+				//GUILayout.Label(s.Deform.ToString(CultureInfo.InvariantCulture), GUILayout.Width(30));
 
 				GUILayout.EndHorizontal();
 
@@ -677,6 +778,15 @@ namespace ShapeKeyMaster.GUI
 
 				GUILayout.FlexibleSpace();
 
+				if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage["copy"]))
+				{
+					var newEntry = s.Clone() as ShapeKeyEntry;
+					newEntry.EntryName += "(Copy)";
+					SkDatabase.Add(newEntry);
+					FocusToNewKey(newEntry.Id, givenShapeKeys);
+					return;
+				}
+
 				if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage["delete"]))
 				{
 					SkDatabase.Remove(s);
@@ -700,6 +810,7 @@ namespace ShapeKeyMaster.GUI
 				FocusToNewKey(activeGuid, givenShapeKeys);
 			}
 		}
+		*/
 
 		private static void DisplayShapeKeyEntriesMenu(Dictionary<Guid, ShapeKeyEntry> givenShapeKeys)
 		{
@@ -717,31 +828,15 @@ namespace ShapeKeyMaster.GUI
 				return;
 			}
 
-			var i = 0;
+			var filteredKeys = givenShapeKeys.Values
+				.Where(s => string.IsNullOrEmpty(_filter) ||
+				            (_filterMode == 0 && s.EntryName.Contains(_filter, StringComparison.OrdinalIgnoreCase)) ||
+				            (_filterMode == 1 && s.Maid.Contains(_filter, StringComparison.OrdinalIgnoreCase)) ||
+				            (_filterMode == 2 && s.ShapeKey.Contains(_filter, StringComparison.OrdinalIgnoreCase)))
+				.OrderBy(s => s, EntryComparer);
 
-			foreach (var s in givenShapeKeys.Values.OrderBy(val => val, EntryComparer))
+			foreach (var s in filteredKeys.Skip(_page).Take(ShapeKeyMaster.EntriesPerPage.Value))
 			{
-				if (_filter != "")
-				{
-					switch (_filterMode)
-					{
-						case 0 when s.EntryName.Contains(_filter, StringComparison.OrdinalIgnoreCase) == false:
-						case 1 when s.Maid.Contains(_filter, StringComparison.OrdinalIgnoreCase) == false:
-						case 2 when s.ShapeKey.Contains(_filter, StringComparison.OrdinalIgnoreCase) == false:
-							continue;
-					}
-				}
-
-				if (i++ < _page)
-				{
-					continue;
-				}
-
-				if (i > _page + ShapeKeyMaster.EntriesPerPage.Value)
-				{
-					break;
-				}
-
 				var style = _newKeyToShine.HasValue && s.Id == _newKeyToShine ? _shineSections : _sections;
 
 				GUILayout.BeginVertical(style);
@@ -757,7 +852,12 @@ namespace ShapeKeyMaster.GUI
 					}
 					GUILayout.EndHorizontal();
 
-					s.Enabled = GUILayout.Toggle(s.Enabled, ShapeKeyMaster.CurrentLanguage["enable"]);
+					var status = s.Enabled == 0 ? "ignore" : s.Enabled == 1 ? "zero" : "on";
+					if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage[status], GUILayout.Width(60)))
+					{
+						s.Enabled -= 1;
+					}
+
 					GUILayout.BeginHorizontal();
 					GUILayout.FlexibleSpace();
 					GUILayout.Label(ShapeKeyMaster.CurrentLanguage["shapekey"], GUILayout.Width(200));
@@ -820,17 +920,16 @@ namespace ShapeKeyMaster.GUI
 						case true:
 							GUILayout.Label(
 								$"{ShapeKeyMaster.CurrentLanguage["animationSpeed"]} = (1000 ms / {s.AnimationPollFloat * 1000} ms) x {s.AnimationRate} = {1000 / (s.AnimationPollFloat * 1000) * s.AnimationRateFloat} %/{ShapeKeyMaster.CurrentLanguage["seconds"]}");
-							GUILayout.Label($"{ShapeKeyMaster.CurrentLanguage["shapekeyDeformation"]}: {s.Deform}");
-							s.Deform = GUILayout.HorizontalSlider(s.Deform, 0, ShapeKeyMaster.MaxDeform.Value);
-							GUILayout.Label($"{ShapeKeyMaster.CurrentLanguage["maxAnimationDeformation"]}: {s.AnimationMaximum}");
-							s.AnimationMaximum = Mathf.RoundToInt(GUILayout.HorizontalSlider(s.AnimationMaximum,
-								s.AnimationMinimum, ShapeKeyMaster.MaxDeform.Value));
-							GUILayout.Label($"{ShapeKeyMaster.CurrentLanguage["minAnimationDeformation"]}: {s.AnimationMinimum}");
-							s.AnimationMinimum =
-								Mathf.RoundToInt(GUILayout.HorizontalSlider(s.AnimationMinimum, 0, s.AnimationMaximum));
+
+							GUILayout.Label(ShapeKeyMaster.CurrentLanguage["shapekeyDeformation"]);
+							s.Deform = Mathf.RoundToInt(HorizontalSliderWithInputBox(s.Deform, 0, ShapeKeyMaster.MaxDeform.Value));
+							GUILayout.Label(ShapeKeyMaster.CurrentLanguage["maxAnimationDeformation"]);
+							s.AnimationMaximum = Mathf.RoundToInt(HorizontalSliderWithInputBox(s.AnimationMaximum, s.AnimationMinimum, ShapeKeyMaster.MaxDeform.Value));
+							GUILayout.Label(ShapeKeyMaster.CurrentLanguage["minAnimationDeformation"]);
+							s.AnimationMinimum = Mathf.RoundToInt(HorizontalSliderWithInputBox(s.AnimationMinimum, 0, ShapeKeyMaster.MaxDeform.Value));
+
 							GUILayout.Label($"{ShapeKeyMaster.CurrentLanguage["animationRate"]}: {s.AnimationRate}");
 							GUILayout.BeginHorizontal();
-							//s.SetAnimationRate(GUILayout.HorizontalSlider(s.GetAnimationRate(), 0, 100).ToString());
 							s.AnimationRate = GUILayout.TextField(s.AnimationRate);
 							GUILayout.EndHorizontal();
 							GUILayout.Label($"{ShapeKeyMaster.CurrentLanguage["animationPollingRate"]}: {s.AnimationPoll}");
@@ -838,27 +937,22 @@ namespace ShapeKeyMaster.GUI
 							break;
 
 						case false when s.AnimateWithExcitement:
-							GUILayout.Label($"{ShapeKeyMaster.CurrentLanguage["maxExcitementThreshold"]}: {s.ExcitementMax}");
-							s.ExcitementMax =
-								Mathf.RoundToInt(GUILayout.HorizontalSlider(s.ExcitementMax, s.ExcitementMin, 300.0F));
 
-							GUILayout.Label($"{ShapeKeyMaster.CurrentLanguage["minExcitementThreshold"]}: {s.ExcitementMin}");
-							s.ExcitementMin =
-								Mathf.RoundToInt(GUILayout.HorizontalSlider(s.ExcitementMin, 0.0F, s.ExcitementMax));
-
-							GUILayout.Label($"{ShapeKeyMaster.CurrentLanguage["defShapekeyDeformation"]}: {s.Deform}");
-							s.Deform = Mathf.RoundToInt(GUILayout.HorizontalSlider(s.Deform, 0, ShapeKeyMaster.MaxDeform.Value));
-							GUILayout.Label($"{ShapeKeyMaster.CurrentLanguage["maxShapekeyDeformation"]}: {s.DeformMax}");
-							s.DeformMax =
-								Mathf.RoundToInt(GUILayout.HorizontalSlider(s.DeformMax, s.DeformMin,
-									ShapeKeyMaster.MaxDeform.Value));
-							GUILayout.Label($"{ShapeKeyMaster.CurrentLanguage["minShapekeyDeformation"]}: {s.DeformMin}");
-							s.DeformMin = Mathf.RoundToInt(GUILayout.HorizontalSlider(s.DeformMin, 0.0F, s.DeformMax));
+							GUILayout.Label(ShapeKeyMaster.CurrentLanguage["maxExcitementThreshold"]);
+							s.ExcitementMax = Mathf.RoundToInt(HorizontalSliderWithInputBox(s.ExcitementMax, 0, ShapeKeyMaster.MaxDeform.Value));
+							GUILayout.Label(ShapeKeyMaster.CurrentLanguage["minExcitementThreshold"]);
+							s.ExcitementMin = Mathf.RoundToInt(HorizontalSliderWithInputBox(s.ExcitementMin, 0, ShapeKeyMaster.MaxDeform.Value));
+							GUILayout.Label(ShapeKeyMaster.CurrentLanguage["defShapekeyDeformation"]);
+							s.Deform = Mathf.RoundToInt(HorizontalSliderWithInputBox(s.Deform, 0, ShapeKeyMaster.MaxDeform.Value));
+							GUILayout.Label(ShapeKeyMaster.CurrentLanguage["maxShapekeyDeformation"]);
+							s.DeformMax = Mathf.RoundToInt(HorizontalSliderWithInputBox(s.DeformMax, s.DeformMin, ShapeKeyMaster.MaxDeform.Value));
+							GUILayout.Label(ShapeKeyMaster.CurrentLanguage["minShapekeyDeformation"]);
+							s.DeformMin = Mathf.RoundToInt(HorizontalSliderWithInputBox(s.DeformMin, 0, s.DeformMax));
 							break;
 
 						default:
-							GUILayout.Label($"{ShapeKeyMaster.CurrentLanguage["shapekeyDeformation"]}: {s.Deform}");
-							s.Deform = Mathf.RoundToInt(GUILayout.HorizontalSlider(s.Deform, 0, ShapeKeyMaster.MaxDeform.Value));
+							GUILayout.Label(ShapeKeyMaster.CurrentLanguage["shapekeyDeformation"]);
+							s.Deform = Mathf.RoundToInt(HorizontalSliderWithInputBox(s.Deform, 0, ShapeKeyMaster.MaxDeform.Value));
 							break;
 					}
 

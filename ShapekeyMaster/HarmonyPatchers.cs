@@ -102,9 +102,18 @@ namespace ShapeKeyMaster
 					continue;
 				}
 
+				if (shapeKeyEntry.Enabled == 0)
+				{
+#if (DEBUG)
+					ShapeKeyMaster.pluginLogger.LogDebug($"Ingoring Key @ {__instance.bodyskin.body.maid.status.fullNameJpStyle} :: {__instance.Category} ::: {shapeKeyEntry.EntryName} :::: {shapeKeyEntry.ShapeKey}");
+#endif
+
+					continue;
+				}
+
 				var index = (int)__instance.hash[shapeKeyEntry.ShapeKey];
 
-				if (!shapeKeyEntry.Enabled)
+				if (shapeKeyEntry.Enabled == 1)
 				{
 #if (DEBUG)
 					ShapeKeyMaster.pluginLogger.LogDebug($"Disabling Key @ {__instance.bodyskin.body.maid.status.fullNameJpStyle} :: {__instance.Category} ::: {shapeKeyEntry.EntryName} :::: {shapeKeyEntry.ShapeKey}");

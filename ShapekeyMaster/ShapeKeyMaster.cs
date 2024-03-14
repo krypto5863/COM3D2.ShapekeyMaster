@@ -4,6 +4,7 @@ using BepInEx.Logging;
 using COM3D2API;
 using HarmonyLib;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using ShapeKeyMaster.GUI;
 using System;
 using System.IO;
@@ -18,7 +19,7 @@ using UnityEngine;
 
 namespace ShapeKeyMaster
 {
-	[BepInPlugin("ShapeKeyMaster", "ShapeKeyMaster", "1.5.1")]
+	[BepInPlugin("ShapeKeyMaster", "ShapeKeyMaster", "1.6")]
 	[BepInDependency("deathweasel.com3d2.api")]
 	public class ShapeKeyMaster : BaseUnityPlugin
 	{
@@ -179,12 +180,49 @@ namespace ShapeKeyMaster
 
 			var mConfig = File.ReadAllText(path);
 
+			// Parse the JSON
+			var jsonObject = JObject.Parse(mConfig);
+
+			// Get the array of objects from the JSON
+			var classCollection = (JObject)jsonObject["AllShapekeyDictionary"];
+
+			// Flag to track if any conversion occurred
+			var converted = false;
+
+			// Iterate through each object in the array
+			foreach (var obj in classCollection.Properties())
+			{
+				// Check if the property is a boolean
+				if (obj.Value["Enabled"] != null && obj.Value["Enabled"].Type == JTokenType.Boolean)
+				{
+					// Convert the boolean value to an integer
+					var oldValue = obj.Value["Enabled"].Value<bool>();
+					var newValue = oldValue ? 2 : 1;
+
+					// Update the property value
+					obj.Value["Enabled"] = newValue;
+
+					converted = true;
+				}
+			}
+
+			// If any conversion occurred, save the updated JSON to a new file
+			if (converted)
+			{
+				// Serialize the updated JSON and save it to a new file
+				//string updatedJson = jsonObject.ToString();
+				//File.WriteAllText(updatedJsonFilePath, updatedJson);
+
+				pluginLogger.LogInfo("Conversion completed successfully.");
+			}
+
 			var serializeSet = new JsonSerializerSettings
 			{
 				ObjectCreationHandling = ObjectCreationHandling.Replace
 			};
 
-			return JsonConvert.DeserializeObject<ShapeKeyDatabase>(mConfig, serializeSet);
+			
+			return jsonObject.ToObject<ShapeKeyDatabase>();
 		}
 
 		/*

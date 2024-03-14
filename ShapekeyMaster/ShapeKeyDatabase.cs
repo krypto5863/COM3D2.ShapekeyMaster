@@ -221,6 +221,7 @@ namespace ShapeKeyMaster
 		internal void Remove(ShapeKeyEntry newVal)
 		{
 			allShapekeyDictionary.Remove(newVal.Id);
+			//newVal.Deform = 0;
 			RefreshSubDictionaries();
 		}
 

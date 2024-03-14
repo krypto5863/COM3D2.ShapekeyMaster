@@ -7,16 +7,18 @@ using UnityEngine;
 
 namespace ShapeKeyMaster
 {
-	internal class ShapeKeyEntry
+	internal class ShapeKeyEntry : ICloneable
 	{
 		private IEnumerator animator;
 		public Guid Id { get; }
 		public string EntryName { get; set; }
 		public DateTime CreationDate { get; set; }
 
-		private bool enabled;
-
-		public bool Enabled
+		private int enabled;
+		/// <summary>
+		/// 0 is ignored, 1 is zeroed, 2 is on.
+		/// </summary>
+		public int Enabled
 		{
 			set
 			{
@@ -25,18 +27,27 @@ namespace ShapeKeyMaster
 					return;
 				}
 
+				if (value > 2)
+				{
+					value = 0;
+				}
+				else if (value < 0)
+				{
+					value = 2;
+				}
+
 				enabled = value;
 
 				if (animate)
 				{
 					switch (enabled)
 					{
-						case false when animator != null:
+						case 0:
+						case 1 when animator != null:
 							ShapeKeyMaster.instance.StopCoroutine(animator);
 							animator = null;
 							break;
-
-						case true when animator == null:
+						case 2 when animator == null:
 							animator = AnimateCoRoute(this);
 							ShapeKeyMaster.instance.StartCoroutine(animator);
 							break;
@@ -390,7 +401,7 @@ namespace ShapeKeyMaster
 			Id = id;
 			EntryName = "";
 			CreationDate = DateTime.Now;
-			enabled = true;
+			enabled = 2;
 			deform = 0;
 			shapeKey = "";
 
@@ -423,6 +434,37 @@ namespace ShapeKeyMaster
 			animator = null;
 
 			//Main.@this.StartCoroutine(Animator);
+		}
+		
+		public object Clone()
+		{
+			var newClone = new ShapeKeyEntry(Guid.NewGuid(), maid)
+			{
+				enabled = enabled,
+				EntryName = EntryName.Clone() as string,
+				deform = deform,
+				shapeKey = shapeKey,
+				animateWithExcitement = animateWithExcitement,
+				excitementMax = excitementMax,
+				excitementMin = excitementMin,
+				deformMax = deformMax,
+				deformMin = deformMin,
+				animate = animate,
+				AnimationMaximum = AnimationMaximum,
+				AnimationMinimum = AnimationMaximum,
+				animationRate = animationRate.Clone() as string,
+				AnimationPoll = AnimationPoll.Clone() as string,
+				animateWithOrgasm = animateWithOrgasm,
+				disableddeform = disableddeform,
+				conditionalsToggle = conditionalsToggle,
+				disableWhen = disableWhen,
+				whenAll = whenAll,
+				slotFlags = (DisableWhenEquipped)((int)slotFlags),
+				Collapsed = true,
+				MenuFileConditionals = new Dictionary<Guid, string>(MenuFileConditionals)
+			};
+
+			return newClone;
 		}
 
 		private void HarmonyPatchersOnClothingMaskChange(object s, EventArgs e) => RunUpdate((e as SmEventsAndArgs.ClothingMaskChangeEvent)?.Maid, true);
@@ -469,7 +511,7 @@ namespace ShapeKeyMaster
 			{
 				if (key.animate)
 				{
-					if (key.enabled && Extensions.IsMaidActive(key.maid))
+					if (key.enabled == 2 && Extensions.IsMaidActive(key.maid))
 					{
 						if (key.deform >= key.AnimationMaximum)
 						{
