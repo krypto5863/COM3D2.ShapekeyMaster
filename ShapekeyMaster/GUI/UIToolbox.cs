@@ -67,13 +67,13 @@ namespace ShapeKeyMaster.GUI
 
 				if (GUILayout.Button("<"))
 				{
-					var addition = initialVal - (max * 0.01f);
+					var addition = initialVal - 1;
 					initialVal = Math.Max(addition, min);
 				}
 
 				if (GUILayout.Button(">"))
 				{
-					var addition = initialVal + (max * 0.01f);
+					var addition = initialVal + 1;
 					initialVal = Math.Min(addition, max);
 				}
 

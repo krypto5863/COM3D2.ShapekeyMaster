@@ -643,6 +643,28 @@ namespace ShapeKeyMaster.GUI
 				{
 					s.Enabled -= 1;
 				}
+
+				if (GUILayout.Button("+", GUILayout.Width(30)))
+				{
+					if (string.IsNullOrEmpty(s.Maid))
+					{
+						_shapeKeysNameList = Extensions.GetAllShapeKeysFromAllMaids().ToList();
+					}
+					else
+					{
+						_shapeKeysNameList = Extensions.GetMaidByName(s.Maid)?.GetAllShapeKeysFromMaid()?.ToList();
+
+						if (_shapeKeysNameList == null || _shapeKeysNameList.Count == 0)
+						{
+							_shapeKeysNameList = Extensions.GetAllShapeKeysFromAllMaids().ToList();
+						}
+					}
+
+					_openSkMenu = s.Id;
+					_filter = _oldSkMenuFilter;
+					_oldPreSkMenuScrollPosition = _scrollPosition;
+					_scrollPosition = _oldSkMenuScrollPosition;
+				}
 				s.ShapeKey = GUILayout.TextField(s.ShapeKey, GUILayout.Width(120));
 				s.Deform = Mathf.RoundToInt(HorizontalSliderWithInputBox(s.Deform, 0, ShapeKeyMaster.MaxDeform.Value));
 				GUILayout.EndHorizontal();
