@@ -451,7 +451,7 @@ namespace ShapeKeyMaster
 				deformMin = deformMin,
 				animate = animate,
 				AnimationMaximum = AnimationMaximum,
-				AnimationMinimum = AnimationMaximum,
+				AnimationMinimum = AnimationMinimum,
 				animationRate = animationRate.Clone() as string,
 				AnimationPoll = AnimationPoll.Clone() as string,
 				animateWithOrgasm = animateWithOrgasm,
