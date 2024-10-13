@@ -9,9 +9,9 @@ namespace ShapeKeyMaster.GUI
 {
 	internal class UiToolbox
 	{
-        public static int LastMouseButtonUp { private set; get; } = -1;
+		public static int LastMouseButtonUp { private set; get; } = -1;
 
-        public static void ChkMouseClick(Rect windowRect)
+		public static void ChkMouseClick(Rect windowRect)
 		{
 			LastMouseButtonUp = Input.GetMouseButtonUp(0) ? 0 : Input.GetMouseButtonUp(1) ? 1 : Input.GetMouseButtonUp(2) ? 2 : -1;
 
@@ -36,7 +36,7 @@ namespace ShapeKeyMaster.GUI
 
 		internal static float FloatField(float initialVal, float min = 0, float max = 100)
 		{
-            var stringReturn = GUILayout.TextField(initialVal.ToString("0"), UIUserOverrides.getTextFieldStyleOverride(), GUILayout.Width(75));
+			var stringReturn = GUILayout.TextField(initialVal.ToString("0"), UIUserOverrides.getTextFieldStyleOverride(), GUILayout.Width(75));
 			stringReturn = NotNumPeriod.Replace(stringReturn, "");
 			stringReturn = stringReturn.IsNullOrWhiteSpace() ? "0" : stringReturn;
 
@@ -45,7 +45,7 @@ namespace ShapeKeyMaster.GUI
 
 		internal static float HorizontalSliderWithInputBox(float initialVal, float min = 0, float max = 100, string label = null, bool doButtons = true)
 		{
-            GUILayout.BeginHorizontal();
+			GUILayout.BeginHorizontal();
 
 			if (label.IsNullOrWhiteSpace() == false)
 			{
@@ -59,7 +59,7 @@ namespace ShapeKeyMaster.GUI
 
 			initialVal = GUILayout.HorizontalSlider(initialVal, min, max, UIUserOverrides.getSliderStyleOverride(), UIUserOverrides.getSliderThumbStyleOverride(), GUILayout.MaxWidth(9999));
 
-            if (doButtons)
+			if (doButtons)
 			{
 				GUILayout.BeginHorizontal();
 

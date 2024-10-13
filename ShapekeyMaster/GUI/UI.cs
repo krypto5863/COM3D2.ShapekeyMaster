@@ -65,9 +65,9 @@ namespace ShapeKeyMaster.GUI
 
 		private static GUIStyle _shineSections;
 		private static GUIStyle _blacklistedButton;
-        //private static GUIStyle PreviewButton;
+		//private static GUIStyle PreviewButton;
 
-        public static void Initialize()
+		public static void Initialize()
 		{
 			//Setup some UI properties.
 			if (_runOnce)
@@ -88,7 +88,7 @@ namespace ShapeKeyMaster.GUI
 					{
 						background = MakeWindowTex(new Color(0.3f, 0.3f, 0.3f, 0.6f), new Color(1, 0, 0, 0.5f))
 					}
-                };
+				};
 
 				_sections = new GUIStyle(UnityEngine.GUI.skin.box)
 				{
@@ -103,7 +103,7 @@ namespace ShapeKeyMaster.GUI
 					{
 						background = MakeTexWithRoundedCorner(new Color(0, 0, 0, 0.6f))
 					}
-                };
+				};
 
 				_shineSections = new GUIStyle(UnityEngine.GUI.skin.box)
 				{
@@ -111,7 +111,7 @@ namespace ShapeKeyMaster.GUI
 					{
 						background = MakeTex(2, 2, new Color(0.92f, 0.74f, 0.2f, 0.3f))
 					}
-                };
+				};
 
 				_blacklistedButton = new GUIStyle(UnityEngine.GUI.skin.button)
 				{
@@ -127,12 +127,12 @@ namespace ShapeKeyMaster.GUI
 					{
 						textColor = Color.red
 					},
-                    fontSize = ShapeKeyMaster.FontSize.Value
-                };
+					fontSize = ShapeKeyMaster.FontSize.Value
+				};
 
-                EntryComparer.Mode = 0;
+				EntryComparer.Mode = 0;
 
-				_runOnce = false;	
+				_runOnce = false;
 			}
 
 			//Sometimes the UI can be improperly sized, this sets it to some measurements.
@@ -146,38 +146,38 @@ namespace ShapeKeyMaster.GUI
 				switch (ShapeKeyMaster.DefaultUIPosition.Value)
 				{
 					case "TopLeft":
-                        uiPosY = 20f;
+						uiPosY = 20f;
 						uiPosX = 20f;
 						break;
-                    case "TopRight":
-                        uiPosY = 20f;
-                        uiPosX = Screen.width - WindowRect.width - 20f;
-                        break;
-                    case "BottomLeft":
-                        uiPosY = Screen.height - WindowRect.height - 20f;
-                        uiPosX = 20f;
-                        break;
-                    case "BottomRight":
-                        uiPosY = Screen.height - WindowRect.height - 20f;
-                        uiPosX = Screen.width - WindowRect.width - 20f;
-                        break;
+					case "TopRight":
+						uiPosY = 20f;
+						uiPosX = Screen.width - WindowRect.width - 20f;
+						break;
+					case "BottomLeft":
+						uiPosY = Screen.height - WindowRect.height - 20f;
+						uiPosX = 20f;
+						break;
+					case "BottomRight":
+						uiPosY = Screen.height - WindowRect.height - 20f;
+						uiPosX = Screen.width - WindowRect.width - 20f;
+						break;
 					case "Center":
 						uiPosY = (Screen.height / 2f) - (WindowRect.height / 2f);
-                        uiPosX = (Screen.width / 2f) - (WindowRect.width / 2f);
+						uiPosX = (Screen.width / 2f) - (WindowRect.width / 2f);
 						break;
 					default:
-                        break;
-                }
+						break;
+				}
 				if (uiPosY < 0 || uiPosX < 0 || uiPosY > Screen.height || uiPosX > Screen.width)
 				{
-                    uiPosY = Screen.height / 4f;
-                    uiPosX = Screen.width / 3f;
+					uiPosY = Screen.height / 4f;
+					uiPosX = Screen.width / 3f;
 				}
 
-                WindowRect.y = uiPosY;
-                WindowRect.x = uiPosX;
+				WindowRect.y = uiPosY;
+				WindowRect.x = uiPosX;
 
-                ShapeKeyMaster.pluginLogger.LogDebug($"Changing sizes of SKM UI to {WindowRect.width} x {WindowRect.height}");
+				ShapeKeyMaster.pluginLogger.LogDebug($"Changing sizes of SKM UI to {WindowRect.width} x {WindowRect.height}");
 
 				_currentHeight = Screen.height;
 				_currentWidth = Screen.width;
@@ -188,7 +188,7 @@ namespace ShapeKeyMaster.GUI
 
 		private static void GuiWindowControls(int windowId)
 		{
-            _closeButton.x = WindowRect.width - (_closeButton.width + 5);
+			_closeButton.x = WindowRect.width - (_closeButton.width + 5);
 			_dragWindow.width = WindowRect.width - (_closeButton.width + 5);
 
 			UnityEngine.GUI.DragWindow(_dragWindow);
@@ -239,17 +239,17 @@ namespace ShapeKeyMaster.GUI
 
 				DisplayHeaderMenu();
 
-                GUILayout.BeginHorizontal();
+				GUILayout.BeginHorizontal();
 
-                ShapeKeyMaster.SimpleMode.Value = GUILayout.Toggle(ShapeKeyMaster.SimpleMode.Value, ShapeKeyMaster.CurrentLanguage["simple"], UIUserOverrides.getToggleStyleOverride());
+				ShapeKeyMaster.SimpleMode.Value = GUILayout.Toggle(ShapeKeyMaster.SimpleMode.Value, ShapeKeyMaster.CurrentLanguage["simple"], UIUserOverrides.getToggleStyleOverride());
 				if (ShapeKeyMaster.SimpleMode.Value)
 				{
 					ShapeKeyMaster.SimpleMode_ShowMoreFuntions.Value = GUILayout.Toggle(ShapeKeyMaster.SimpleMode_ShowMoreFuntions.Value, ShapeKeyMaster.CurrentLanguage["showMoreFuntions"], UIUserOverrides.getToggleStyleOverride());
 				}
 
-                GUILayout.EndHorizontal();
+				GUILayout.EndHorizontal();
 
-                switch (_tabSelection)
+				switch (_tabSelection)
 				{
 					case 1:
 						if (ShapeKeyMaster.SimpleMode.Value)
@@ -260,9 +260,9 @@ namespace ShapeKeyMaster.GUI
 
 							SimpleDisplayShapeKeyEntriesMenu(SkDatabase.GlobalShapekeyDictionary());
 
-                            DisplayPageManager();
+							DisplayPageManager();
 
-                            GUILayout.EndVertical();
+							GUILayout.EndVertical();
 						}
 						else
 						{
@@ -272,16 +272,16 @@ namespace ShapeKeyMaster.GUI
 
 							DisplayShapeKeyEntriesMenu(SkDatabase.GlobalShapekeyDictionary());
 
-                            DisplayPageManager();
+							DisplayPageManager();
 
-                            GUILayout.EndVertical();
+							GUILayout.EndVertical();
 						}
 						break;
 
 					case 2:
 						ShapeKeyMaster.HideInactiveMaids.Value = GUILayout.Toggle(ShapeKeyMaster.HideInactiveMaids.Value, ShapeKeyMaster.CurrentLanguage["hideInactiveMaids"], UIUserOverrides.getToggleStyleOverride());
 
-                        GUILayout.BeginVertical(_sections);
+						GUILayout.BeginVertical(_sections);
 
 						GUILayout.BeginHorizontal(_sections2);
 						GUILayout.FlexibleSpace();
@@ -304,9 +304,9 @@ namespace ShapeKeyMaster.GUI
 
 							SimpleDisplayShapeKeyEntriesMenu(SkDatabase.AllShapekeyDictionary);
 
-                            DisplayPageManager();
+							DisplayPageManager();
 
-                            GUILayout.EndVertical();
+							GUILayout.EndVertical();
 						}
 						else
 						{
@@ -316,9 +316,9 @@ namespace ShapeKeyMaster.GUI
 
 							DisplayShapeKeyEntriesMenu(SkDatabase.AllShapekeyDictionary);
 
-                            DisplayPageManager();
+							DisplayPageManager();
 
-                            GUILayout.EndVertical();
+							GUILayout.EndVertical();
 						}
 						break;
 				}
@@ -332,7 +332,7 @@ namespace ShapeKeyMaster.GUI
 
 		private static void DisplayHeaderMenu()
 		{
-            GUILayout.BeginHorizontal(_sections2);
+			GUILayout.BeginHorizontal(_sections2);
 
 			var modeLabel = EntryComparer.Mode == 0 ? ShapeKeyMaster.CurrentLanguage["date"] : EntryComparer.Mode == 1 ? ShapeKeyMaster.CurrentLanguage["name"] : EntryComparer.Mode == 2 ? ShapeKeyMaster.CurrentLanguage["shapekey"] : "GUID";
 			var ascendLabel = EntryComparer.Ascending ? "↑" : "↓";
@@ -372,7 +372,7 @@ namespace ShapeKeyMaster.GUI
 
 		private static void DisplaySearchMenu(bool noModes = false)
 		{
-            GUILayout.BeginHorizontal(_sections2);
+			GUILayout.BeginHorizontal(_sections2);
 
 			if (_openSkMenu != Guid.Empty)
 			{
@@ -417,7 +417,7 @@ namespace ShapeKeyMaster.GUI
 
 		private static void DisplayPageManager(string maidWithKey = null)
 		{
-            string headerString;
+			string headerString;
 			int applicantCount;
 
 			switch (_tabSelection)
@@ -458,7 +458,7 @@ namespace ShapeKeyMaster.GUI
 
 		private static void DisplayFooter()
 		{
-            GUILayout.BeginVertical(_sections2);
+			GUILayout.BeginVertical(_sections2);
 			if (_exportMenuOpen)
 			{
 				if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage["cancel"], UIUserOverrides.getButtonStyleOverride()))
@@ -510,7 +510,7 @@ namespace ShapeKeyMaster.GUI
 
 		private static void DisplayMaidOptions()
 		{
-            GUILayout.BeginVertical(_sections);
+			GUILayout.BeginVertical(_sections);
 
 			foreach (var maidWithKey in SkDatabase.ListOfMaidsWithKeys().OrderBy(maid => maid))
 			{
@@ -569,7 +569,7 @@ namespace ShapeKeyMaster.GUI
 					do
 					{
 						tempMaidGroupName = "Temporary Maid Group Name" + rand.Next();
-					} 
+					}
 					while (SkDatabase.ShapeKeysByMaid(tempMaidGroupName).Count > 0);
 
 					foreach (var key in newKeys)
@@ -656,8 +656,8 @@ namespace ShapeKeyMaster.GUI
 
 					GUILayout.EndHorizontal();
 
-                    DisplayPageManager(maidWithKey);
-                }
+					DisplayPageManager(maidWithKey);
+				}
 
 				GUILayout.EndVertical();
 			}
@@ -676,7 +676,7 @@ namespace ShapeKeyMaster.GUI
 
 		private static void SimpleDisplayShapeKeyEntriesMenu(Dictionary<Guid, ShapeKeyEntry> givenShapeKeys)
 		{
-            var filteredKeys = givenShapeKeys.Values
+			var filteredKeys = givenShapeKeys.Values
 				.Where(s => string.IsNullOrEmpty(_filter) ||
 							(_filterMode == 0 && s.EntryName.Contains(_filter, StringComparison.OrdinalIgnoreCase)) ||
 							(_filterMode == 1 && s.Maid.Contains(_filter, StringComparison.OrdinalIgnoreCase)) ||
@@ -721,12 +721,12 @@ namespace ShapeKeyMaster.GUI
 				s.Deform = Mathf.RoundToInt(HorizontalSliderWithInputBox(s.Deform, 0, ShapeKeyMaster.MaxDeform.Value));
 				if (!ShapeKeyMaster.SimpleMode_ShowMoreFuntions.Value)
 				{
-                    if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage["delete"], UIUserOverrides.getButtonStyleOverride()))
-                    {
-                        SkDatabase.Remove(s);
-                    }
-                }
-                GUILayout.EndHorizontal();
+					if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage["delete"], UIUserOverrides.getButtonStyleOverride()))
+					{
+						SkDatabase.Remove(s);
+					}
+				}
+				GUILayout.EndHorizontal();
 
 				if (ShapeKeyMaster.SimpleMode_ShowMoreFuntions.Value)
 				{
@@ -762,7 +762,7 @@ namespace ShapeKeyMaster.GUI
 			if (_tabSelection != 2 && GUILayout.Button("+", UIUserOverrides.getButtonStyleOverride(), GUILayout.Width(40)))
 			{
 #if (DEBUG)
-        ShapeKeyMaster.pluginLogger.LogDebug("I've been clicked! Oh the humanity!!");
+				ShapeKeyMaster.pluginLogger.LogDebug("I've been clicked! Oh the humanity!!");
 #endif
 				var activeGuid = Guid.NewGuid();
 				SkDatabase.Add(new ShapeKeyEntry(activeGuid));
@@ -899,7 +899,7 @@ namespace ShapeKeyMaster.GUI
 
 		private static void DisplayShapeKeyEntriesMenu(Dictionary<Guid, ShapeKeyEntry> givenShapeKeys)
 		{
-            if (_tabSelection != 2 && GUILayout.Button(ShapeKeyMaster.CurrentLanguage["addNewShapekey"], UIUserOverrides.getButtonStyleOverride()))
+			if (_tabSelection != 2 && GUILayout.Button(ShapeKeyMaster.CurrentLanguage["addNewShapekey"], UIUserOverrides.getButtonStyleOverride()))
 			{
 #if (DEBUG)
 				ShapeKeyMaster.pluginLogger.LogDebug("I've been clicked! Oh the humanity!!");
@@ -915,9 +915,9 @@ namespace ShapeKeyMaster.GUI
 
 			var filteredKeys = givenShapeKeys.Values
 				.Where(s => string.IsNullOrEmpty(_filter) ||
-				            (_filterMode == 0 && s.EntryName.Contains(_filter, StringComparison.OrdinalIgnoreCase)) ||
-				            (_filterMode == 1 && s.Maid.Contains(_filter, StringComparison.OrdinalIgnoreCase)) ||
-				            (_filterMode == 2 && s.ShapeKey.Contains(_filter, StringComparison.OrdinalIgnoreCase)))
+							(_filterMode == 0 && s.EntryName.Contains(_filter, StringComparison.OrdinalIgnoreCase)) ||
+							(_filterMode == 1 && s.Maid.Contains(_filter, StringComparison.OrdinalIgnoreCase)) ||
+							(_filterMode == 2 && s.ShapeKey.Contains(_filter, StringComparison.OrdinalIgnoreCase)))
 				.OrderBy(s => s, EntryComparer);
 
 			foreach (var s in filteredKeys.Skip(_page).Take(ShapeKeyMaster.EntriesPerPage.Value))
@@ -1085,7 +1085,7 @@ namespace ShapeKeyMaster.GUI
 		//From here on down are submenus....
 		private static void DisplayShapeKeySelectMenu(ShapeKeyEntry s)
 		{
-            DisplaySearchMenu(true);
+			DisplaySearchMenu(true);
 
 			GUILayout.BeginHorizontal();
 
@@ -1228,7 +1228,7 @@ namespace ShapeKeyMaster.GUI
 
 		private static void DisplayMaidSelectMenu(ShapeKeyEntry s)
 		{
-            DisplaySearchMenu(true);
+			DisplaySearchMenu(true);
 
 			GUILayout.Label($"{s.EntryName} {ShapeKeyMaster.CurrentLanguage["selectMaid"]}", UIUserOverrides.getLabelStyleOverride());
 
@@ -1271,7 +1271,7 @@ namespace ShapeKeyMaster.GUI
 
 		private static void DisplayMaidGroupCreateMenu(Dictionary<Guid, ShapeKeyEntry> givenShapeKeys)
 		{
-            DisplaySearchMenu(true);
+			DisplaySearchMenu(true);
 
 			GUILayout.Label(ShapeKeyMaster.CurrentLanguage["selectNewMaidGroup"], UIUserOverrides.getLabelStyleOverride());
 
@@ -1321,7 +1321,7 @@ namespace ShapeKeyMaster.GUI
 
 		private static void DisplayRenameMenu(ShapeKeyEntry s)
 		{
-            GUILayout.Label($"{ShapeKeyMaster.CurrentLanguage["nowRenaming"]} {s.EntryName}", UIUserOverrides.getLabelStyleOverride());
+			GUILayout.Label($"{ShapeKeyMaster.CurrentLanguage["nowRenaming"]} {s.EntryName}", UIUserOverrides.getLabelStyleOverride());
 
 			s.EntryName = GUILayout.TextField(s.EntryName, UIUserOverrides.getTextFieldStyleOverride());
 
@@ -1333,7 +1333,7 @@ namespace ShapeKeyMaster.GUI
 
 		private static void DisplaySlotConditionsMenu(ShapeKeyEntry s)
 		{
-            GUILayout.BeginVertical(_sections);
+			GUILayout.BeginVertical(_sections);
 
 			GUILayout.BeginHorizontal(_sections2);
 			GUILayout.FlexibleSpace();
@@ -1440,7 +1440,7 @@ namespace ShapeKeyMaster.GUI
 
 		private static void DisplayMaidRenameMenu(string s)
 		{
-            DisplaySearchMenu(true);
+			DisplaySearchMenu(true);
 
 			GUILayout.Label($"{ShapeKeyMaster.CurrentLanguage["renamingMaidGroup"]}: {s}", UIUserOverrides.getLabelStyleOverride());
 
@@ -1494,7 +1494,7 @@ namespace ShapeKeyMaster.GUI
 
 		private static void DisplayExportMenu()
 		{
-            ShapeKeyMaster.HideInactiveMaids.Value = GUILayout.Toggle(ShapeKeyMaster.HideInactiveMaids.Value, ShapeKeyMaster.CurrentLanguage["hideInactiveMaids"], UIUserOverrides.getToggleStyleOverride());
+			ShapeKeyMaster.HideInactiveMaids.Value = GUILayout.Toggle(ShapeKeyMaster.HideInactiveMaids.Value, ShapeKeyMaster.CurrentLanguage["hideInactiveMaids"], UIUserOverrides.getToggleStyleOverride());
 
 			if (ShapeKeyMaster.HideInactiveMaids.Value == false && GUILayout.Button(ShapeKeyMaster.CurrentLanguage["all"], UIUserOverrides.getButtonStyleOverride()))
 			{

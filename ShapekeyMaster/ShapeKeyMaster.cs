@@ -45,14 +45,14 @@ namespace ShapeKeyMaster
 		internal static ConfigEntry<string> Language;
 
 		internal static ConfigEntry<int> FontSize;
-        internal static ConfigEntry<float> SliderSize;
-        internal static ConfigEntry<float> MinUIHeight;
-        internal static ConfigEntry<float> MinUIWidth;
+		internal static ConfigEntry<float> SliderSize;
+		internal static ConfigEntry<float> MinUIHeight;
+		internal static ConfigEntry<float> MinUIWidth;
 		internal static ConfigEntry<float> MinShapekeyNameTextboxWidth;
 		internal static ConfigEntry<string> DefaultUIPosition;
-        internal static ConfigEntry<bool> SimpleMode_ShowMoreFuntions;
+		internal static ConfigEntry<bool> SimpleMode_ShowMoreFuntions;
 
-        internal static ConfigEntry<bool> HotKeyEnabled;
+		internal static ConfigEntry<bool> HotKeyEnabled;
 		internal static ConfigEntry<KeyboardShortcut> HotKey;
 
 		internal static TranslationResource CurrentLanguage { get; private set; }
@@ -91,16 +91,16 @@ namespace ShapeKeyMaster
 			HideInactiveMaids = Config.Bind("UI", "2. Hide Inactive Maids", false, "In the maids view, maids that are not present or loaded are hidden from the menu options.");
 			EntriesPerPage = Config.Bind("UI", "3. Entries Per Page", 10, "How many entries to display per an entry page.");
 			Language = Config.Bind("UI", "4. Language", "english.json", new ConfigDescription("The language for SKM's UI.", acceptableValues));
-		
-			FontSize = Config.Bind("UI 2", "1. Font Size", 14, "Font size.");
-            SliderSize = Config.Bind("UI 2", "2. Slider Size", 16f, "Shapekey slider size");
-            MinUIHeight = Config.Bind("UI 2", "3. Minimum UI Height", 200f, "Minimum UI height in pixels.");
-            MinUIWidth = Config.Bind("UI 2", "4. Minimum UI Width", 500f, "Minimum UI width in pixels.");
-            MinShapekeyNameTextboxWidth = Config.Bind("UI 2", "5. Minimum Shapekey Name Textbox Width", 200f, "Sets the minimum shapekey name textbox width in pixels. Wider shapekey name textbox will shorten the shapekey slider.");
-            DefaultUIPosition = Config.Bind("UI 2", "6. Default UI Position", "Default", new ConfigDescription("UI default position. Available Positions: \"TopLeft\", \"TopRight\", \"BottomLeft\", \"BottomRight\", \"Center\", \"Default\". If the top left corner of the UI exceeds screen boundaries, the UI postion will be set to \"Default\"", acceptableDefaultUIPositionList));
-            SimpleMode_ShowMoreFuntions = Config.Bind("UI 2", "7. Simple Mode - Show More Functions", true, "Show row under shapekey containing more functions, such as conditions setup, conditions toggle, copy shapekey.");
 
-            Language.SettingChanged += (e, s) =>
+			FontSize = Config.Bind("UI 2", "1. Font Size", 14, "Font size.");
+			SliderSize = Config.Bind("UI 2", "2. Slider Size", 16f, "Shapekey slider size");
+			MinUIHeight = Config.Bind("UI 2", "3. Minimum UI Height", 200f, "Minimum UI height in pixels.");
+			MinUIWidth = Config.Bind("UI 2", "4. Minimum UI Width", 500f, "Minimum UI width in pixels.");
+			MinShapekeyNameTextboxWidth = Config.Bind("UI 2", "5. Minimum Shapekey Name Textbox Width", 200f, "Sets the minimum shapekey name textbox width in pixels. Wider shapekey name textbox will shorten the shapekey slider.");
+			DefaultUIPosition = Config.Bind("UI 2", "6. Default UI Position", "Default", new ConfigDescription("UI default position. Available Positions: \"TopLeft\", \"TopRight\", \"BottomLeft\", \"BottomRight\", \"Center\", \"Default\". If the top left corner of the UI exceeds screen boundaries, the UI postion will be set to \"Default\"", acceptableDefaultUIPositionList));
+			SimpleMode_ShowMoreFuntions = Config.Bind("UI 2", "7. Simple Mode - Show More Functions", true, "Show row under shapekey containing more functions, such as conditions setup, conditions toggle, copy shapekey.");
+
+			Language.SettingChanged += (e, s) =>
 			{
 				CurrentLanguage = new TranslationResource(Paths.ConfigPath + "\\ShapekeyMaster\\" + Language.Value);
 			};
@@ -238,7 +238,7 @@ namespace ShapeKeyMaster
 				ObjectCreationHandling = ObjectCreationHandling.Replace
 			};
 
-			
+
 			return jsonObject.ToObject<ShapeKeyDatabase>();
 		}
 

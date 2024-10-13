@@ -246,7 +246,7 @@ namespace ShapeKeyMaster
 						.ForEach(keyVal =>
 							{
 #if DEBUG
-							ShapeKeyMaster.pluginLogger.LogDebug($"{ID} is updating mesh for category: {keyVal.Key.Category} | Maid: {keyVal.Key.bodyskin.body.maid.status.fullNameJpStyle}");
+								ShapeKeyMaster.pluginLogger.LogDebug($"{ID} is updating mesh for category: {keyVal.Key.Category} | Maid: {keyVal.Key.bodyskin.body.maid.status.fullNameJpStyle}");
 #endif
 
 								keyVal.Key.FixBlendValues();
