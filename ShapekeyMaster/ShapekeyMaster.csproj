@@ -36,6 +36,7 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GUI\UIUserOverrides.cs" />
     <Compile Include="ShapeKeyBlacklist.cs" />
     <Compile Include="ShapeKeyUpdate.cs" />
     <Compile Include="CategorySlotHandler.cs" />
@@ -64,7 +65,7 @@
       <HintPath>..\packages\BepInEx.BaseLib.5.4.21\lib\net35\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="COM3D2.API">
-      <HintPath>..\..\..\..\Desktop\Game Related Files\Meido Related Stuff\Meido Assemblies\COM Assemblies\Resources\COM3D2.API.dll</HintPath>
+      <HintPath>..\..\References\COM3D2.API.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net35\Newtonsoft.Json.dll</HintPath>
@@ -80,8 +81,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>del "G:\KISS\COM3D2Test\BepinEx\plugins\$(TargetFileName)"
-copy "$(TargetPath)" "G:\KISS\COM3D2Test\BepinEx\plugins"
-powershell start-process "G:\KISS\COM3D2Test\COM3D2x64.exe"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

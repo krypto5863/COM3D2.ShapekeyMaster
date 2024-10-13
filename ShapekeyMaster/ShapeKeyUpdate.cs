@@ -215,7 +215,7 @@ namespace ShapeKeyMaster
 		public class UpdateKeysOrder : IShapeKeyWorkOrder, IEquatable<UpdateKeysOrder>
 		{
 #if DEBUG
-			private static Random rander = new Random();
+			private static System.Random rander = new System.Random();
 
 			public readonly string ID;
 #endif
