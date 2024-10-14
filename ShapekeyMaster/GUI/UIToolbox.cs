@@ -36,7 +36,7 @@ namespace ShapeKeyMaster.GUI
 
 		internal static float FloatField(float initialVal, float min = 0, float max = 100)
 		{
-			var stringReturn = GUILayout.TextField(initialVal.ToString("0"), UIUserOverrides.getTextFieldStyleOverride(), GUILayout.Width(75));
+			var stringReturn = GUILayout.TextField(initialVal.ToString("0"), GUILayout.Width(75));
 			stringReturn = NotNumPeriod.Replace(stringReturn, "");
 			stringReturn = stringReturn.IsNullOrWhiteSpace() ? "0" : stringReturn;
 
@@ -49,15 +49,15 @@ namespace ShapeKeyMaster.GUI
 
 			if (label.IsNullOrWhiteSpace() == false)
 			{
-				GUILayout.Label(label, UIUserOverrides.getLabelStyleOverride());
+				GUILayout.Label(label);
 			}
 
-			if (GUILayout.Button("0", UIUserOverrides.getButtonStyleOverride()))
+			if (GUILayout.Button("0"))
 			{
 				initialVal = 0;
 			}
 
-			initialVal = GUILayout.HorizontalSlider(initialVal, min, max, UIUserOverrides.getSliderStyleOverride(), UIUserOverrides.getSliderThumbStyleOverride(), GUILayout.MaxWidth(9999));
+			initialVal = GUILayout.HorizontalSlider(initialVal, min, max, GUILayout.MaxWidth(9999));
 
 			if (doButtons)
 			{
@@ -65,13 +65,13 @@ namespace ShapeKeyMaster.GUI
 
 				GUILayout.FlexibleSpace();
 
-				if (GUILayout.Button("<", UIUserOverrides.getButtonStyleOverride()))
+				if (GUILayout.Button("<"))
 				{
 					var addition = initialVal - 1;
 					initialVal = Math.Max(addition, min);
 				}
 
-				if (GUILayout.Button(">", UIUserOverrides.getButtonStyleOverride()))
+				if (GUILayout.Button(">"))
 				{
 					var addition = initialVal + 1;
 					initialVal = Math.Min(addition, max);

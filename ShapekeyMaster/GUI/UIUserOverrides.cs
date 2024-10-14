@@ -10,6 +10,23 @@ namespace ShapeKeyMaster.GUI
 	internal static class UIUserOverrides
 	{
 		private static Dictionary<string, GUIStyle> cache = new Dictionary<string, GUIStyle>();
+
+		private static GUISkin _CustomSkin = GUISkin.CreateInstance<GUISkin>();
+
+		internal static GUISkin CustomSkin { 
+			get 
+			{
+				_CustomSkin.button = getButtonStyleOverride();
+				_CustomSkin.label = getLabelStyleOverride();
+				_CustomSkin.toggle = getToggleStyleOverride();
+				_CustomSkin.textField = getTextFieldStyleOverride();
+				_CustomSkin.horizontalSlider = getSliderStyleOverride();
+				_CustomSkin.horizontalSliderThumb = getSliderThumbStyleOverride();
+				return _CustomSkin;
+			}
+			set { }
+		}
+
 		internal static GUIStyle getButtonStyleOverride()
 		{
 			GUIStyle buttonStyleOverride;
