@@ -50,7 +50,7 @@ namespace ShapeKeyMaster
 		internal static ConfigEntry<float> MinUIWidth;
 		internal static ConfigEntry<float> MinShapekeyNameTextboxWidth;
 		internal static ConfigEntry<string> DefaultUIPosition;
-		internal static ConfigEntry<bool> SimpleMode_ShowMoreFuntions;
+		internal static ConfigEntry<bool> SimpleMode_ShowMoreFunctions;
 
 		internal static ConfigEntry<bool> HotKeyEnabled;
 		internal static ConfigEntry<KeyboardShortcut> HotKey;
@@ -98,7 +98,7 @@ namespace ShapeKeyMaster
 			MinUIWidth = Config.Bind("UI 2", "4. Minimum UI Width", 500f, "Minimum UI width in pixels.");
 			MinShapekeyNameTextboxWidth = Config.Bind("UI 2", "5. Minimum Shapekey Name Textbox Width", 200f, "Sets the minimum shapekey name textbox width in pixels. Wider shapekey name textbox will shorten the shapekey slider.");
 			DefaultUIPosition = Config.Bind("UI 2", "6. Default UI Position", "Default", new ConfigDescription("UI default position. Available Positions: \"TopLeft\", \"TopRight\", \"BottomLeft\", \"BottomRight\", \"Center\", \"Default\". If the top left corner of the UI exceeds screen boundaries, the UI postion will be set to \"Default\"", acceptableDefaultUIPositionList));
-			SimpleMode_ShowMoreFuntions = Config.Bind("UI 2", "7. Simple Mode - Show More Functions", true, "Show row under shapekey containing more functions, such as conditions setup, conditions toggle, copy shapekey.");
+			SimpleMode_ShowMoreFunctions = Config.Bind("UI 2", "7. Simple Mode - Show More Functions", true, "Show row under shapekey containing more functions, such as conditions setup, conditions toggle, copy shapekey.");
 
 			Language.SettingChanged += (e, s) =>
 			{

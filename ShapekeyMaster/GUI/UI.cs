@@ -244,7 +244,7 @@ namespace ShapeKeyMaster.GUI
 				ShapeKeyMaster.SimpleMode.Value = GUILayout.Toggle(ShapeKeyMaster.SimpleMode.Value, ShapeKeyMaster.CurrentLanguage["simple"], UIUserOverrides.getToggleStyleOverride());
 				if (ShapeKeyMaster.SimpleMode.Value)
 				{
-					ShapeKeyMaster.SimpleMode_ShowMoreFuntions.Value = GUILayout.Toggle(ShapeKeyMaster.SimpleMode_ShowMoreFuntions.Value, ShapeKeyMaster.CurrentLanguage["showMoreFuntions"], UIUserOverrides.getToggleStyleOverride());
+					ShapeKeyMaster.SimpleMode_ShowMoreFunctions.Value = GUILayout.Toggle(ShapeKeyMaster.SimpleMode_ShowMoreFunctions.Value, ShapeKeyMaster.CurrentLanguage["showMoreFunctions"], UIUserOverrides.getToggleStyleOverride());
 				}
 
 				GUILayout.EndHorizontal();
@@ -719,7 +719,7 @@ namespace ShapeKeyMaster.GUI
 				}
 				s.ShapeKey = GUILayout.TextField(s.ShapeKey, UIUserOverrides.getTextFieldStyleOverride(), GUILayout.Width(ShapeKeyMaster.MinShapekeyNameTextboxWidth.Value));
 				s.Deform = Mathf.RoundToInt(HorizontalSliderWithInputBox(s.Deform, 0, ShapeKeyMaster.MaxDeform.Value));
-				if (!ShapeKeyMaster.SimpleMode_ShowMoreFuntions.Value)
+				if (!ShapeKeyMaster.SimpleMode_ShowMoreFunctions.Value)
 				{
 					if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage["delete"], UIUserOverrides.getButtonStyleOverride()))
 					{
@@ -728,7 +728,7 @@ namespace ShapeKeyMaster.GUI
 				}
 				GUILayout.EndHorizontal();
 
-				if (ShapeKeyMaster.SimpleMode_ShowMoreFuntions.Value)
+				if (ShapeKeyMaster.SimpleMode_ShowMoreFunctions.Value)
 				{
 					GUILayout.BeginHorizontal(style);
 					if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage["openSlotCondMenu"], UIUserOverrides.getButtonStyleOverride()))

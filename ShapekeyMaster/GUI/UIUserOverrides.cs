@@ -9,58 +9,121 @@ namespace ShapeKeyMaster.GUI
 {
 	internal static class UIUserOverrides
 	{
+		private static Dictionary<string, GUIStyle> cache = new Dictionary<string, GUIStyle>();
 		internal static GUIStyle getButtonStyleOverride()
 		{
-			var buttonStyleOverride = new GUIStyle(UnityEngine.GUI.skin.button)
+			GUIStyle buttonStyleOverride;
+			if (!cache.TryGetValue("ButtonStyleOverride", out buttonStyleOverride))
 			{
-				fontSize = ShapeKeyMaster.FontSize.Value
-			};
-			return buttonStyleOverride;
+				buttonStyleOverride = new GUIStyle(UnityEngine.GUI.skin.button)
+				{
+					fontSize = ShapeKeyMaster.FontSize.Value
+				};
+				cache.Add("ButtonStyleOverride", buttonStyleOverride);
+				return buttonStyleOverride;
+			}
+			else 
+			{
+				buttonStyleOverride.fontSize = ShapeKeyMaster.FontSize.Value;
+				return buttonStyleOverride;
+			}
 		}
 
 		internal static GUIStyle getLabelStyleOverride()
 		{
-			var labelStyleOverride = new GUIStyle(UnityEngine.GUI.skin.label)
+			GUIStyle labelStyleOverride;
+			if (!cache.TryGetValue("LabelStyleOverride", out labelStyleOverride))
 			{
-				fontSize = ShapeKeyMaster.FontSize.Value
-			};
-			return labelStyleOverride;
+				labelStyleOverride = new GUIStyle(UnityEngine.GUI.skin.label)
+				{
+					fontSize = ShapeKeyMaster.FontSize.Value
+				};
+				cache.Add("LabelStyleOverride", labelStyleOverride);
+				return labelStyleOverride;
+			}
+			else
+			{
+				labelStyleOverride.fontSize = ShapeKeyMaster.FontSize.Value;
+				return labelStyleOverride;
+			}
 		}
 
 		internal static GUIStyle getTextFieldStyleOverride()
 		{
-			var textFieldStyleOverride = new GUIStyle(UnityEngine.GUI.skin.textField)
+			GUIStyle textFieldStyleOverride;
+			if (!cache.TryGetValue("TextFieldStyleOverride", out textFieldStyleOverride))
 			{
-				fontSize = ShapeKeyMaster.FontSize.Value
-			};
-			return textFieldStyleOverride;
+				textFieldStyleOverride = new GUIStyle(UnityEngine.GUI.skin.textField)
+				{
+					fontSize = ShapeKeyMaster.FontSize.Value
+				};
+				cache.Add("TextFieldStyleOverride", textFieldStyleOverride);
+				return textFieldStyleOverride;
+			}
+			else
+			{
+				textFieldStyleOverride.fontSize = ShapeKeyMaster.FontSize.Value;
+				return textFieldStyleOverride;
+			}
 		}
 
 		internal static GUIStyle getToggleStyleOverride()
 		{
-			return new GUIStyle(UnityEngine.GUI.skin.toggle)
+			GUIStyle toggleStyleOverride;
+			if (!cache.TryGetValue("ToggleStyleOverride", out toggleStyleOverride))
 			{
-				fontSize = ShapeKeyMaster.FontSize.Value
-			};
+				toggleStyleOverride = new GUIStyle(UnityEngine.GUI.skin.toggle)
+				{
+					fontSize = ShapeKeyMaster.FontSize.Value
+				};
+				cache.Add("ToggleStyleOverride", toggleStyleOverride);
+				return toggleStyleOverride;
+			}
+			else
+			{
+				toggleStyleOverride.fontSize = ShapeKeyMaster.FontSize.Value;
+				return toggleStyleOverride;
+			}
 		}
 
 		internal static GUIStyle getSliderStyleOverride()
 		{
-			var sliderStyleOverride = new GUIStyle(UnityEngine.GUI.skin.horizontalSlider)
+			GUIStyle sliderStyleOverride;
+			if (!cache.TryGetValue("SliderStyleOverride", out sliderStyleOverride))
 			{
-				fixedHeight = ShapeKeyMaster.SliderSize.Value
-			};
-			return sliderStyleOverride;
+				sliderStyleOverride = new GUIStyle(UnityEngine.GUI.skin.horizontalSlider)
+				{
+					fixedHeight = ShapeKeyMaster.SliderSize.Value
+				};
+				cache.Add("SliderStyleOverride", sliderStyleOverride);
+				return sliderStyleOverride;
+			}
+			else
+			{
+				sliderStyleOverride.fixedHeight = ShapeKeyMaster.SliderSize.Value;
+				return sliderStyleOverride;
+			}
 		}
 
 		internal static GUIStyle getSliderThumbStyleOverride()
 		{
-			var sliderThumbStyleOverride = new GUIStyle(UnityEngine.GUI.skin.horizontalSliderThumb)
+			GUIStyle sliderThumbStyleOverride;
+			if (!cache.TryGetValue("SliderThumbStyleOverride", out sliderThumbStyleOverride))
 			{
-				fixedHeight = ShapeKeyMaster.SliderSize.Value,
-				fixedWidth = ShapeKeyMaster.SliderSize.Value
-			};
-			return sliderThumbStyleOverride;
+				sliderThumbStyleOverride = new GUIStyle(UnityEngine.GUI.skin.horizontalSliderThumb)
+				{
+					fixedHeight = ShapeKeyMaster.SliderSize.Value,
+					fixedWidth = ShapeKeyMaster.SliderSize.Value
+				};
+				cache.Add("SliderThumbStyleOverride", sliderThumbStyleOverride);
+				return sliderThumbStyleOverride;
+			}
+			else
+			{
+				sliderThumbStyleOverride.fixedHeight = ShapeKeyMaster.SliderSize.Value;
+				sliderThumbStyleOverride.fixedWidth = ShapeKeyMaster.SliderSize.Value;
+				return sliderThumbStyleOverride;
+			}
 		}
 	}
 }
