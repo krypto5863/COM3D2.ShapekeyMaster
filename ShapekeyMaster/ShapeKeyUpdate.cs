@@ -215,7 +215,7 @@ namespace ShapeKeyMaster
 		public class UpdateKeysOrder : IShapeKeyWorkOrder, IEquatable<UpdateKeysOrder>
 		{
 #if DEBUG
-			private static Random rander = new Random();
+			private static System.Random rander = new System.Random();
 
 			public readonly string ID;
 #endif
@@ -246,7 +246,7 @@ namespace ShapeKeyMaster
 						.ForEach(keyVal =>
 							{
 #if DEBUG
-							ShapeKeyMaster.pluginLogger.LogDebug($"{ID} is updating mesh for category: {keyVal.Key.Category} | Maid: {keyVal.Key.bodyskin.body.maid.status.fullNameJpStyle}");
+								ShapeKeyMaster.pluginLogger.LogDebug($"{ID} is updating mesh for category: {keyVal.Key.Category} | Maid: {keyVal.Key.bodyskin.body.maid.status.fullNameJpStyle}");
 #endif
 
 								keyVal.Key.FixBlendValues();
