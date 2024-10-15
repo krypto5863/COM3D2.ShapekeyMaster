@@ -11,7 +11,7 @@ namespace ShapeKeyMaster.GUI
 	{
 		private static Dictionary<string, GUIStyle> cache = new Dictionary<string, GUIStyle>();
 
-		private static GUISkin _CustomSkin = GUISkin.CreateInstance<GUISkin>();
+		private static GUISkin _CustomSkin = UnityEngine.Object.Instantiate(UnityEngine.GUI.skin);
 
 		internal static GUISkin CustomSkin { 
 			get 
