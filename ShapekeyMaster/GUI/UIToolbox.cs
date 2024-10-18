@@ -43,6 +43,15 @@ namespace ShapeKeyMaster.GUI
 			return float.TryParse(stringReturn, out var floatReturn) ? Math.Min(max, Math.Max(floatReturn, min)) : initialVal;
 		}
 
+		internal static int IntField(int initialVal, int min = 0, int max = 100, int width = 75)
+		{
+			var stringReturn = GUILayout.TextField(initialVal.ToString("0"), GUILayout.Width(width));
+			stringReturn = NotNumPeriod.Replace(stringReturn, "");
+			stringReturn = stringReturn.IsNullOrWhiteSpace() ? "0" : stringReturn;
+
+			return int.TryParse(stringReturn, out var intReturn) ? Math.Min(max, Math.Max(intReturn, min)) : initialVal;
+		}
+
 		internal static float HorizontalSliderWithInputBox(float initialVal, float min = 0, float max = 100, string label = null, bool doButtons = true)
 		{
 			GUILayout.BeginHorizontal();
@@ -217,12 +226,13 @@ namespace ShapeKeyMaster.GUI
 			//Mode 1, entry name
 			//Mode 2, shapekey
 			//Mode 3, guid
+			//Mode 4, Order Number
 			public int Mode
 			{
 				get => mode;
 				set
 				{
-					if (value > 3 || value < 0)
+					if (value > 4 || value < 0)
 					{
 						mode = 0;
 					}
@@ -255,6 +265,10 @@ namespace ShapeKeyMaster.GUI
 
 					case 3:
 						result = shapekeyThing1.Id.CompareTo(shapekeyThing2.Id);
+						break;
+
+					case 4:
+						result = shapekeyThing1.OrderNum.Value.CompareTo(shapekeyThing2.OrderNum.Value);
 						break;
 
 					default:

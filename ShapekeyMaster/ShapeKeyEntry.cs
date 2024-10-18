@@ -1,4 +1,5 @@
-﻿using ShapeKeyMaster.GUI;
+﻿using Newtonsoft.Json;
+using ShapeKeyMaster.GUI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,6 +14,32 @@ namespace ShapeKeyMaster
 		public Guid Id { get; }
 		public string EntryName { get; set; }
 		public DateTime CreationDate { get; set; }
+		[JsonIgnore]
+		private int? _OrderNum;
+		public int? OrderNum {
+			get
+			{ 
+				return _OrderNum;
+			}
+			set 
+			{
+				if (value == null)
+				{
+					_OrderNum = null;
+					return;
+				}
+
+				if (_OrderNum == null)
+				{
+					_OrderNum = value;
+					return;
+				}
+
+				_OrderNum = Ui.SkDatabase.Reorder_Insert(this, value.Value);
+			} 
+		}
+		[JsonIgnore]
+		public int? OrderNumTmp { get; set; }
 
 		private int enabled;
 		/// <summary>
@@ -435,13 +462,14 @@ namespace ShapeKeyMaster
 
 			//Main.@this.StartCoroutine(Animator);
 		}
-		
+
 		public object Clone()
 		{
 			var newClone = new ShapeKeyEntry(Guid.NewGuid(), maid)
 			{
 				enabled = enabled,
 				EntryName = EntryName.Clone() as string,
+				OrderNum = OrderNum,
 				deform = deform,
 				shapeKey = shapeKey,
 				animateWithExcitement = animateWithExcitement,
