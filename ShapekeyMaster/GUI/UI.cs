@@ -130,7 +130,7 @@ namespace ShapeKeyMaster.GUI
 					fontSize = ShapeKeyMaster.FontSize.Value
 				};
 
-				EntryComparer.Mode = 0;
+				EntryComparer.Mode = ConvertDefaultSortMethod(ShapeKeyMaster.DefaultSortingMethod.Value);
 
 				_runOnce = false;
 			}
@@ -338,7 +338,10 @@ namespace ShapeKeyMaster.GUI
 		{
 			GUILayout.BeginHorizontal(_sections2);
 
-			var modeLabel = EntryComparer.Mode == 0 ? ShapeKeyMaster.CurrentLanguage["date"] : EntryComparer.Mode == 1 ? ShapeKeyMaster.CurrentLanguage["name"] : EntryComparer.Mode == 2 ? ShapeKeyMaster.CurrentLanguage["shapekey"] : "GUID";
+			var modeLabel = EntryComparer.Mode == 0 ? ShapeKeyMaster.CurrentLanguage["date"] : 
+							EntryComparer.Mode == 1 ? ShapeKeyMaster.CurrentLanguage["name"] : 
+							EntryComparer.Mode == 2 ? ShapeKeyMaster.CurrentLanguage["shapekey"] : 
+							EntryComparer.Mode == 3 ? "GUID" : ShapeKeyMaster.CurrentLanguage["orderNumber"];
 			var ascendLabel = EntryComparer.Ascending ? "↑" : "↓";
 
 			GUILayout.Label(ShapeKeyMaster.CurrentLanguage["sortBy"] + ":");
@@ -448,7 +451,7 @@ namespace ShapeKeyMaster.GUI
 				_page = Math.Max(_page - ShapeKeyMaster.EntriesPerPage.Value, 0);
 			}
 			GUILayout.FlexibleSpace();
-			GUILayout.Label($"{headerString}:{_page} ~ {_page + ShapeKeyMaster.EntriesPerPage.Value}");
+			BuildPageManagerLabel(headerString, applicantCount);
 			GUILayout.FlexibleSpace();
 			if (GUILayout.Button(">>"))
 			{
@@ -746,6 +749,12 @@ namespace ShapeKeyMaster.GUI
 					cateNameLabel = cateNameLabel.Length > 25 ? cateNameLabel.Substring(0, 25) + "..." : cateNameLabel;
 					GUILayout.Label(cateNameLabel);
 					GUILayout.FlexibleSpace();
+
+					if (EntryComparer.Mode == 4)
+					{
+						BuildOrderNumControls(s);
+					}
+
 					if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage["copy"]))
 					{
 						var newEntry = s.Clone() as ShapeKeyEntry;
@@ -1056,6 +1065,11 @@ namespace ShapeKeyMaster.GUI
 					s.ConditionalsToggle = GUILayout.Toggle(s.ConditionalsToggle, ShapeKeyMaster.CurrentLanguage["enableConditionals"]);
 
 					GUILayout.FlexibleSpace();
+
+					if (EntryComparer.Mode == 4)
+					{
+						BuildOrderNumControls(s);
+					}
 
 					if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage["rename"]))
 					{
@@ -1555,6 +1569,108 @@ namespace ShapeKeyMaster.GUI
 				}
 
 				ThingsToExport.Clear();
+			}
+		}
+
+		private static void BuildPageManagerLabel(string headerString, int applicantCount)
+		{
+			if (EntryComparer.Ascending)
+			{
+				var countStart = _page + 1;
+				var countEnd = Math.Min(_page + ShapeKeyMaster.EntriesPerPage.Value, applicantCount);
+				if (countStart == applicantCount)
+				{
+					GUILayout.Label($"{headerString} : {countStart}");
+				}
+				else
+				{
+					GUILayout.Label($"{headerString} : {countStart} ~ {countEnd}");
+				}
+			}
+			else
+			{
+				var countStart = applicantCount - _page;
+				var countEnd = Math.Max(countStart - ShapeKeyMaster.EntriesPerPage.Value + 1, 1);
+				if (countStart == 1)
+				{
+					GUILayout.Label($"{headerString} : {countStart}");
+				}
+				else
+				{
+					GUILayout.Label($"{headerString} : {countStart} ~ {countEnd}");
+				}
+			}
+		}
+
+		private static void BuildOrderNumControls(ShapeKeyEntry s)
+		{
+			if (Event.current.type == EventType.keyDown
+				&& (Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter)
+				&& UnityEngine.GUI.GetNameOfFocusedControl() == "OrderNumInput")
+			{
+				if (s.OrderNumTmp.HasValue)
+				{
+					s.OrderNum = s.OrderNumTmp;
+					s.OrderNumTmp = null;
+				}
+			}
+
+			if (s.OrderNumTmp.HasValue)
+			{
+				if (GUILayout.Button("X", GUILayout.Width(50)))
+				{
+					s.OrderNumTmp = null;
+					return;
+				}
+
+				UnityEngine.GUI.SetNextControlName("OrderNumInput");
+				s.OrderNumTmp = UiToolbox.IntField(s.OrderNumTmp.Value, 0, 999, 75);
+
+				if (GUILayout.Button("✓", GUILayout.Width(50)))
+				{
+					s.OrderNum = s.OrderNumTmp;
+					s.OrderNumTmp = null;
+					return;
+				}
+			}
+			else
+			{
+				if (GUILayout.Button("↑", GUILayout.Width(50)))
+				{
+					SkDatabase.Reorder_MoveForward(s);
+					return;
+				}
+
+				if (GUILayout.Button(s.OrderNum.Value.ToString(), GUILayout.Width(75)))
+				{
+					s.OrderNumTmp = s.OrderNum;
+					return;
+				}
+
+				if (GUILayout.Button("↓", GUILayout.Width(50)))
+				{
+					SkDatabase.Reorder_MoveBack(s);
+					return;
+				}
+			}
+		}
+
+		private static int ConvertDefaultSortMethod(string sortMethodStr)
+		{
+			switch (sortMethodStr)
+			{
+				case "Date":
+					return 0;
+				case "Name":
+					return 1;
+				case "Shapekey":
+					return 2;
+				case "Id":
+					return 3;
+				case "Order Number":
+					return 4;
+				default: 
+					return 0;
 			}
 		}
 
