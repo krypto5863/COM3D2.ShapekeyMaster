@@ -43,6 +43,7 @@ namespace ShapeKeyMaster
 		internal static ConfigEntry<bool> HideInactiveMaids;
 		internal static ConfigEntry<int> EntriesPerPage;
 		internal static ConfigEntry<string> Language;
+		internal static ConfigEntry<string> DefaultSortingMethod;
 
 		internal static ConfigEntry<int> FontSize;
 		internal static ConfigEntry<float> SliderSize;
@@ -82,6 +83,7 @@ namespace ShapeKeyMaster
 
 			var acceptableValues = new AcceptableValueList<string>(translationFiles);
 			var acceptableDefaultUIPositionList = new AcceptableValueList<string>("TopLeft", "TopRight", "BottomLeft", "BottomRight", "Center", "Default");
+			var acceptableDefaultSortMethodList = new AcceptableValueList<string>("Date", "Name", "Shapekey", "Id", "Order Number");
 
 			MaxDeform = Config.Bind("General", "1. Max Deformation", 100f, "The max limit of the sliders in UI.");
 			AutoSave = Config.Bind("General", "2. AutoSave", true, "Will the config be saved automatically at set points.");
@@ -91,6 +93,7 @@ namespace ShapeKeyMaster
 			HideInactiveMaids = Config.Bind("UI", "2. Hide Inactive Maids", false, "In the maids view, maids that are not present or loaded are hidden from the menu options.");
 			EntriesPerPage = Config.Bind("UI", "3. Entries Per Page", 10, "How many entries to display per an entry page.");
 			Language = Config.Bind("UI", "4. Language", "english.json", new ConfigDescription("The language for SKM's UI.", acceptableValues));
+			DefaultSortingMethod = Config.Bind("UI", "5. Default Sorting Method", "Date", new ConfigDescription("The default sorting method.", acceptableDefaultSortMethodList));
 
 			FontSize = Config.Bind("UI 2", "1. Font Size", 14, "Font size.");
 			SliderSize = Config.Bind("UI 2", "2. Slider Size", 16f, "Shapekey slider size");
