@@ -446,7 +446,12 @@ namespace ShapeKeyMaster.GUI
 			}
 
 			GUILayout.BeginHorizontal(_sections2);
+			//To Beginning
 			if (GUILayout.Button("<<"))
+			{
+				_page = 0;
+			}
+			if (GUILayout.Button(" < "))
 			{
 				if (_page - ShapeKeyMaster.EntriesPerPage.Value >= 0)
 				{
@@ -455,7 +460,11 @@ namespace ShapeKeyMaster.GUI
 				//Past first shapekey, wrap to end
 				else
 				{
-					if (applicantCount % ShapeKeyMaster.EntriesPerPage.Value == 0)
+					if (applicantCount == 0)
+					{
+						_page = 0;
+					}
+					else if (applicantCount % ShapeKeyMaster.EntriesPerPage.Value == 0)
 					{
 						_page = applicantCount - ShapeKeyMaster.EntriesPerPage.Value;
 					}
@@ -468,7 +477,7 @@ namespace ShapeKeyMaster.GUI
 			GUILayout.FlexibleSpace();
 			BuildPageManagerLabel(headerString, applicantCount);
 			GUILayout.FlexibleSpace();
-			if (GUILayout.Button(">>"))
+			if (GUILayout.Button(" > "))
 			{
 				if (_page + ShapeKeyMaster.EntriesPerPage.Value < applicantCount)
 				{
@@ -478,6 +487,22 @@ namespace ShapeKeyMaster.GUI
 				else
 				{
 					_page = 0;
+				}
+			}
+			//To End
+			if (GUILayout.Button(">>"))
+			{
+				if (applicantCount == 0)
+				{
+					_page = 0;
+				}
+				else if (applicantCount % ShapeKeyMaster.EntriesPerPage.Value == 0)
+				{
+					_page = applicantCount - ShapeKeyMaster.EntriesPerPage.Value;
+				}
+				else
+				{
+					_page = applicantCount - (applicantCount % ShapeKeyMaster.EntriesPerPage.Value);
 				}
 			}
 			GUILayout.EndHorizontal();
