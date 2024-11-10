@@ -448,7 +448,22 @@ namespace ShapeKeyMaster.GUI
 			GUILayout.BeginHorizontal(_sections2);
 			if (GUILayout.Button("<<"))
 			{
-				_page = Math.Max(_page - ShapeKeyMaster.EntriesPerPage.Value, 0);
+				if (_page - ShapeKeyMaster.EntriesPerPage.Value >= 0)
+				{
+					_page -= ShapeKeyMaster.EntriesPerPage.Value;
+				}
+				//Past first shapekey, wrap to end
+				else
+				{
+					if (applicantCount % ShapeKeyMaster.EntriesPerPage.Value == 0)
+					{
+						_page = applicantCount - ShapeKeyMaster.EntriesPerPage.Value;
+					}
+                    else
+					{
+						_page = applicantCount - (applicantCount % ShapeKeyMaster.EntriesPerPage.Value);
+					}
+				}
 			}
 			GUILayout.FlexibleSpace();
 			BuildPageManagerLabel(headerString, applicantCount);
@@ -458,6 +473,11 @@ namespace ShapeKeyMaster.GUI
 				if (_page + ShapeKeyMaster.EntriesPerPage.Value < applicantCount)
 				{
 					_page += ShapeKeyMaster.EntriesPerPage.Value;
+				}
+				//Past last shapekey, wrap to beginning
+				else
+				{
+					_page = 0;
 				}
 			}
 			GUILayout.EndHorizontal();
