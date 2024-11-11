@@ -177,7 +177,7 @@ namespace ShapeKeyMaster.GUI
 				WindowRect.y = uiPosY;
 				WindowRect.x = uiPosX;
 
-				ShapeKeyMaster.pluginLogger.LogDebug($"Changing sizes of SKM UI to {WindowRect.width} x {WindowRect.height}");
+				ShapeKeyMaster.PluginLogger.LogDebug($"Changing sizes of SKM UI to {WindowRect.width} x {WindowRect.height}");
 
 				_currentHeight = Screen.height;
 				_currentWidth = Screen.width;
@@ -613,7 +613,7 @@ namespace ShapeKeyMaster.GUI
 					var keysToCopy = SkDatabase.ShapeKeysByMaid(maidWithKey).Values;
 					var newKeys = keysToCopy.Select(r => r.Clone() as ShapeKeyEntry).ToDictionary(r => r.Id, m => m);
 
-					ShapeKeyMaster.pluginLogger.LogInfo($"Key count {newKeys.Count}");
+					ShapeKeyMaster.PluginLogger.LogInfo($"Key count {newKeys.Count}");
 
 					var rand = new Random();
 					string tempMaidGroupName;
@@ -1561,7 +1561,7 @@ namespace ShapeKeyMaster.GUI
 
 			if (ShapeKeyMaster.HideInactiveMaids.Value == false && GUILayout.Button(ShapeKeyMaster.CurrentLanguage["all"]))
 			{
-				ShapeKeyMaster.pluginLogger.LogMessage(ShapeKeyMaster.CurrentLanguage["exportingAll"]);
+				ShapeKeyMaster.PluginLogger.LogMessage(ShapeKeyMaster.CurrentLanguage["exportingAll"]);
 
 				ShapeKeyMaster.SaveToJson(null, SkDatabase, true);
 			}

@@ -57,7 +57,7 @@ namespace ShapeKeyMaster
 		{
 			allShapekeyDictionary = new Dictionary<Guid, ShapeKeyEntry>();
 			morphShapekeyDictionary = new Dictionary<TMorph, HashSet<ShapeKeyEntry>>();
-			HarmonyPatchers.MorphEvent += (s, e) => ShapeKeyMaster.instance.StartCoroutine(UpdateMorphDic(e));
+			HarmonyPatchers.MorphEvent += (s, e) => ShapeKeyMaster.Instance.StartCoroutine(UpdateMorphDic(e));
 
 			RefreshSubDictionaries();
 		}
@@ -118,7 +118,7 @@ namespace ShapeKeyMaster
 
 			if (ListOfActiveMorphs.Count > 0)
 			{
-				ShapeKeyMaster.instance.StartCoroutine(ReloadMorphDic());
+				ShapeKeyMaster.Instance.StartCoroutine(ReloadMorphDic());
 			}
 		}
 

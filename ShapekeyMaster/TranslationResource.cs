@@ -32,7 +32,7 @@ namespace ShapeKeyMaster
 					return transString;
 				}
 
-				ShapeKeyMaster.pluginLogger.LogWarning($"The translation resource is missing key {name}! Will fallback to using the key as the result!");
+				ShapeKeyMaster.PluginLogger.LogWarning($"The translation resource is missing key {name}! Will fallback to using the key as the result!");
 
 				map[name] = name;
 				return name;

@@ -15,27 +15,24 @@ namespace ShapeKeyMaster
 		public string EntryName { get; set; }
 		public DateTime CreationDate { get; set; }
 		[JsonIgnore]
-		private int? _OrderNum;
+		private int? orderNum;
 		public int? OrderNum {
-			get
-			{ 
-				return _OrderNum;
-			}
+			get => orderNum;
 			set 
 			{
 				if (value == null)
 				{
-					_OrderNum = null;
+					orderNum = null;
 					return;
 				}
 
-				if (_OrderNum == null)
+				if (orderNum == null)
 				{
-					_OrderNum = value;
+					orderNum = value;
 					return;
 				}
 
-				_OrderNum = Ui.SkDatabase.Reorder_Insert(this, value.Value);
+				orderNum = Ui.SkDatabase.Reorder_Insert(this, value.Value);
 			} 
 		}
 		[JsonIgnore]
@@ -71,12 +68,12 @@ namespace ShapeKeyMaster
 					{
 						case 0:
 						case 1 when animator != null:
-							ShapeKeyMaster.instance.StopCoroutine(animator);
+							ShapeKeyMaster.Instance.StopCoroutine(animator);
 							animator = null;
 							break;
 						case 2 when animator == null:
 							animator = AnimateCoRoute(this);
-							ShapeKeyMaster.instance.StartCoroutine(animator);
+							ShapeKeyMaster.Instance.StartCoroutine(animator);
 							break;
 					}
 				}
@@ -180,13 +177,13 @@ namespace ShapeKeyMaster
 
 				if (value == false)
 				{
-					ShapeKeyMaster.instance.StopCoroutine(animator);
+					ShapeKeyMaster.Instance.StopCoroutine(animator);
 					animator = null;
 				}
 				else
 				{
 					animator = AnimateCoRoute(this);
-					ShapeKeyMaster.instance.StartCoroutine(animator);
+					ShapeKeyMaster.Instance.StartCoroutine(animator);
 				}
 			}
 			get => animate;

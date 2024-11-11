@@ -19,13 +19,13 @@ using UnityEngine;
 
 namespace ShapeKeyMaster
 {
-	[BepInPlugin("ShapeKeyMaster", "ShapeKeyMaster", "1.6.2")]
+	[BepInPlugin("ShapeKeyMaster", "ShapeKeyMaster", "1.7")]
 	[BepInDependency("deathweasel.com3d2.api")]
 	public class ShapeKeyMaster : BaseUnityPlugin
 	{
-		internal static ShapeKeyMaster instance { get; private set; }
+		internal static ShapeKeyMaster Instance { get; private set; }
 
-		internal static ManualLogSource pluginLogger => instance.Logger;
+		internal static ManualLogSource PluginLogger => Instance.Logger;
 
 		public static bool EnableGui { get; internal set; }
 
@@ -60,11 +60,11 @@ namespace ShapeKeyMaster
 
 		private void Awake()
 		{
-			instance = this;
+			Instance = this;
 
 			if (Directory.Exists(Paths.ConfigPath + "\\ShapekeyMaster\\") == false)
 			{
-				pluginLogger.LogFatal("It seems we're lacking any translation folder for ShapeKeyMaster! instance is bad and we can't start without that and the translation files! Please download the translation files, they come with the plugin, and place them in the proper directory!");
+				PluginLogger.LogFatal("It seems we're lacking any translation folder for ShapeKeyMaster! instance is bad and we can't start without that and the translation files! Please download the translation files, they come with the plugin, and place them in the proper directory!");
 
 				return;
 			}
@@ -76,7 +76,7 @@ namespace ShapeKeyMaster
 
 			if (!translationFiles.Any())
 			{
-				pluginLogger.LogFatal("It seems we're lacking any translation files for ShapeKeyMaster! instance is bad and we can't start without them! Please download the translation files, they come with the plugin, and place them in the proper directory!");
+				PluginLogger.LogFatal("It seems we're lacking any translation files for ShapeKeyMaster! instance is bad and we can't start without them! Please download the translation files, they come with the plugin, and place them in the proper directory!");
 
 				return;
 			}
@@ -233,7 +233,7 @@ namespace ShapeKeyMaster
 				//string updatedJson = jsonObject.ToString();
 				//File.WriteAllText(updatedJsonFilePath, updatedJson);
 
-				pluginLogger.LogInfo("Conversion completed successfully.");
+				PluginLogger.LogInfo("Conversion completed successfully.");
 			}
 
 			var serializeSet = new JsonSerializerSettings

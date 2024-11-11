@@ -25,7 +25,7 @@ namespace ShapeKeyMaster
 				return;
 
 			_worker = Worker();
-			_workerCoRoute = ShapeKeyMaster.instance.StartCoroutine(_worker);
+			_workerCoRoute = ShapeKeyMaster.Instance.StartCoroutine(_worker);
 		}
 
 		/*
@@ -93,7 +93,7 @@ namespace ShapeKeyMaster
 
 					if (job.ExecuteTask() == false)
 					{
-						ShapeKeyMaster.pluginLogger.LogWarning($"Failed to execute a task! @\n{Environment.StackTrace}");
+						ShapeKeyMaster.PluginLogger.LogWarning($"Failed to execute a task! @\n{Environment.StackTrace}");
 					}
 				}
 
@@ -105,7 +105,7 @@ namespace ShapeKeyMaster
 
 					if (job.ExecuteTask() == false)
 					{
-						ShapeKeyMaster.pluginLogger.LogWarning($"Failed to execute a task! @\n{Environment.StackTrace}");
+						ShapeKeyMaster.PluginLogger.LogWarning($"Failed to execute a task! @\n{Environment.StackTrace}");
 					}
 				}
 
@@ -309,7 +309,7 @@ namespace ShapeKeyMaster
 				}
 				catch (Exception e)
 				{
-					ShapeKeyMaster.pluginLogger.LogWarning($"We couldn't update some keys on {Maid}, it's likely some value was null: {e.Message}\n{e.StackTrace}");
+					ShapeKeyMaster.PluginLogger.LogWarning($"We couldn't update some keys on {Maid}, it's likely some value was null: {e.Message}\n{e.StackTrace}");
 					return false;
 					//Sometimes a maid has a nullref somewhere in that recursive line of checking. Just catch the error and discard the operation if so...
 				}
