@@ -42,7 +42,14 @@ namespace ShapeKeyMaster.GUI
 
 		private static readonly ShapekeyEntryComparer EntryComparer = new ShapekeyEntryComparer();
 
-		private static Vector2 _scrollPosition = Vector2.zero;
+		private static Vector2 _scrollPosition_ExportMenu = Vector2.zero;
+		private static Vector2 _scrollPosition_ShapeKeySelectMenu = Vector2.zero;
+		private static Vector2 _scrollPosition_MaidSelectMenu = Vector2.zero;
+		private static Vector2 _scrollPosition_RenameMenu = Vector2.zero;
+		private static Vector2 _scrollPosition_SlotConditionsMenu = Vector2.zero;
+		private static Vector2 _scrollPosition_MaidRenameMenu = Vector2.zero;
+		private static Vector2 _scrollPosition_MaidGroupCreateMenu = Vector2.zero;
+		private static Vector2 _scrollPosition_MaidShapeKeyList = Vector2.zero;
 		private static Vector2 _scrollPosition1 = Vector2.zero;
 		private static Guid _openSkMenu;
 		private static Guid _openMaidMenu;
@@ -202,8 +209,6 @@ namespace ShapeKeyMaster.GUI
 				ShapeKeyMaster.EnableGui = false;
 			}
 
-			_scrollPosition = GUILayout.BeginScrollView(_scrollPosition);
-
 			if (_exportMenuOpen)
 			{
 				DisplayExportMenu();
@@ -256,6 +261,9 @@ namespace ShapeKeyMaster.GUI
 				switch (_tabSelection)
 				{
 					case 1:
+
+						_scrollPosition_MaidShapeKeyList = GUILayout.BeginScrollView(_scrollPosition_MaidShapeKeyList);
+
 						if (ShapeKeyMaster.SimpleMode.Value)
 						{
 							GUILayout.BeginVertical(_sections);
@@ -280,6 +288,9 @@ namespace ShapeKeyMaster.GUI
 
 							GUILayout.EndVertical();
 						}
+
+						GUILayout.EndScrollView();
+
 						break;
 
 					case 2:
@@ -293,12 +304,27 @@ namespace ShapeKeyMaster.GUI
 						GUILayout.FlexibleSpace();
 						GUILayout.EndHorizontal();
 
+						_scrollPosition_MaidShapeKeyList = GUILayout.BeginScrollView(_scrollPosition_MaidShapeKeyList);
+
 						DisplayMaidOptions();
+
+						GUILayout.EndScrollView();
+
+						if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage["newMaidGroup"]))
+						{
+							_maidNameList = Extensions.GetNameOfAllMaids().ToList();
+
+							_maidGroupCreateOpen = true;
+
+							return;
+						}
 
 						GUILayout.EndVertical();
 						break;
 
 					default:
+
+						_scrollPosition_MaidShapeKeyList = GUILayout.BeginScrollView(_scrollPosition_MaidShapeKeyList);
 
 						if (ShapeKeyMaster.SimpleMode.Value)
 						{
@@ -324,11 +350,12 @@ namespace ShapeKeyMaster.GUI
 
 							GUILayout.EndVertical();
 						}
+
+						GUILayout.EndScrollView();
+
 						break;
 				}
 			}
-
-			GUILayout.EndScrollView();
 
 			DisplayFooter();
 			ChkMouseClick(WindowRect);
@@ -714,15 +741,6 @@ namespace ShapeKeyMaster.GUI
 				GUILayout.EndVertical();
 			}
 
-			if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage["newMaidGroup"]))
-			{
-				_maidNameList = Extensions.GetNameOfAllMaids().ToList();
-
-				_maidGroupCreateOpen = true;
-
-				return;
-			}
-
 			GUILayout.EndVertical();
 		}
 
@@ -766,8 +784,8 @@ namespace ShapeKeyMaster.GUI
 
 					_openSkMenu = s.Id;
 					_filter = _oldSkMenuFilter;
-					_oldPreSkMenuScrollPosition = _scrollPosition;
-					_scrollPosition = _oldSkMenuScrollPosition;
+					_oldPreSkMenuScrollPosition = _scrollPosition_MaidShapeKeyList;
+					_scrollPosition_ShapeKeySelectMenu = _oldSkMenuScrollPosition;
 				}
 				s.ShapeKey = GUILayout.TextField(s.ShapeKey, GUILayout.Width(ShapeKeyMaster.MinShapekeyNameTextboxWidth.Value));
 				s.Deform = Mathf.RoundToInt(HorizontalSliderWithInputBox(s.Deform, 0, ShapeKeyMaster.MaxDeform.Value));
@@ -1030,8 +1048,8 @@ namespace ShapeKeyMaster.GUI
 						}
 
 						_filter = _oldSkMenuFilter;
-						_oldPreSkMenuScrollPosition = _scrollPosition;
-						_scrollPosition = _oldSkMenuScrollPosition;
+						_oldPreSkMenuScrollPosition = _scrollPosition_MaidShapeKeyList;
+						_scrollPosition_ShapeKeySelectMenu = _oldSkMenuScrollPosition;
 
 						return;
 					}
@@ -1164,8 +1182,8 @@ namespace ShapeKeyMaster.GUI
 			{
 				_openSkMenu = Guid.Empty;
 				_oldSkMenuFilter = _filter;
-				_oldSkMenuScrollPosition = _scrollPosition;
-				_scrollPosition = _oldPreSkMenuScrollPosition;
+				_oldSkMenuScrollPosition = _scrollPosition_ShapeKeySelectMenu;
+				_scrollPosition_MaidShapeKeyList = _oldPreSkMenuScrollPosition;
 
 				_filter = "";
 			}
@@ -1174,12 +1192,14 @@ namespace ShapeKeyMaster.GUI
 			{
 				_openSkMenu = Guid.Empty;
 				_oldSkMenuFilter = _filter;
-				_oldSkMenuScrollPosition = _scrollPosition;
-				_scrollPosition = _oldPreSkMenuScrollPosition;
+				_oldSkMenuScrollPosition = _scrollPosition_ShapeKeySelectMenu;
+				_scrollPosition_MaidShapeKeyList = _oldPreSkMenuScrollPosition;
 
 				s.ShapeKey = "";
 				_filter = "";
 			}
+
+			_scrollPosition_ShapeKeySelectMenu = GUILayout.BeginScrollView(_scrollPosition_ShapeKeySelectMenu);
 
 			var columns = 0;
 			var totalGroupsWorked = 0;
@@ -1270,8 +1290,8 @@ namespace ShapeKeyMaster.GUI
 									_openSkMenu = Guid.Empty;
 									s.ShapeKey = str.item2;
 									_oldSkMenuFilter = _filter;
-									_oldSkMenuScrollPosition = _scrollPosition;
-									_scrollPosition = _oldPreSkMenuScrollPosition;
+									_oldSkMenuScrollPosition = _scrollPosition_ShapeKeySelectMenu;
+									_scrollPosition_MaidShapeKeyList = _oldPreSkMenuScrollPosition;
 									_filter = "";
 									break;
 							}
@@ -1287,6 +1307,8 @@ namespace ShapeKeyMaster.GUI
 					columns = 0;
 				}
 			}
+
+			GUILayout.EndScrollView();
 		}
 
 		private static void DisplayMaidSelectMenu(ShapeKeyEntry s)
@@ -1313,6 +1335,8 @@ namespace ShapeKeyMaster.GUI
 				_filter = "";
 			}
 
+			_scrollPosition_MaidSelectMenu = GUILayout.BeginScrollView(_scrollPosition_MaidSelectMenu);
+
 			foreach (var mn in _maidNameList)
 			{
 				if (_filter != "")
@@ -1330,6 +1354,8 @@ namespace ShapeKeyMaster.GUI
 					_filter = "";
 				}
 			}
+
+			GUILayout.EndScrollView();
 		}
 
 		private static void DisplayMaidGroupCreateMenu(Dictionary<Guid, ShapeKeyEntry> givenShapeKeys)
@@ -1357,6 +1383,8 @@ namespace ShapeKeyMaster.GUI
 				_filter = "";
 			}
 
+			_scrollPosition_MaidGroupCreateMenu = GUILayout.BeginScrollView(_scrollPosition_MaidGroupCreateMenu);
+
 			foreach (var mn in _maidNameList)
 			{
 				if (_filter != "")
@@ -1380,10 +1408,13 @@ namespace ShapeKeyMaster.GUI
 					_filter = "";
 				}
 			}
+
+			GUILayout.EndScrollView();
 		}
 
 		private static void DisplayRenameMenu(ShapeKeyEntry s)
 		{
+			_scrollPosition_RenameMenu = GUILayout.BeginScrollView(_scrollPosition_RenameMenu);
 			GUILayout.Label($"{ShapeKeyMaster.CurrentLanguage["nowRenaming"]} {s.EntryName}");
 
 			s.EntryName = GUILayout.TextField(s.EntryName);
@@ -1392,10 +1423,13 @@ namespace ShapeKeyMaster.GUI
 			{
 				_openRenameMenu = Guid.Empty;
 			}
+			GUILayout.EndScrollView();
 		}
 
 		private static void DisplaySlotConditionsMenu(ShapeKeyEntry s)
 		{
+			_scrollPosition_SlotConditionsMenu = GUILayout.BeginScrollView(_scrollPosition_SlotConditionsMenu);
+
 			GUILayout.BeginVertical(_sections);
 
 			GUILayout.BeginHorizontal(_sections2);
@@ -1499,6 +1533,7 @@ namespace ShapeKeyMaster.GUI
 			{
 				_openSlotConditions = Guid.Empty;
 			}
+			GUILayout.EndScrollView();
 		}
 
 		private static void DisplayMaidRenameMenu(string s)
@@ -1528,6 +1563,8 @@ namespace ShapeKeyMaster.GUI
 
 			GUILayout.EndHorizontal();
 
+			_scrollPosition_MaidRenameMenu = GUILayout.BeginScrollView(_scrollPosition_MaidRenameMenu);
+
 			foreach (var mn in _maidNameList)
 			{
 				if (_filter != "")
@@ -1553,10 +1590,14 @@ namespace ShapeKeyMaster.GUI
 					_filter = "";
 				}
 			}
+
+			GUILayout.EndScrollView();
 		}
 
 		private static void DisplayExportMenu()
 		{
+			_scrollPosition_ExportMenu = GUILayout.BeginScrollView(_scrollPosition_ExportMenu);
+
 			ShapeKeyMaster.HideInactiveMaids.Value = GUILayout.Toggle(ShapeKeyMaster.HideInactiveMaids.Value, ShapeKeyMaster.CurrentLanguage["hideInactiveMaids"]);
 
 			if (ShapeKeyMaster.HideInactiveMaids.Value == false && GUILayout.Button(ShapeKeyMaster.CurrentLanguage["all"]))
@@ -1615,6 +1656,8 @@ namespace ShapeKeyMaster.GUI
 
 				ThingsToExport.Clear();
 			}
+
+			GUILayout.EndScrollView();
 		}
 
 		private static void BuildPageManagerLabel(string headerString, int applicantCount)
