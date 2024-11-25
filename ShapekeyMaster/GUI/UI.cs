@@ -138,6 +138,7 @@ namespace ShapeKeyMaster.GUI
 				};
 
 				EntryComparer.Mode = ConvertDefaultSortMethod(ShapeKeyMaster.DefaultSortingMethod.Value);
+				_tabSelection = ConvertDefaultTabSelection(ShapeKeyMaster.DefaultTabSelection.Value);
 
 				_runOnce = false;
 			}
@@ -1783,6 +1784,21 @@ namespace ShapeKeyMaster.GUI
 				case "Order Number":
 					return 4;
 				default: 
+					return 0;
+			}
+		}
+
+		private static int ConvertDefaultTabSelection(string tabSelStr)
+		{
+			switch (tabSelStr)
+			{
+				case "All":
+					return 0;
+				case "Globals":
+					return 1;
+				case "Maids":
+					return 2;
+				default:
 					return 0;
 			}
 		}

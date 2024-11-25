@@ -44,6 +44,7 @@ namespace ShapeKeyMaster
 		internal static ConfigEntry<int> EntriesPerPage;
 		internal static ConfigEntry<string> Language;
 		internal static ConfigEntry<string> DefaultSortingMethod;
+		internal static ConfigEntry<string> DefaultTabSelection;
 
 		internal static ConfigEntry<int> FontSize;
 		internal static ConfigEntry<float> SliderSize;
@@ -84,6 +85,7 @@ namespace ShapeKeyMaster
 			var acceptableValues = new AcceptableValueList<string>(translationFiles);
 			var acceptableDefaultUIPositionList = new AcceptableValueList<string>("TopLeft", "TopRight", "BottomLeft", "BottomRight", "Center", "Default");
 			var acceptableDefaultSortMethodList = new AcceptableValueList<string>("Date", "Name", "Shapekey", "Id", "Order Number");
+			var acceptableDefaultTabSelectionList = new AcceptableValueList<string>("All", "Globals", "Maids");
 
 			MaxDeform = Config.Bind("General", "1. Max Deformation", 100f, "The max limit of the sliders in UI.");
 			AutoSave = Config.Bind("General", "2. AutoSave", true, "Will the config be saved automatically at set points.");
@@ -94,6 +96,7 @@ namespace ShapeKeyMaster
 			EntriesPerPage = Config.Bind("UI", "3. Entries Per Page", 10, "How many entries to display per an entry page.");
 			Language = Config.Bind("UI", "4. Language", "english.json", new ConfigDescription("The language for SKM's UI.", acceptableValues));
 			DefaultSortingMethod = Config.Bind("UI", "5. Default Sorting Method", "Date", new ConfigDescription("The default sorting method.", acceptableDefaultSortMethodList));
+			DefaultTabSelection = Config.Bind("UI", "6. Default Tab Selection", "All", new ConfigDescription("The default tab selected at start.", acceptableDefaultTabSelectionList));
 
 			FontSize = Config.Bind("UI 2", "1. Font Size", 14, "Font size.");
 			SliderSize = Config.Bind("UI 2", "2. Slider Size", 16f, "Shapekey slider size");
