@@ -72,6 +72,8 @@ namespace ShapeKeyMaster.GUI
 
 		private static GUIStyle _shineSections;
 		private static GUIStyle _blacklistedButton;
+		private static bool _collapseBodyShapekeys;
+		private static bool _collapseHeadShapekeys;
 		//private static GUIStyle PreviewButton;
 
 		public static void Initialize()
@@ -139,6 +141,8 @@ namespace ShapeKeyMaster.GUI
 
 				EntryComparer.Mode = ConvertDefaultSortMethod(ShapeKeyMaster.DefaultSortingMethod.Value);
 				_tabSelection = ConvertDefaultTabSelection(ShapeKeyMaster.DefaultTabSelection.Value);
+				_collapseBodyShapekeys = ShapeKeyMaster.CollapseBodyShapekeysAtStart.Value;
+				_collapseHeadShapekeys = ShapeKeyMaster.CollapseHeadShapekeysAtStart.Value;
 
 				_runOnce = false;
 			}
@@ -1179,6 +1183,15 @@ namespace ShapeKeyMaster.GUI
 
 			GUILayout.EndHorizontal();
 
+			GUILayout.BeginHorizontal();
+
+			GUILayout.Label(ShapeKeyMaster.CurrentLanguage["collapseShapekeyList"]);
+			_collapseBodyShapekeys = GUILayout.Toggle(_collapseBodyShapekeys, ShapeKeyMaster.CurrentLanguage["body"]);
+			_collapseHeadShapekeys = GUILayout.Toggle(_collapseHeadShapekeys, ShapeKeyMaster.CurrentLanguage["head"]);
+			GUILayout.FlexibleSpace();
+
+			GUILayout.EndHorizontal();
+
 			if (GUILayout.Button(ShapeKeyMaster.CurrentLanguage["finish"]))
 			{
 				_openSkMenu = Guid.Empty;
@@ -1204,7 +1217,7 @@ namespace ShapeKeyMaster.GUI
 
 			var columns = 0;
 			var totalGroupsWorked = 0;
-
+			
 			var groupedKeys = _shapeKeysNameList
 				.GroupBy(r => r.item1)
 				.OrderBy(r => r.Key)
@@ -1227,7 +1240,7 @@ namespace ShapeKeyMaster.GUI
 				totalGroupsWorked++;
 
 				var filteredList = group.ToList();
-
+				
 				if (_filterCommonKeys)
 				{
 					if (group.Key.Equals("body") == false)
@@ -1245,7 +1258,7 @@ namespace ShapeKeyMaster.GUI
 				{
 					filteredList = filteredList.Where(t => SkDatabase.BlacklistedShapeKeys.IsBlacklisted(t.item2) == false).ToList();
 				}
-
+				
 				if (filteredList.Count > 0)
 				{
 					if (columns++ == 0)
@@ -1264,37 +1277,46 @@ namespace ShapeKeyMaster.GUI
 					GUILayout.FlexibleSpace();
 					GUILayout.EndHorizontal();
 
-					foreach (var str in filteredList.OrderBy(r => r.item2))
+					var collapse = false;
+					if ((group.Key.Equals("body") && _collapseBodyShapekeys) || (group.Key.Equals("head") && _collapseHeadShapekeys))
 					{
-						if (_filter != "")
+						collapse = true;
+					}
+
+					if (!collapse)
+					{
+						foreach (var str in filteredList.OrderBy(r => r.item2))
 						{
-							if (str.item2.Contains(_filter, StringComparison.OrdinalIgnoreCase) == false)
+							if (_filter != "")
 							{
-								continue;
+								if (str.item2.Contains(_filter, StringComparison.OrdinalIgnoreCase) == false)
+								{
+									continue;
+								}
 							}
-						}
 
-						var style = _hideBlacklistedKeys == false && SkDatabase.BlacklistedShapeKeys.IsBlacklisted(str.item2) ? _blacklistedButton : UIUserOverrides.getButtonStyleOverride();
-						if (GUILayout.Button(str.item2, style))
-						{
-							switch (LastMouseButtonUp)
+							var style = _hideBlacklistedKeys == false && SkDatabase.BlacklistedShapeKeys.IsBlacklisted(str.item2) ? _blacklistedButton : UIUserOverrides.getButtonStyleOverride();
+							if (GUILayout.Button(str.item2, style))
 							{
-								case 1 when SkDatabase.BlacklistedShapeKeys.IsBlacklisted(str.item2) == false:
-									SkDatabase.BlacklistedShapeKeys.AddItem(str.item2);
-									break;
+								switch (LastMouseButtonUp)
+								{
+									case 1 when SkDatabase.BlacklistedShapeKeys.IsBlacklisted(str.item2) == false:
+										SkDatabase.BlacklistedShapeKeys.AddItem(str.item2);
+										break;
 
-								case 1:
-									SkDatabase.BlacklistedShapeKeys.RemoveItem(str.item2);
-									break;
+									case 1:
+										SkDatabase.BlacklistedShapeKeys.RemoveItem(str.item2);
+										break;
 
-								case 0:
-									_openSkMenu = Guid.Empty;
-									s.ShapeKey = str.item2;
-									_oldSkMenuFilter = _filter;
-									_oldSkMenuScrollPosition = _scrollPosition_ShapeKeySelectMenu;
-									_scrollPosition_MaidShapeKeyList = _oldPreSkMenuScrollPosition;
-									_filter = "";
-									break;
+									case 0:
+										_openSkMenu = Guid.Empty;
+										s.ShapeKey = str.item2;
+										_oldSkMenuFilter = _filter;
+										_oldSkMenuScrollPosition = _scrollPosition_ShapeKeySelectMenu;
+										_scrollPosition_MaidShapeKeyList = _oldPreSkMenuScrollPosition;
+										_filter = "";
+										break;
+								}
 							}
 						}
 					}
@@ -1308,7 +1330,7 @@ namespace ShapeKeyMaster.GUI
 					columns = 0;
 				}
 			}
-
+			
 			GUILayout.EndScrollView();
 		}
 

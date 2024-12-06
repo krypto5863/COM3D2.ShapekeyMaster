@@ -46,6 +46,8 @@ namespace ShapeKeyMaster
 		internal static ConfigEntry<string> DefaultSortingMethod;
 		internal static ConfigEntry<string> DefaultTabSelection;
 		internal static ConfigEntry<int> SliderHandleIncrementAmt;
+		internal static ConfigEntry<bool> CollapseBodyShapekeysAtStart;
+		internal static ConfigEntry<bool> CollapseHeadShapekeysAtStart;
 
 		internal static ConfigEntry<int> FontSize;
 		internal static ConfigEntry<float> SliderSize;
@@ -99,7 +101,9 @@ namespace ShapeKeyMaster
 			Language = Config.Bind("UI", "4. Language", "english.json", new ConfigDescription("The language for SKM's UI.", acceptableValues));
 			DefaultSortingMethod = Config.Bind("UI", "5. Default Sorting Method", "Date", new ConfigDescription("The default sorting method.", acceptableDefaultSortMethodList));
 			DefaultTabSelection = Config.Bind("UI", "6. Default Tab Selection", "All", new ConfigDescription("The default tab selected at start.", acceptableDefaultTabSelectionList));
-			SliderHandleIncrementAmt = Config.Bind("UI", "7. Slider Handle Increment Amount", 1, new ConfigDescription("Slider Handle Increment Amount", acceptableSliderIncrementList));
+			SliderHandleIncrementAmt = Config.Bind("UI", "7. Slider Handle Increment Amount", 1, new ConfigDescription("Slider Handle Increment Amount.", acceptableSliderIncrementList));
+			CollapseBodyShapekeysAtStart = Config.Bind("UI", "8. Collapse Body Shapekey List At Start", false, "Collapse Body shapekey list at start."); ;
+			CollapseHeadShapekeysAtStart = Config.Bind("UI", "9. Collapse Head Shapekey List At Start", false, "Collapse Head shapekey list at start."); ;
 
 			FontSize = Config.Bind("UI 2", "1. Font Size", 14, "Font size.");
 			SliderSize = Config.Bind("UI 2", "2. Slider Size", 16f, "Shapekey slider size");
