@@ -61,12 +61,43 @@ namespace ShapeKeyMaster.GUI
 				GUILayout.Label(label);
 			}
 
-			if (GUILayout.Button("0"))
+			if (initialVal != 0)
 			{
-				initialVal = 0;
+				if (GUILayout.Button("0"))
+				{
+					initialVal = 0;
+				}
+			}
+			else
+			{
+				if (GUILayout.Button("1"))
+				{
+					initialVal = Math.Min(max, 100f);
+				}
 			}
 
-			initialVal = GUILayout.HorizontalSlider(initialVal, min, max, GUILayout.MaxWidth(9999));
+			var sliderVal = GUILayout.HorizontalSlider(initialVal, min, max, GUILayout.MaxWidth(9999));
+
+			float sliderIncrement = ShapeKeyMaster.SliderHandleIncrementAmt.Value;
+
+			if (sliderIncrement == 1f)
+			{
+				initialVal = sliderVal;
+			}
+			else
+			{
+				if (sliderVal != initialVal)
+				{
+					if (sliderVal >= max)
+					{
+						initialVal = max;
+					}
+					else
+					{
+						initialVal = Mathf.Round(sliderVal / sliderIncrement) * sliderIncrement;
+					}
+				}
+			}
 
 			if (doButtons)
 			{
