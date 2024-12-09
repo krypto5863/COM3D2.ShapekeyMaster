@@ -50,6 +50,9 @@
     <Compile Include="ShapeKeyMaster.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="packages.config" />
+    <None Include="Translations\ChineseSimplified.json" />
+    <None Include="Translations\english.json" />
+    <None Include="Translations\espanol.json" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="0Harmony, Version=2.10.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -79,6 +82,7 @@
       <HintPath>..\packages\COM3D2.GameLibs.2.24.0-r.1\lib\net35\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
