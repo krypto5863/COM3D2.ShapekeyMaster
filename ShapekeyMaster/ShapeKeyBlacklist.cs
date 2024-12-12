@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace ShapeKeyMaster
@@ -6,7 +6,7 @@ namespace ShapeKeyMaster
 	public class ShapeKeyBlacklist
 	{
 		[JsonProperty]
-		public List<string> Blacklist { get; private set; } = new List<string>
+		public HashSet<string> Blacklist { get; private set; } = new HashSet<string>
 		{
 			"arml",
 			"hara",

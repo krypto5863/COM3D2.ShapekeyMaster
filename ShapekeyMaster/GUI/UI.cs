@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1223,43 +1223,43 @@ namespace ShapeKeyMaster.GUI
 				.OrderBy(r => r.Key)
 				.ToArray();
 
-			var bodyKeys = groupedKeys
-				.Where(r => r.Key.Equals("body"))
+			var bodyKeys = new HashSet<string>(groupedKeys
+				.Where(r => r.Key.Equals("body", StringComparison.Ordinal))
 				.SelectMany(r => r)
-				.Select(t => t.item2)
-				.ToList();
+				.Select(t => t.item2),
+				StringComparer.Ordinal);
 
-			var headKeys = groupedKeys
-				.Where(r => r.Key.Equals("head"))
+			var headKeys = new HashSet<string>(groupedKeys
+				.Where(r => r.Key.Equals("head", StringComparison.Ordinal))
 				.SelectMany(r => r)
-				.Select(t => t.item2)
-				.ToList();
+				.Select(t => t.item2),
+				StringComparer.Ordinal);
 
 			foreach (var group in groupedKeys)
 			{
 				totalGroupsWorked++;
 
-				var filteredList = group.ToList();
+				var filteredList = group.AsEnumerable();
 				
 				if (_filterCommonKeys)
 				{
-					if (group.Key.Equals("body") == false)
+					if (group.Key.Equals("body", StringComparison.Ordinal) == false)
 					{
-						filteredList = filteredList.Where(t => !bodyKeys.Contains(t.item2)).ToList();
+						filteredList = filteredList.Where(t => !bodyKeys.Contains(t.item2));
 					}
 
-					if (group.Key.Equals("head") == false)
+					if (group.Key.Equals("head", StringComparison.Ordinal) == false)
 					{
-						filteredList = filteredList.Where(t => !headKeys.Contains(t.item2)).ToList();
+						filteredList = filteredList.Where(t => !headKeys.Contains(t.item2));
 					}
 				}
 
 				if (_hideBlacklistedKeys)
 				{
-					filteredList = filteredList.Where(t => SkDatabase.BlacklistedShapeKeys.IsBlacklisted(t.item2) == false).ToList();
+					filteredList = filteredList.Where(t => SkDatabase.BlacklistedShapeKeys.IsBlacklisted(t.item2) == false);
 				}
 				
-				if (filteredList.Count > 0)
+				if (filteredList.Any())
 				{
 					if (columns++ == 0)
 					{
