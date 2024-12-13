@@ -224,8 +224,8 @@ namespace ShapeKeyMaster
 
 			public UpdateKeysOrder(ShapeKeyEntry shapeKeyEntry, bool noWait)
 			{
-				this.ShapeKeyEntry = shapeKeyEntry;
-				this.DoImmediately = noWait;
+				ShapeKeyEntry = shapeKeyEntry;
+				DoImmediately = noWait;
 #if DEBUG
 				ID = shapeKeyEntry.ShapeKey + rander.Next(99999);
 #endif
@@ -285,8 +285,8 @@ namespace ShapeKeyMaster
 
 			public UpdateMaidOrder(string maid, bool noWait)
 			{
-				this.Maid = maid;
-				this.DoImmediately = noWait;
+				Maid = maid;
+				DoImmediately = noWait;
 			}
 
 			public bool ExecuteTask()

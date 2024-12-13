@@ -1760,7 +1760,7 @@ namespace ShapeKeyMaster.GUI
 				}
 
 				UnityEngine.GUI.SetNextControlName("OrderNumInput");
-				s.OrderNumTmp = UiToolbox.IntField(s.OrderNumTmp.Value, 0, 999, 75);
+				s.OrderNumTmp = IntField(s.OrderNumTmp.Value, 0, 999, 75);
 
 				if (GUILayout.Button("✓", GUILayout.Width(50)))
 				{
