@@ -10,6 +10,7 @@ namespace ShapeKeyMaster.GUI
 	internal class UiToolbox
 	{
 		public static int LastMouseButtonUp { private set; get; } = -1;
+		private static readonly GUILayoutOption[] EmptyGuiLayoutOptions = new GUILayoutOption[0];
 
 		public static void ChkMouseClick(Rect windowRect)
 		{
@@ -37,7 +38,7 @@ namespace ShapeKeyMaster.GUI
 		internal static float FloatField(float initialVal, float min = 0, float max = 100)
 		{
 			var stringReturn = GUILayout.TextField(initialVal.ToString("0"), GUILayout.Width(75));
-			stringReturn = NotNumPeriod.Replace(stringReturn, "");
+			stringReturn = NotNumPeriod.Replace(stringReturn, string.Empty);
 			stringReturn = stringReturn.IsNullOrWhiteSpace() ? "0" : stringReturn;
 
 			return float.TryParse(stringReturn, out var floatReturn) ? Math.Min(max, Math.Max(floatReturn, min)) : initialVal;
@@ -46,7 +47,7 @@ namespace ShapeKeyMaster.GUI
 		internal static int IntField(int initialVal, int min = 0, int max = 100, int width = 75)
 		{
 			var stringReturn = GUILayout.TextField(initialVal.ToString("0"), GUILayout.Width(width));
-			stringReturn = NotNumPeriod.Replace(stringReturn, "");
+			stringReturn = NotNumPeriod.Replace(stringReturn, string.Empty);
 			stringReturn = stringReturn.IsNullOrWhiteSpace() ? "0" : stringReturn;
 
 			return int.TryParse(stringReturn, out var intReturn) ? Math.Min(max, Math.Max(intReturn, min)) : initialVal;
@@ -54,23 +55,23 @@ namespace ShapeKeyMaster.GUI
 
 		internal static float HorizontalSliderWithInputBox(float initialVal, float min = 0, float max = 100, string label = null, bool doButtons = true)
 		{
-			GUILayout.BeginHorizontal();
+			GUILayout.BeginHorizontal(EmptyGuiLayoutOptions);
 
 			if (label.IsNullOrWhiteSpace() == false)
 			{
-				GUILayout.Label(label);
+				GUILayout.Label(label, EmptyGuiLayoutOptions);
 			}
 
 			if (initialVal != 0)
 			{
-				if (GUILayout.Button("0"))
+				if (GUILayout.Button("0", EmptyGuiLayoutOptions))
 				{
 					initialVal = 0;
 				}
 			}
 			else
 			{
-				if (GUILayout.Button("1"))
+				if (GUILayout.Button("1", EmptyGuiLayoutOptions))
 				{
 					initialVal = Math.Min(max, 100f);
 				}
@@ -101,17 +102,17 @@ namespace ShapeKeyMaster.GUI
 
 			if (doButtons)
 			{
-				GUILayout.BeginHorizontal();
+				GUILayout.BeginHorizontal(EmptyGuiLayoutOptions);
 
 				GUILayout.FlexibleSpace();
 
-				if (GUILayout.Button("<"))
+				if (GUILayout.Button("<", EmptyGuiLayoutOptions))
 				{
 					var addition = initialVal - 1;
 					initialVal = Math.Max(addition, min);
 				}
 
-				if (GUILayout.Button(">"))
+				if (GUILayout.Button(">", EmptyGuiLayoutOptions))
 				{
 					var addition = initialVal + 1;
 					initialVal = Math.Min(addition, max);

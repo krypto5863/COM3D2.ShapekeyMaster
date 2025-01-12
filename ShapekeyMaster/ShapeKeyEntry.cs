@@ -484,7 +484,7 @@ namespace ShapeKeyMaster
 				conditionalsToggle = conditionalsToggle,
 				disableWhen = disableWhen,
 				whenAll = whenAll,
-				slotFlags = (DisableWhenEquipped)((int)slotFlags),
+				slotFlags = (DisableWhenEquipped)(int)slotFlags,
 				Collapsed = true,
 				MenuFileConditionals = new Dictionary<Guid, string>(MenuFileConditionals)
 			};

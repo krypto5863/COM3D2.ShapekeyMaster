@@ -90,7 +90,7 @@ namespace ShapeKeyMaster
 				if (maidSkList.Any(s => !s.OrderNum.HasValue) 
 					|| maidSkList.Count != maidSkList.Select(s => s.OrderNum).Distinct().ToList().Count)
 				{
-					for (int i = 0; i < maidSkList.Count; i++)
+					for (var i = 0; i < maidSkList.Count; i++)
 					{
 						maidSkList[i].OrderNum = null;
 						maidSkList[i].OrderNum = i + 1;
@@ -109,7 +109,7 @@ namespace ShapeKeyMaster
 			if (globalSkList.Any(s => !s.OrderNum.HasValue) 
 				|| globalSkList.Count != globalSkList.Select(s => s.OrderNum).Distinct().ToList().Count)
 			{
-				for (int i = 0; i < globalSkList.Count; i++)
+				for (var i = 0; i < globalSkList.Count; i++)
 				{
 					globalSkList[i].OrderNum = null;
 					globalSkList[i].OrderNum = i + 1;

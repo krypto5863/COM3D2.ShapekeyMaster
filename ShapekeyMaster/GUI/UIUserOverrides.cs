@@ -1,146 +1,124 @@
-﻿using BepInEx;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace ShapeKeyMaster.GUI
 {
-	internal static class UIUserOverrides
+	internal static class UiUserOverrides
 	{
-		private static Dictionary<string, GUIStyle> cache = new Dictionary<string, GUIStyle>();
+		private static readonly Dictionary<string, GUIStyle> Cache = new Dictionary<string, GUIStyle>();
 
-		private static GUISkin _CustomSkin = UnityEngine.Object.Instantiate(UnityEngine.GUI.skin);
+		private static readonly GUISkin _CustomSkin = Object.Instantiate(UnityEngine.GUI.skin);
 
-		internal static GUISkin CustomSkin { 
+		internal static GUISkin CustomSkin
+		{ 
 			get 
 			{
-				_CustomSkin.button = getButtonStyleOverride();
-				_CustomSkin.label = getLabelStyleOverride();
-				_CustomSkin.toggle = getToggleStyleOverride();
-				_CustomSkin.textField = getTextFieldStyleOverride();
-				_CustomSkin.horizontalSlider = getSliderStyleOverride();
-				_CustomSkin.horizontalSliderThumb = getSliderThumbStyleOverride();
+				_CustomSkin.button = GetButtonStyleOverride();
+				_CustomSkin.label = GetLabelStyleOverride();
+				_CustomSkin.toggle = GetToggleStyleOverride();
+				_CustomSkin.textField = GetTextFieldStyleOverride();
+				_CustomSkin.horizontalSlider = GetSliderStyleOverride();
+				_CustomSkin.horizontalSliderThumb = GetSliderThumbStyleOverride();
 				return _CustomSkin;
 			}
-			set { }
 		}
 
-		internal static GUIStyle getButtonStyleOverride()
+		internal static GUIStyle GetButtonStyleOverride()
 		{
-			GUIStyle buttonStyleOverride;
-			if (!cache.TryGetValue("ButtonStyleOverride", out buttonStyleOverride))
+			if (!Cache.TryGetValue("ButtonStyleOverride", out var buttonStyleOverride))
 			{
 				buttonStyleOverride = new GUIStyle(UnityEngine.GUI.skin.button)
 				{
 					fontSize = ShapeKeyMaster.FontSize.Value
 				};
-				cache.Add("ButtonStyleOverride", buttonStyleOverride);
+				Cache.Add("ButtonStyleOverride", buttonStyleOverride);
 				return buttonStyleOverride;
 			}
-			else 
-			{
-				buttonStyleOverride.fontSize = ShapeKeyMaster.FontSize.Value;
-				return buttonStyleOverride;
-			}
+
+			buttonStyleOverride.fontSize = ShapeKeyMaster.FontSize.Value;
+			return buttonStyleOverride;
 		}
 
-		internal static GUIStyle getLabelStyleOverride()
+		internal static GUIStyle GetLabelStyleOverride()
 		{
-			GUIStyle labelStyleOverride;
-			if (!cache.TryGetValue("LabelStyleOverride", out labelStyleOverride))
+			if (!Cache.TryGetValue("LabelStyleOverride", out var labelStyleOverride))
 			{
 				labelStyleOverride = new GUIStyle(UnityEngine.GUI.skin.label)
 				{
 					fontSize = ShapeKeyMaster.FontSize.Value
 				};
-				cache.Add("LabelStyleOverride", labelStyleOverride);
+				Cache.Add("LabelStyleOverride", labelStyleOverride);
 				return labelStyleOverride;
 			}
-			else
-			{
-				labelStyleOverride.fontSize = ShapeKeyMaster.FontSize.Value;
-				return labelStyleOverride;
-			}
+
+			labelStyleOverride.fontSize = ShapeKeyMaster.FontSize.Value;
+			return labelStyleOverride;
 		}
 
-		internal static GUIStyle getTextFieldStyleOverride()
+		internal static GUIStyle GetTextFieldStyleOverride()
 		{
-			GUIStyle textFieldStyleOverride;
-			if (!cache.TryGetValue("TextFieldStyleOverride", out textFieldStyleOverride))
+			if (!Cache.TryGetValue("TextFieldStyleOverride", out var textFieldStyleOverride))
 			{
 				textFieldStyleOverride = new GUIStyle(UnityEngine.GUI.skin.textField)
 				{
 					fontSize = ShapeKeyMaster.FontSize.Value
 				};
-				cache.Add("TextFieldStyleOverride", textFieldStyleOverride);
+				Cache.Add("TextFieldStyleOverride", textFieldStyleOverride);
 				return textFieldStyleOverride;
 			}
-			else
-			{
-				textFieldStyleOverride.fontSize = ShapeKeyMaster.FontSize.Value;
-				return textFieldStyleOverride;
-			}
+
+			textFieldStyleOverride.fontSize = ShapeKeyMaster.FontSize.Value;
+			return textFieldStyleOverride;
 		}
 
-		internal static GUIStyle getToggleStyleOverride()
+		internal static GUIStyle GetToggleStyleOverride()
 		{
-			GUIStyle toggleStyleOverride;
-			if (!cache.TryGetValue("ToggleStyleOverride", out toggleStyleOverride))
+			if (!Cache.TryGetValue("ToggleStyleOverride", out var toggleStyleOverride))
 			{
 				toggleStyleOverride = new GUIStyle(UnityEngine.GUI.skin.toggle)
 				{
 					fontSize = ShapeKeyMaster.FontSize.Value
 				};
-				cache.Add("ToggleStyleOverride", toggleStyleOverride);
+				Cache.Add("ToggleStyleOverride", toggleStyleOverride);
 				return toggleStyleOverride;
 			}
-			else
-			{
-				toggleStyleOverride.fontSize = ShapeKeyMaster.FontSize.Value;
-				return toggleStyleOverride;
-			}
+
+			toggleStyleOverride.fontSize = ShapeKeyMaster.FontSize.Value;
+			return toggleStyleOverride;
 		}
 
-		internal static GUIStyle getSliderStyleOverride()
+		internal static GUIStyle GetSliderStyleOverride()
 		{
-			GUIStyle sliderStyleOverride;
-			if (!cache.TryGetValue("SliderStyleOverride", out sliderStyleOverride))
+			if (!Cache.TryGetValue("SliderStyleOverride", out var sliderStyleOverride))
 			{
 				sliderStyleOverride = new GUIStyle(UnityEngine.GUI.skin.horizontalSlider)
 				{
 					fixedHeight = ShapeKeyMaster.SliderSize.Value
 				};
-				cache.Add("SliderStyleOverride", sliderStyleOverride);
+				Cache.Add("SliderStyleOverride", sliderStyleOverride);
 				return sliderStyleOverride;
 			}
-			else
-			{
-				sliderStyleOverride.fixedHeight = ShapeKeyMaster.SliderSize.Value;
-				return sliderStyleOverride;
-			}
+
+			sliderStyleOverride.fixedHeight = ShapeKeyMaster.SliderSize.Value;
+			return sliderStyleOverride;
 		}
 
-		internal static GUIStyle getSliderThumbStyleOverride()
+		internal static GUIStyle GetSliderThumbStyleOverride()
 		{
-			GUIStyle sliderThumbStyleOverride;
-			if (!cache.TryGetValue("SliderThumbStyleOverride", out sliderThumbStyleOverride))
+			if (!Cache.TryGetValue("SliderThumbStyleOverride", out var sliderThumbStyleOverride))
 			{
 				sliderThumbStyleOverride = new GUIStyle(UnityEngine.GUI.skin.horizontalSliderThumb)
 				{
 					fixedHeight = ShapeKeyMaster.SliderSize.Value,
 					fixedWidth = ShapeKeyMaster.SliderSize.Value
 				};
-				cache.Add("SliderThumbStyleOverride", sliderThumbStyleOverride);
+				Cache.Add("SliderThumbStyleOverride", sliderThumbStyleOverride);
 				return sliderThumbStyleOverride;
 			}
-			else
-			{
-				sliderThumbStyleOverride.fixedHeight = ShapeKeyMaster.SliderSize.Value;
-				sliderThumbStyleOverride.fixedWidth = ShapeKeyMaster.SliderSize.Value;
-				return sliderThumbStyleOverride;
-			}
+
+			sliderThumbStyleOverride.fixedHeight = ShapeKeyMaster.SliderSize.Value;
+			sliderThumbStyleOverride.fixedWidth = ShapeKeyMaster.SliderSize.Value;
+			return sliderThumbStyleOverride;
 		}
 	}
 }
