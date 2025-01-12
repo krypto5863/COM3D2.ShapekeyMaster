@@ -19,7 +19,7 @@ using UnityEngine;
 
 namespace ShapeKeyMaster
 {
-	[BepInPlugin("org.krypto5863.com3d2.shapekeymaster", "ShapeKeyMaster", "1.7.1")]
+	[BepInPlugin("org.krypto5863.com3d2.shapekeymaster", "ShapeKeyMaster", "1.7.2")]
 	[BepInDependency(Plugin.PluginGUID)]
 	public class ShapeKeyMaster : BaseUnityPlugin
 	{
