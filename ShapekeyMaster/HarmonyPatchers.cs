@@ -23,6 +23,8 @@ namespace ShapeKeyMaster
 
 		private static float[] _previousBlends;
 
+		private static Dictionary<ShapeKeyEntry, bool> _ignoreFlag = new Dictionary<ShapeKeyEntry, bool>();
+
 		[HarmonyPatch(typeof(TMorph), MethodType.Constructor, typeof(TBodySkin))]
 		[HarmonyPostfix]
 		private static void NotifyOfLoad(ref TMorph __instance)
@@ -121,14 +123,50 @@ namespace ShapeKeyMaster
 					__instance.BlendValues[index] = 0;
 					__instance.BlendValuesBackup[index] = 0;
 				}
-				else if (shapeKeyEntry.ConditionalsToggle && __instance.bodyskin != null && __instance.bodyskin.body && __instance.bodyskin.body.maid && SlotChecker.CheckIfSlotDisableApplies(shapeKeyEntry, __instance.bodyskin.body.maid))
+				else if (shapeKeyEntry.ConditionalsToggle && __instance.bodyskin != null && __instance.bodyskin.body && __instance.bodyskin.body.maid)
 				{
 #if (DEBUG)
 					ShapeKeyMaster.pluginLogger.LogDebug($"Applying Conditional State @ {__instance.bodyskin.body.maid.status.fullNameJpStyle} :: {__instance.Category} ::: {shapeKeyEntry.EntryName} :::: {shapeKeyEntry.ShapeKey}");
 #endif
 
-					__instance.BlendValues[index] = shapeKeyEntry.DisabledDeform / 100;
-					__instance.BlendValuesBackup[index] = shapeKeyEntry.DisabledDeform / 100;
+                    // When the condition is not met, skip the processing of shapekey, so other programs can use this shape key
+                    if (SlotChecker.CheckIfSlotDisableApplies(shapeKeyEntry, __instance.bodyskin.body.maid))
+                    {
+                        if (_ignoreFlag.ContainsKey(shapeKeyEntry) && _ignoreFlag[shapeKeyEntry] == true)
+                        {
+                            continue;
+                        }
+
+                        __instance.BlendValues[index] = shapeKeyEntry.DisabledDeform / 100;
+                        __instance.BlendValuesBackup[index] = shapeKeyEntry.DisabledDeform / 100;
+
+
+                        // Check if values are approximately equal, because sometimes there will be problems with values not being applied
+                        bool isBlendValueEqual = Math.Abs(__instance.BlendValues[index] - (shapeKeyEntry.DisabledDeform / 100)) < 0.01;
+                        bool isBlendBackupEqual = Math.Abs(__instance.BlendValuesBackup[index] - (shapeKeyEntry.DisabledDeform / 100)) < 0.01;
+
+                        if (isBlendValueEqual && isBlendBackupEqual)
+                        {
+                            _ignoreFlag[shapeKeyEntry] = true;
+                        }
+                    }
+                    else
+                    {
+                        _ignoreFlag[shapeKeyEntry] = false;
+
+                        if (shapeKeyEntry.AnimateWithExcitement &&
+                            YotogiLvls.Contains(SceneManager.GetActiveScene().name))
+                        {
+                            var deform = shapeKeyEntry.CalculateExcitementDeformation();
+                            __instance.BlendValues[index] = deform / 100;
+                            __instance.BlendValuesBackup[index] = deform / 100;
+                        }
+                        else
+                        {
+                            __instance.BlendValues[index] = shapeKeyEntry.Deform / 100;
+                            __instance.BlendValuesBackup[index] = shapeKeyEntry.Deform / 100;
+                        }
+                    }
 				}
 				else if (shapeKeyEntry.AnimateWithExcitement && YotogiLvls.Contains(SceneManager.GetActiveScene().name))
 				{
